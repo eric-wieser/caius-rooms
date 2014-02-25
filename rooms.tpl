@@ -21,7 +21,7 @@
 
 			<h1>Rooms <small>({{len(rooms)}} in the ballot)</small></h1>
 			<table class="table table-condensed">
-				% for room in sorted(rooms, key=lambda r: (r['bayesian_rank'], len(r['images']), -r.id), reverse=True):
+				% for room in sorted(rooms, key=lambda r: (r['bayesian_rank'], len(r['images']), -r['id']), reverse=True):
 					<tr>
 						<td><a href="/rooms/{{room['id']}}">{{room['name']}}</a></td>
 						<td>
