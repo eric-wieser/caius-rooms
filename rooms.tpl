@@ -30,10 +30,16 @@
 							% end
 						</td>
 						<td>
-							{{len(room['reviews'])}} reviews
+							% if room['reviews']:
+								% n = len(room['reviews'])
+								{{ "%d review%s" % (n, "s"[n==1:]) }}
+							% end
 						</td>
 						<td>
-							{{len(room['images'])}} images
+							% if room['images']:
+								% n = len(room['images'])
+								{{ "%d image%s" % (n, "s"[n==1:]) }}
+							% end
 						</td>
 					</tr>
 				% end
