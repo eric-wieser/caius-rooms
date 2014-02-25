@@ -14,12 +14,14 @@
 			% 	reviews = room['reviews']
 			% 	room['mean_score'] = sum(r['rating'] for r in reviews) * 1.0 / len(reviews) if reviews else None
 			% 	room['id'] = i
+			%	n = len(reviews)
+			% 	room['bayesian_rank'] = (3 + n * room['mean_score'] ) / (1 + n)
 			% end
 			% rooms = rooms.values()
 
 			<h1>Rooms <small>({{len(rooms)}} in the ballot)</small></h1>
 			<table class="table table-condensed">
-				% for room in sorted(rooms, key=lambda r: r['mean_score'], reverse=True):
+				% for room in sorted(rooms, key=lambda r: r['bayesian_rank'], reverse=True):
 					<tr>
 						<td><a href="/rooms/{{room['id']}}">{{room['name']}}</a></td>
 						<td>
