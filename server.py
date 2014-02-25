@@ -6,6 +6,9 @@ from bottle import *
 with open('all2.json') as f:
 	data = json.load(f)
 
+for i, room in data.iteritems():
+	room['id'] = int(i)
+
 @route(r'/rooms')
 def show_rooms():
 	return template('rooms', rooms=data)

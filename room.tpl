@@ -1,3 +1,4 @@
+% import json
 <!doctype html>
 <html>
 	<head>
@@ -6,12 +7,33 @@
 	    <meta name="viewport" content="width=device-width, initial-scale=1">
 		<link rel="icon" type="image/png" href="http://cdn.dustball.com/house.png">
 		<link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
+		<script src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
 		<title>Rooms | {{room['name']}}</title>
 	</head>
 	<body>
 		<div class="container">
 			<div style="position: fixed; top: 1em; right: 1em">
-				<a class="btn btn-default" href='random'><span class="glyphicon glyphicon-random"></span>  Random</a></p>
+				<a class="btn btn-default" href='random'>
+					<span class="glyphicon glyphicon-random"></span> Random</a></p>
+				<button type="button" class="btn btn-default" id="favorite" title="Record as favorite on this PC">
+					<span class="glyphicon glyphicon-star"></span> Favorite</button>
+
+				<script>
+				var thisRoom = {{! json.dumps(room['id']) }};
+				if(localStorage['favorited-' + thisRoom])
+					$('#favorite').addClass('btn-success');
+
+				$('#favorite').click(function() {
+					if(localStorage['favorited-' + thisRoom]) {
+						delete localStorage['favorited-' + thisRoom];
+						$('#favorite').removeClass('btn-success');
+					}
+					else {
+						localStorage['favorited-' + thisRoom] = true;
+						$('#favorite').addClass('btn-success');
+					}
+				});
+				</script>
 			</div>
 			% reviews = room['reviews']
 			% if reviews:
