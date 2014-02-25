@@ -15,7 +15,7 @@
 			<h1>{{room['name']}} <small>{{ '{:.1f}'.format(mean_score) }}/10</small></h1>
 			<div class="images">
 				%for image in room['images']:
-					<img src="{{image['href']" class="img-rounded" />
+					<img src="{{ image['href'] }}" class="img-rounded" />
 					<p>{{ image['caption'] }}</p>
 				%end
 			</div>
