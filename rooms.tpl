@@ -30,7 +30,10 @@
 							% end
 						</td>
 						<td>
-						 	({{len(room['reviews'])}} reviews)
+							{{len(room['reviews'])}} reviews
+						</td>
+						<td>
+							{{len(room['images'])}} images
 						</td>
 					</tr>
 				% end
