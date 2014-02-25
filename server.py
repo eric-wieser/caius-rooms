@@ -27,6 +27,6 @@ def show_room(room):
 
 import socket
 if socket.gethostname() == 'pip':
-	run(host='efw27.user.srcf.net', port=8098)
+	run(host='efw27.user.srcf.net', port=8098, server='cherrypy')
 else:
 	run(host='localhost', port=8080, debug=True)
