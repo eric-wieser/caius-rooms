@@ -17,4 +17,8 @@ def show_room(room):
 	else:
 		raise HTTPError(404)
 
-run(host='localhost', port=8080, debug=True)
+import socket
+if socket.gethostname() == 'pip':
+	run(host='efw27.user.srcf.net', port=8098)
+else:
+	run(host='localhost', port=8080, debug=True)
