@@ -15,7 +15,7 @@
 			% 	room['mean_score'] = sum(r['rating'] for r in reviews) * 1.0 / len(reviews) if reviews else None
 			% 	room['id'] = i
 			%	n = len(reviews)
-			% 	room['bayesian_rank'] = (3 + n * room['mean_score'] ) / (1 + n)
+			% 	room['bayesian_rank'] = (3 + n * room['mean_score'] ) / (1 + n) if reviews else None
 			% end
 			% rooms = rooms.values()
 
