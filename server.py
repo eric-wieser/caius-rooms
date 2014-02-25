@@ -1,4 +1,5 @@
 import json
+import random
 
 from bottle import *
 
@@ -8,6 +9,10 @@ with open('all2.json') as f:
 @route(r'/rooms')
 def show_rooms():
 	return template('rooms', rooms=data)
+
+@route(r'/rooms/random')
+def show_random_room():
+	redirect('/rooms/{}'.format(random.choice(data.keys())))
 
 @route(r'/rooms/<room>')
 def show_room(room):

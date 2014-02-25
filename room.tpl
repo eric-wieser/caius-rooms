@@ -10,9 +10,16 @@
 	</head>
 	<body>
 		<div class="container">
+			<div style="position: fixed; top: 1em; right: 1em">
+				<a class="btn btn-default" href='random'><span class="glyphicon glyphicon-random"></span>  Random</a></p>
+			</div>
 			% reviews = room['reviews']
-			% mean_score = sum(r['rating'] for r in reviews) * 1.0 / len(reviews)
-			<h1>{{room['name']}} <small>{{ '{:.1f}'.format(mean_score) }}/10</small></h1>
+			% if reviews:
+				% mean_score = sum(r['rating'] for r in reviews) * 1.0 / len(reviews) 
+				<h1>{{room['name']}} <small>{{ '{:.1f}'.format(mean_score) }}/10</small></h1>
+			% else:
+				<h1>{{room['name']}}</h1>
+			% end
 			<div class="images">
 				%for image in room['images']:
 					<img src="{{ image['href'] }}" class="img-rounded" />
