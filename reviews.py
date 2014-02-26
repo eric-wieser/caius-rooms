@@ -89,7 +89,9 @@ def parse_reviews():
 			r['reviews'] = []
 			r['id'] = i
 			for elem in soup.find_all('div', {'class': 'bubble'}):
-				review = {}
+				review = {
+					'sections': []
+				}
 				review_list = elem.find('dl')
 				last_key = None
 				for c in review_list.children:
@@ -106,10 +108,10 @@ def parse_reviews():
 						elif c.name == 'dd':
 							value = c.getText().strip()
 							if 'Rated in' in value:
-								review['rated-in'] = int(re.search(r'in (\d+)', value).group(1))
+								review['date'] = int(re.search(r'in (\d+)', value).group(1))
 
 							elif last_key is not None:
-								review[last_key] = value
+								review['sections'].append({'name': last_key, 'value': value})
 								last_key = None
 					except:
 						print c
@@ -163,11 +165,11 @@ def parse_residents():
 
 			year = int(year.rstrip(u'\u2014'))
 
-			reviews = [r for r in room['reviews'] if r['rated-in'] == year]
+			reviews = [r for r in room['reviews'] if r['date'] == year]
 
 			if not reviews:
 				r = {
-					'rated-in': year,
+					'date': year,
 					'rating': None
 				}
 				room['reviews'].append(r)
@@ -176,12 +178,12 @@ def parse_residents():
 			for r in reviews:
 				if 'rating' not in r:
 					r['rating'] = None
-				r['rated-by'] = {
+				r['resident'] = {
 					'name': link.get_text(),
 					'email': link['href'].split(':')[1]
 				}
 
-			room['reviews'].sort(key=lambda r: r['rated-in'], reverse=True)
+			room['reviews'].sort(key=lambda r: r['date'], reverse=True)
 
 	with open('all.json', 'w') as a:
 		json.dump(rooms, a, sort_keys=True, indent=4, separators=(',', ': '))
@@ -300,8 +302,11 @@ def parse_places():
 # parse_photos()
 # parse_places()
 # download_residents()
-# parse_residents()
 
 # download_features()
 
+parse_reviews()
+parse_photos()
+parse_places()
+parse_residents()
 parse_descriptions()

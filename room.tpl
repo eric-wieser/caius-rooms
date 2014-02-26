@@ -51,22 +51,24 @@
 			<div class="reviews">
 				%for review in room['reviews']:
 					<div>
-						<h2>{{review['rated-in']}}
+						<h2>{{review['date']}}
 							% if review['rating'] is not None:
 								<small>{{review['rating']}}/10</small>
 							% end
 						</h2>
-						% if 'rated-by' in review:
-							<a href="mailto:{{review['rated-by']['email']}}">{{review['rated-by']['name']}}</a>
+						% if 'resident' in review:
+							<a href="mailto:{{review['resident']['email']}}">{{review['resident']['name']}}</a>
 						% end
-						<dl class="review dl-horizontal">
-							%for k, v in review.iteritems():
-								%if k not in ('rated-in', 'rating', 'rated-by') and v:
-									<dt>{{k}}</dt>
-									<dd style="white-space: pre-wrap">{{v}}</dd>
+						% if 'sections' in review:
+							<dl class="review dl-horizontal">
+								%for item in review['sections']:
+									%if item['value']:
+										<dt>{{item['name']}}</dt>
+										<dd style="white-space: pre-wrap">{{item['value']}}</dd>
+									%end
 								%end
-							%end
-						</dl>
+							</dl>
+						% end
 					</div>
 				%end
 			</div>
