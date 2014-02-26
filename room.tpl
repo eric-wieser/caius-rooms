@@ -35,13 +35,65 @@
 				});
 				</script>
 			</div>
+			% d = room.get('details', {})
+
 			% reviews = [r for r in room['reviews'] if r['rating'] is not None]
-			% if reviews:
-				% mean_score = sum(r['rating'] for r in reviews) * 1.0 / len(reviews) 
-				<h1>{{room['name']}} <small>{{ '{:.1f}'.format(mean_score) }}/10</small></h1>
-			% else:
-				<h1>{{room['name']}}</h1>
-			% end
+			<h1>
+				{{room['name']}} 
+				% if reviews:
+					% mean_score = sum(r['rating'] for r in reviews) * 1.0 / len(reviews) 
+					<small>{{ '{:.1f}'.format(mean_score) }}/10</small>
+				% end
+
+				<div class="pull-right">
+					% n = d.get('Network')
+					% if n in ('Y', 'Yes'):
+						<span class="glyphicon glyphicon-cloud text-success" title="Network"></span>
+					% elif n in ('N', 'No'):
+						<span class="glyphicon glyphicon-cloud text-muted" title="No Network"></span>
+					% else:
+						<span class="glyphicon glyphicon-cloud text-warning" title="Possible Network"></span>
+					% end
+
+					% p = d.get('Piano')
+					% if p in ('Y', 'Yes'):
+						<span class="glyphicon glyphicon-music text-success" title="Piano"></span>
+					% elif p in ('N', 'No'):
+						<span class="glyphicon glyphicon-music text-muted" title="No Piano"></span>
+					% else:
+						<span class="glyphicon glyphicon-music text-warning" title="Possible Piano"></span>
+					%end
+
+					% w = d.get('Washbasin')
+					% if w in ('Y', 'Yes'):
+						<span class="glyphicon glyphicon-tint text-success" title="Washbasin"></span>
+					% elif w in ('N', 'No'):
+						<span class="glyphicon glyphicon-tint text-muted" title="No Washbasin"></span>
+					% else:
+						<span class="glyphicon glyphicon-tint text-warning" title="Possible Washbasin"></span>
+					%end
+
+					% g = d.get('George Foreman nearby')
+					% if g in ('Y', 'Yes'):
+						<span class="glyphicon glyphicon-fire text-success" title="George Foreman"></span>
+					% elif g in ('N', 'No'):
+						<span class="glyphicon glyphicon-fire text-muted" title="No George Foreman"></span>
+					% else:
+						<span class="glyphicon glyphicon-fire text-warning" title="Possible George Foreman"></span>
+					% end
+				</div>
+			</h1>
+			<table class="table">
+				% for prop, value in d.iteritems():
+					% if prop not in ('Network', 'Piano', 'Washbasin', 'George Foreman nearby'):
+						<tr>
+							<th scope="row">{{prop}}</th>
+							<td>{{value}}</td>
+						</tr>
+					%end
+				% end
+			</table>
+
 			<div class="images">
 				%for image in room['images']:
 					<img src="{{ image['href'] }}" class="img-rounded" />

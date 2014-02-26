@@ -11,7 +11,13 @@ for i, room in data.iteritems():
 
 @route(r'/rooms')
 def show_rooms():
-	return template('rooms', rooms=data)
+	if request.query.place:
+		return template('rooms', rooms={
+			k: v for k, v in data.iteritems()
+			if v['place'] == request.query.place
+		})
+	else:
+		return template('rooms', rooms=data)
 
 @route(r'/rooms/random')
 def show_random_room():
