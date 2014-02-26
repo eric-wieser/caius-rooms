@@ -30,6 +30,16 @@ def download_photos():
 		with open('photos/room-{}.html'.format(i), 'w') as f:
 			f.write(r.text.encode('utf8'))
 
+def download_residents():
+	with open('all.json') as f:
+		data = json.load(f)
+
+	for i in data:
+		r = requests.get('http://www.caiusjcr.org.uk/roomCaius/previousResidents.php?roomid={}'.format(i))
+
+		with open('residents/room-{}.html'.format(i), 'w') as f:
+			f.write(r.text.encode('utf8'))
+
 def parse_reviews():
 	rooms = {}
 
