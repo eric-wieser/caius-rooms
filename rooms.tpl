@@ -9,6 +9,12 @@
 		<link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
 		<script src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
 		<title>Rooms</title>
+		<style>
+			td.shrink { width: 1px; white-space: nowrap; }
+			td.center { text-align: center; }
+			td.rule-right,
+			th.rule-right { border-right: 1px solid #ddd; }
+		</style>
 	</head>
 	<body>
 		<a href="https://github.com/eric-wieser/caius-rooms">
@@ -16,7 +22,7 @@
 		</a>
 		<div class="container">
 			% for i, room in rooms.iteritems():
-			% 	reviews = room['reviews']
+			% 	reviews = [r for r in room['reviews'] if r['rating'] is not None]
 			% 	room['mean_score'] = sum(r['rating'] for r in reviews) * 1.0 / len(reviews) if reviews else None
 			%	n = len(reviews)
 			% 	room['bayesian_rank'] = (3 + n * room['mean_score'] ) / (1 + n) if reviews else None
@@ -24,23 +30,80 @@
 			% rooms = rooms.values()
 
 			<h1>Rooms <small>({{len(rooms)}} in the ballot)</small></h1>
-			<table class="table table-condensed">
+			<table class="table table-condensed table-hover">
+				<tr>
+					<th style="text-align: right">Room</th>
+					<th class="rule-right">Block</th>
+					<th>Rent</th>
+					<th class="rule-right">Rating</th>
+					<th colspan="2" class="rule-right" style="text-align: center">Feedback</th>
+					<th colspan="4" style="text-align: center">Features</th>
+				</tr>
 				% for room in sorted(rooms, key=lambda r: (r['bayesian_rank'], len(r['images']), -r['id']), reverse=True):
 					<tr class="room" data-roomid="{{room['id']}}">
-						<td><a href="/rooms/{{room['id']}}">{{room['name']}}</a></td>
+						<td class="shrink" style="text-align: right"><a href="/rooms/{{room['id']}}">{{room['number'] or room['name']}}</a></td>
+						<td class="rule-right">{{room['place']}}</td>
 						<td>
+							%if 'details' in room and 'Estimated Rent' in room['details']:
+								{{room['details']['Estimated Rent']}}
+							% end
+						</td>
+						<td class="rule-right">
 							%if room['mean_score'] is not None:
 								{{ '{:.1f}'.format(room['mean_score']) }}/10
 							% end
 						</td>
-						<td style="text-align: right">
+						<td class="shrink center">
 							% if room['reviews']:
-								{{ len(room['reviews'])}} <span class="glyphicon glyphicon-pencil" title="reviews"></span>
+								<span style="display: inline-block; width: 2ex; text-align: right">{{ len(room['reviews'])}}</span>
+								<span class="glyphicon glyphicon-comment" title="reviews"></span>
 							% end
 						</td>
-						<td style="text-align: right">
+						<td class="shrink center rule-right">
 							% if room['images']:
-								{{ len(room['images']) }} <span class="glyphicon glyphicon-picture" title="images"></span>
+								<span style="display: inline-block; width: 2ex; text-align: right">{{ len(room['images']) }}</span>
+								<span class="glyphicon glyphicon-picture" title="images"></span>
+							% end
+						</td>
+						% d = room.get('details', {})
+						<td class="shrink center">
+							% n = d.get('Network')
+							% if n in ('Y', 'Yes'):
+								<span class="glyphicon glyphicon-cloud text-success" title="Network"></span>
+							% elif n in ('N', 'No'):
+								<span class="glyphicon glyphicon-cloud text-muted" title="No Network"></span>
+							% else:
+								<span class="glyphicon glyphicon-cloud text-warning" title="Possible Network"></span>
+							% end
+						</td>
+						<td class="shrink center">
+							% p = d.get('Piano')
+							% if p in ('Y', 'Yes'):
+								<span class="glyphicon glyphicon-music text-success" title="Piano"></span>
+							% elif p in ('N', 'No'):
+								<span class="glyphicon glyphicon-music text-muted" title="No Piano"></span>
+							% else:
+								<span class="glyphicon glyphicon-music text-warning" title="Possible Piano"></span>
+							%end
+						</td>
+						<td class="shrink center">
+							% w = d.get('Washbasin')
+							% if w in ('Y', 'Yes'):
+								<span class="glyphicon glyphicon-tint text-success" title="Washbasin"></span>
+							% elif w in ('N', 'No'):
+								<span class="glyphicon glyphicon-tint text-muted" title="No Washbasin"></span>
+							% else:
+								<span class="glyphicon glyphicon-tint text-warning" title="Possible Washbasin"></span>
+							%end
+						</td>
+						<td class="shrink center">
+							% g = d.get('George Foreman nearby')
+							% if g in ('Y', 'Yes'):
+								<span class="glyphicon glyphicon-fire text-success" title="George Foreman"></span>
+							% elif g in ('N', 'No'):
+								<span class="glyphicon glyphicon-fire text-muted" title="No George Foreman"></span>
+							% else:
+								<span class="glyphicon glyphicon-fire text-warning" title="Possible George Foreman"></span>
 							% end
 						</td>
 					</tr>

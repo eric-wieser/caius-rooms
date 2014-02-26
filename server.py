@@ -3,7 +3,7 @@ import random
 
 from bottle import *
 
-with open('all2.json') as f:
+with open('all.json') as f:
 	data = json.load(f)
 
 for i, room in data.iteritems():

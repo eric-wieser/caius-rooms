@@ -35,7 +35,7 @@
 				});
 				</script>
 			</div>
-			% reviews = room['reviews']
+			% reviews = [r for r in room['reviews'] if r['rating'] is not None]
 			% if reviews:
 				% mean_score = sum(r['rating'] for r in reviews) * 1.0 / len(reviews) 
 				<h1>{{room['name']}} <small>{{ '{:.1f}'.format(mean_score) }}/10</small></h1>
@@ -51,10 +51,17 @@
 			<div class="reviews">
 				%for review in room['reviews']:
 					<div>
-						<h2>{{review['rated-in']}} <small>{{review['rating']}}/10</small></h2>
+						<h2>{{review['rated-in']}}
+							% if review['rating'] is not None:
+								<small>{{review['rating']}}/10</small>
+							% end
+						</h2>
+						% if 'rated-by' in review:
+							<a href="mailto:{{review['rated-by']['email']}}">{{review['rated-by']['name']}}</a>
+						% end
 						<dl class="review dl-horizontal">
 							%for k, v in review.iteritems():
-								%if k not in ('rated-in', 'rating') and v:
+								%if k not in ('rated-in', 'rating', 'rated-by') and v:
 									<dt>{{k}}</dt>
 									<dd style="white-space: pre-wrap">{{v}}</dd>
 								%end
