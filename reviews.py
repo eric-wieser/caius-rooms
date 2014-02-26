@@ -53,6 +53,7 @@ def parse_reviews():
 			soup = BeautifulSoup(f)
 			r['name'] = soup.button['data-roomname']
 			r['reviews'] = []
+			r['id'] = i
 			for elem in soup.find_all('div', {'class': 'bubble'}):
 				review = {}
 				review_list = elem.find('dl')
