@@ -32,7 +32,7 @@ def download_reviews():
 			print "Fail", i
 		else:
 
-			with open('reviews/room-{}.html'.format(i), 'w') as f:
+			with open('dump/reviews/room-{}.html'.format(i), 'w') as f:
 				f.write(r.text.encode('utf8'))
 
 			print "Success", i
@@ -45,7 +45,7 @@ def download_photos():
 	for i in data:
 		r = requests.get('http://www.caiusjcr.org.uk/roomCaius/photos.php?roomid={}'.format(i))
 
-		with open('photos/room-{}.html'.format(i), 'w') as f:
+		with open('dump/photos/room-{}.html'.format(i), 'w') as f:
 			f.write(r.text.encode('utf8'))
 
 def download_residents():
@@ -55,8 +55,9 @@ def download_residents():
 	for i in data:
 		r = requests.get('http://www.caiusjcr.org.uk/roomCaius/previousResidents.php?roomid={}'.format(i))
 
-		with open('residents/room-{}.html'.format(i), 'w') as f:
+		with open('dump/residents/room-{}.html'.format(i), 'w') as f:
 			f.write(r.text.encode('utf8'))
+		print "Done", i
 
 def download_features():
 	""" This takes a really long time! """
@@ -69,7 +70,7 @@ def download_features():
 	for place in places.values():
 		r = s.get('http://www.caiusjcr.org.uk/roomCaius/index.php?location={}'.format(place['name'].replace(' ', '%20')), allow_redirects=False)
 
-		with open('features/place-{}.html'.format(place['name']), 'w') as f:
+		with open('dump/features/place-{}.html'.format(place['name']), 'w') as f:
 			f.write(r.text.encode('utf8'))
 
 		print place['name']
@@ -78,12 +79,12 @@ def parse_reviews():
 	rooms = {}
 
 	pattern = re.compile('room-(\d+).html')
-	for fname in os.listdir('reviews'):
+	for fname in os.listdir('dump/reviews'):
 		i = int(pattern.match(fname).group(1))
 
 		r = rooms[i] = {}
 
-		with open(os.path.join('reviews', fname)) as f:
+		with open(os.path.join('dump', 'reviews', fname)) as f:
 			soup = BeautifulSoup(f)
 			r['name'] = soup.button['data-roomname']
 			r['reviews'] = []
@@ -133,11 +134,14 @@ def parse_photos():
 		rooms = json.load(f)
 
 	for k, room in rooms.iteritems():
-		with open('photos/room-{}.html'.format(k)) as f:
+		with open('dump/photos/room-{}.html'.format(k)) as f:
 			soup = BeautifulSoup(f)
 		images = room['images'] = []
 
 		wrapper = soup.find('div', {'class': 'carousel-inner'})
+		if wrapper is None:
+			print "Error getting photos for room", k
+			continue
 
 		for elem in wrapper.find_all('div', {'class': 'item'}):
 			image = {}
@@ -157,7 +161,7 @@ def parse_residents():
 		rooms = json.load(f)
 
 	for k, room in rooms.iteritems():
-		with open('residents/room-{}.html'.format(k)) as f:
+		with open('dump/residents/room-{}.html'.format(k)) as f:
 			soup = BeautifulSoup(f)
 
 		for item in soup.find_all('li'):
@@ -189,7 +193,7 @@ def parse_residents():
 		json.dump(rooms, a, sort_keys=True, indent=4, separators=(',', ': '))
 
 
-def parse_descriptions():
+def parse_features():
 	with open('all.json') as f:
 		rooms = json.load(f)
 
@@ -198,7 +202,7 @@ def parse_descriptions():
 		places = json.load(f)
 
 	for place in places.values():
-		with open('features/place-{}.html'.format(place['name'])) as f:
+		with open('dump/features/place-{}.html'.format(place['name'])) as f:
 			soup = BeautifulSoup(f)
 
 		for i in place['roomIds']:
@@ -252,7 +256,7 @@ def parse_places():
 		"roomIds": []
 	}
 
-	with open('other/index.php') as f:
+	with open('dump/other/index.php') as f:
 		while next(f) != 'var locations = new Array();\n':
 			pass
 
