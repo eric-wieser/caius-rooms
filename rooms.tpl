@@ -40,6 +40,7 @@
 						<th data-defaultsort='disabled' style="text-align: right">Room</th>
 						<th class="rule-right">Block</th>
 						<th>Rent</th>
+						<th>Area</th>
 						<th class="rule-right">Rating</th>
 						<th data-defaultsort='disabled' colspan="3" class="rule-right" style="text-align: center">Feedback</th>
 						<th data-defaultsort='disabled' colspan="4" style="text-align: center">Features</th>
@@ -48,12 +49,55 @@
 				<tbody>
 					% for room in sorted(rooms, key=lambda r: (r['bayesian_rank'], len(r['images']), -r['id']), reverse=True):
 						<tr class="room" data-roomid="{{room['id']}}">
-							<td class="shrink" style="text-align: right"><a href="/rooms/{{room['id']}}">{{room['number'] or room['name']}}</a></td>
+							% d = room.get('details', {})
+							<td class="shrink" style="text-align: right">
+								% if d.get('Type') == 'Suite':
+									<span class="glyphicon glyphicon-th-large text-muted" title="Suite"></span>
+								% end
+								<a href="/rooms/{{room['id']}}">{{room['number'] or room['name']}}</a>
+							</td>
 							<td class="rule-right">{{room['place']}}</td>
 							<td>
 								%if 'details' in room and 'Estimated Rent' in room['details']:
 									{{room['details']['Estimated Rent']}}
 								% end
+							</td>
+							% b_space = d.get('Bedroom')
+							% b_space = b_space and b_space.split(' sqr ft', 1)[0]
+							% b_w, b_h = 0, 0
+							% if b_space:
+								% try:
+									% b_w, b_h = map(int, b_space.split('*'))
+								% except ValueError:
+									% b_space = None
+								% end
+							% end
+
+							% l_space = d.get('Living Room', '')
+							% l_space = l_space and l_space.split(' sqr ft', 1)[0]
+							% l_w, l_h = 0, 0
+							% if l_space:
+								% try:
+									% l_w, l_h = map(int, l_space.split('*'))
+								% except ValueError:
+									% l_space = None
+								% end
+							% end
+
+							% area = b_w * b_h + l_w * l_h
+							<td data-value="{{area if b_space or l_space else -1}}">
+								% if b_space or l_space:
+									{{area}}<span class="hidden-xs">&nbsp;ft&sup2;</span>
+								% end
+								<span class="hidden-xs text-muted">
+									% if b_space and l_space:
+										({{b_w}}&times;{{b_h}} + {{l_w}}&times;{{l_h}})
+									% elif b_space:
+										({{b_w}}&times;{{b_h}})
+									% elif l_space:
+										({{l_w}}&times;{{l_h}})
+									% end
+								</span>
 							</td>
 							<td class="rule-right" data-value="{{room['bayesian_rank'] or 0}}">
 								%if room['mean_score'] is not None:
