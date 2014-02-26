@@ -36,7 +36,7 @@
 					<th class="rule-right">Block</th>
 					<th>Rent</th>
 					<th class="rule-right">Rating</th>
-					<th colspan="2" class="rule-right" style="text-align: center">Feedback</th>
+					<th colspan="3" class="rule-right" style="text-align: center">Feedback</th>
 					<th colspan="4" style="text-align: center">Features</th>
 				</tr>
 				% for room in sorted(rooms, key=lambda r: (r['bayesian_rank'], len(r['images']), -r['id']), reverse=True):
@@ -55,8 +55,22 @@
 						</td>
 						<td class="shrink center">
 							% if room['reviews']:
-								<span style="display: inline-block; width: 2ex; text-align: right">{{ len(room['reviews'])}}</span>
-								<span class="glyphicon glyphicon-comment" title="reviews"></span>
+								% n = sum(r['rating'] != None for r in room['reviews'])
+								% m = '1 review' if n == 1 else '{} reviews'.format(n)
+								% if n != 0:
+									<span style="display: inline-block; width: 2ex; text-align: right">{{ n if n != 1 else '' }}</span>
+									<span class="glyphicon glyphicon-comment" title="{{m}}"></span>
+								% end
+							% end
+						</td>
+						<td class="shrink center">
+							% if room['reviews']:
+								% n = sum('resident' in r for r in room['reviews'])
+								% m = '1 resident' if n == 1 else '{} residents'.format(n)
+								% if n != 0:
+									<span style="display: inline-block; width: 2ex; text-align: right">{{ n if n != 1 else '' }}</span>
+									<span class="glyphicon glyphicon-user" title="{{m}}"></span>
+								% end
 							% end
 						</td>
 						<td class="shrink center rule-right">
