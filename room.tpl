@@ -40,7 +40,6 @@
 			</div>
 			% d = room.get('details', {})
 
-			% latlng = ','.join([room['place']['location']['lat'], room['place']['location']['lng']])
 			<div class="row">
 				<div class="col-md-6">
 					% reviews = [r for r in room['reviews'] if r['rating'] is not None]
