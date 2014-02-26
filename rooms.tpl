@@ -21,7 +21,7 @@
 		</style>
 	</head>
 	<body>
-		<a href="https://github.com/eric-wieser/caius-rooms">
+		<a class="hidden-xs" href="https://github.com/eric-wieser/caius-rooms">
 			<img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png" alt="Fork me on GitHub">
 		</a>
 		<div class="container">
@@ -57,7 +57,7 @@
 							</td>
 							<td class="rule-right" data-value="{{room['bayesian_rank'] or 0}}">
 								%if room['mean_score'] is not None:
-									{{ '{:.1f}'.format(room['mean_score']) }}/10
+									{{ '{:.1f}'.format(room['mean_score']) }}<span class="hidden-xs">/10</span>
 								% end
 							</td>
 							<td class="shrink center">
@@ -65,7 +65,7 @@
 									% n = sum(r['rating'] != None for r in room['reviews'])
 									% m = '1 review' if n == 1 else '{} reviews'.format(n)
 									% if n != 0:
-										<span style="display: inline-block; width: 2ex; text-align: right">{{ n if n != 1 else '' }}</span>
+										<span class="hidden-xs" style="display: inline-block; width: 2ex; text-align: right">{{ n if n != 1 else '' }}</span>
 										<span class="glyphicon glyphicon-comment" title="{{m}}"></span>
 									% end
 								% end
@@ -75,14 +75,14 @@
 									% n = sum('resident' in r for r in room['reviews'])
 									% m = '1 resident' if n == 1 else '{} residents'.format(n)
 									% if n != 0:
-										<span style="display: inline-block; width: 2ex; text-align: right">{{ n if n != 1 else '' }}</span>
+										<span class="hidden-xs" style="display: inline-block; width: 2ex; text-align: right">{{ n if n != 1 else '' }}</span>
 										<span class="glyphicon glyphicon-user" title="{{m}}"></span>
 									% end
 								% end
 							</td>
 							<td class="shrink center rule-right">
 								% if room['images']:
-									<span style="display: inline-block; width: 2ex; text-align: right">{{ len(room['images']) }}</span>
+									<span class="hidden-xs" style="display: inline-block; width: 2ex; text-align: right">{{ len(room['images']) }}</span>
 									<span class="glyphicon glyphicon-picture" title="images"></span>
 								% end
 							</td>
