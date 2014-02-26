@@ -63,7 +63,7 @@
 								% end
 								<a href="/rooms/{{room['id']}}">{{room['number'] or room['name']}}</a>
 							</td>
-							<td class="rule-right">{{room['place']}}</td>
+							<td class="rule-right">{{room['place']['name']}}</td>
 							<td>
 								%if 'details' in room and 'Estimated Rent' in room['details']:
 									{{room['details']['Estimated Rent']}}

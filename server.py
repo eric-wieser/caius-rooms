@@ -6,8 +6,13 @@ from bottle import *
 with open('all.json') as f:
 	data = json.load(f)
 
+with open('places.json') as f:
+	places = json.load(f)
+
+
+
 for i, room in data.iteritems():
-	room['id'] = int(i)
+	room['place'] = places[room['place']]
 
 
 @route('/static/<path:path>', name='static')
