@@ -33,16 +33,14 @@
 								{{ '{:.1f}'.format(room['mean_score']) }}/10
 							% end
 						</td>
-						<td>
+						<td style="text-align: right">
 							% if room['reviews']:
-								% n = len(room['reviews'])
-								{{ "%d review%s" % (n, "s"[n==1:]) }}
+								{{ len(room['reviews'])}} <span class="glyphicon glyphicon-pencil" title="reviews"></span>
 							% end
 						</td>
-						<td>
+						<td style="text-align: right">
 							% if room['images']:
-								% n = len(room['images'])
-								{{ "%d image%s" % (n, "s"[n==1:]) }}
+								{{ len(room['images']) }} <span class="glyphicon glyphicon-picture" title="images"></span>
 							% end
 						</td>
 					</tr>
