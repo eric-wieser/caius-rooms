@@ -9,6 +9,11 @@ with open('all.json') as f:
 for i, room in data.iteritems():
 	room['id'] = int(i)
 
+
+@route('/static/<path:path>', name='static')
+def static(path):
+    return static_file(path, root='static')
+
 @route(r'/rooms')
 def show_rooms():
 	if request.query.place:
