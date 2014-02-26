@@ -50,36 +50,37 @@
 					% if n in ('Y', 'Yes'):
 						<span class="glyphicon glyphicon-cloud text-success" title="Network"></span>
 					% elif n in ('N', 'No'):
-						<span class="glyphicon glyphicon-cloud text-muted" title="No Network"></span>
+						<span class="glyphicon glyphicon-cloud text-danger" title="No Network"></span>
 					% else:
-						<span class="glyphicon glyphicon-cloud text-warning" title="Possible Network"></span>
+						<span class="glyphicon glyphicon-cloud text-muted" title="Possible Network"></span>
 					% end
-
-					% p = d.get('Piano')
-					% if p in ('Y', 'Yes'):
-						<span class="glyphicon glyphicon-music text-success" title="Piano"></span>
-					% elif p in ('N', 'No'):
-						<span class="glyphicon glyphicon-music text-muted" title="No Piano"></span>
-					% else:
-						<span class="glyphicon glyphicon-music text-warning" title="Possible Piano"></span>
-					%end
 
 					% w = d.get('Washbasin')
 					% if w in ('Y', 'Yes'):
 						<span class="glyphicon glyphicon-tint text-success" title="Washbasin"></span>
 					% elif w in ('N', 'No'):
-						<span class="glyphicon glyphicon-tint text-muted" title="No Washbasin"></span>
+						<span class="glyphicon glyphicon-tint text-danger" title="No Washbasin"></span>
 					% else:
-						<span class="glyphicon glyphicon-tint text-warning" title="Possible Washbasin"></span>
+						<span class="glyphicon glyphicon-tint text-muted" title="Possible Washbasin"></span>
 					%end
+
+					% p = d.get('Piano')
+					% if p in ('Y', 'Yes'):
+						<span class="glyphicon glyphicon-music text-success" title="Piano"></span>
+					% elif p in ('N', 'No'):
+						<span class="glyphicon glyphicon-music text-danger" title="No Piano"></span>
+					% else:
+						<span class="glyphicon glyphicon-music text-muted" title="Possible Piano"></span>
+					%end
+
 
 					% g = d.get('George Foreman nearby')
 					% if g in ('Y', 'Yes'):
 						<span class="glyphicon glyphicon-fire text-success" title="George Foreman"></span>
 					% elif g in ('N', 'No'):
-						<span class="glyphicon glyphicon-fire text-muted" title="No George Foreman"></span>
+						<span class="glyphicon glyphicon-fire text-danger" title="No George Foreman"></span>
 					% else:
-						<span class="glyphicon glyphicon-fire text-warning" title="Possible George Foreman"></span>
+						<span class="glyphicon glyphicon-fire text-muted" title="Possible George Foreman"></span>
 					% end
 				</div>
 			</h1>
