@@ -91,16 +91,6 @@
 						% else:
 							<span class="glyphicon glyphicon-music text-muted" title="Possible Piano"></span>
 						%end
-
-
-						% g = d.get('George Foreman nearby')
-						% if g in ('Y', 'Yes'):
-							<span class="glyphicon glyphicon-fire text-success" title="George Foreman"></span>
-						% elif g in ('N', 'No'):
-							<span class="glyphicon glyphicon-fire text-danger" title="No George Foreman"></span>
-						% else:
-							<span class="glyphicon glyphicon-fire text-muted" title="Possible George Foreman"></span>
-						% end
 					</div>
 					<div id="map"></div>
 					% try:

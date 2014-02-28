@@ -168,16 +168,6 @@
 									<span class="glyphicon glyphicon-music text-muted" title="Possible Piano"></span>
 								%end
 							</td>
-							<td class="shrink center">
-								% g = d.get('George Foreman nearby')
-								% if g in ('Y', 'Yes'):
-									<span class="glyphicon glyphicon-fire text-success" title="George Foreman"></span>
-								% elif g in ('N', 'No'):
-									% pass
-								% else:
-									<span class="glyphicon glyphicon-fire text-muted" title="Possible George Foreman"></span>
-								% end
-							</td>
 						</tr>
 					% end
 				</tbody>
