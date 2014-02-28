@@ -22,7 +22,8 @@
             "lng": "0.118154"
         },
         "name": "1a Rose Crescent",
-        "roomIds": []
+        "roomIds": [],
+        "unlisted": true
     },
     "2 Mortimer Rd": {
         "location": {
@@ -113,7 +114,8 @@
             355,
             359,
             358
-        ]
+        ],
+        "unlisted": true
     },
     "35-37 Chesterton Rd": {
         "location": {
@@ -136,7 +138,8 @@
             488,
             487,
             486
-        ]
+        ],
+        "unlisted": true
     },
     "37 Green Street": {
         "location": {
@@ -145,9 +148,6 @@
         },
         "name": "37 Green Street",
         "roomIds": [
-            199,
-            200,
-            203,
             202,
             205,
             207,
@@ -214,7 +214,8 @@
             456,
             368,
             369
-        ]
+        ],
+        "unlisted": true
     },
     "43 Glisson Rd": {
         "location": {
@@ -230,7 +231,8 @@
             386,
             387,
             388
-        ]
+        ],
+        "unlisted": true
     },
     "5 Gresham Rd": {
         "location": {
@@ -264,7 +266,8 @@
             334,
             337,
             336
-        ]
+        ],
+        "unlisted": true
     },
     "5 Mortimer Rd": {
         "location": {
@@ -312,7 +315,8 @@
             352,
             351,
             350
-        ]
+        ],
+        "unlisted": true
     },
     "6 Mortimer Rd": {
         "location": {
@@ -365,9 +369,7 @@
             "lng": "0.116987"
         },
         "name": "Caius Court",
-        "roomIds": [
-            16
-        ]
+        "roomIds": []
     },
     "Gonville Court": {
         "location": {
@@ -471,16 +473,10 @@
             149,
             454,
             170,
-            168,
             169,
-            164,
-            165,
-            166,
             167,
             160,
             161,
-            162,
-            163,
             151,
             150,
             153,
@@ -506,7 +502,6 @@
             101,
             106,
             107,
-            104,
             438,
             439,
             436,
@@ -585,7 +580,6 @@
             35,
             34,
             24,
-            25,
             26,
             27,
             20,
