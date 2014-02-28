@@ -304,6 +304,13 @@ def parse_places():
 	with open('places.json', 'w') as a:
 		json.dump(places, a, sort_keys=True, indent=4, separators=(',', ': '))
 
+def parse_some_things():
+	parse_photos()
+	parse_residents()
+	parse_places()
+	parse_features()
+
+
 def get_all_the_things():
 	d = datetime.now()
 
@@ -320,6 +327,7 @@ def get_all_the_things():
 	print "Parsing other things"
 	parse_photos()
 	parse_residents()
+	parse_places()
 
 	# Y U SO SLOW?
 	print "Downloading details"
