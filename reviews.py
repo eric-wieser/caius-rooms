@@ -285,6 +285,13 @@ def parse_places():
 				"roomIds": []
 			}
 
+	for place in places.values():
+		parts = place['name'].split(None, 1)
+		if parts[0][0].isdigit():
+			place['group'] = parts[1]
+		else:
+			place['group'] = None
+
 
 	with open('all.json') as f:
 		rooms = json.load(f)

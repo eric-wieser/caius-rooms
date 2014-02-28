@@ -1,5 +1,6 @@
 {
     "1 Mortimer Rd": {
+        "group": "Mortimer Rd",
         "location": {
             "lat": "52.2018",
             "lng": "0.132383"
@@ -17,6 +18,7 @@
         ]
     },
     "1a Rose Crescent": {
+        "group": "Rose Crescent",
         "location": {
             "lat": "52.2063",
             "lng": "0.118154"
@@ -26,6 +28,7 @@
         "unlisted": true
     },
     "2 Mortimer Rd": {
+        "group": "Mortimer Rd",
         "location": {
             "lat": "52.2017",
             "lng": "0.132329"
@@ -41,6 +44,7 @@
         ]
     },
     "27 Green Street": {
+        "group": "Green Street",
         "location": {
             "lat": "52.2065",
             "lng": "0.118857"
@@ -66,6 +70,7 @@
         ]
     },
     "28A Green Street": {
+        "group": "Green Street",
         "location": {
             "lat": "52.2065",
             "lng": "0.119082"
@@ -86,6 +91,7 @@
         ]
     },
     "3 Mortimer Rd": {
+        "group": "Mortimer Rd",
         "location": {
             "lat": "52.2016",
             "lng": "0.132233"
@@ -100,6 +106,7 @@
         ]
     },
     "3 St Pauls Rd": {
+        "group": "St Pauls Rd",
         "location": {},
         "name": "3 St Pauls Rd",
         "roomIds": [
@@ -118,6 +125,7 @@
         "unlisted": true
     },
     "35-37 Chesterton Rd": {
+        "group": "Chesterton Rd",
         "location": {
             "lat": "52.2129",
             "lng": "0.119669"
@@ -142,6 +150,7 @@
         "unlisted": true
     },
     "37 Green Street": {
+        "group": "Green Street",
         "location": {
             "lat": "52.2067",
             "lng": "0.119597"
@@ -155,6 +164,7 @@
         ]
     },
     "4 Mortimer Rd": {
+        "group": "Mortimer Rd",
         "location": {
             "lat": "52.2016",
             "lng": "0.132169"
@@ -171,6 +181,7 @@
         ]
     },
     "4 Rose Crescent": {
+        "group": "Rose Crescent",
         "location": {
             "lat": "52.2063",
             "lng": "0.118661"
@@ -201,6 +212,7 @@
         ]
     },
     "4 St Pauls Rd": {
+        "group": "St Pauls Rd",
         "location": {},
         "name": "4 St Pauls Rd",
         "roomIds": [
@@ -218,6 +230,7 @@
         "unlisted": true
     },
     "43 Glisson Rd": {
+        "group": "Glisson Rd",
         "location": {
             "lat": "52.198",
             "lng": "0.1325"
@@ -235,6 +248,7 @@
         "unlisted": true
     },
     "5 Gresham Rd": {
+        "group": "Gresham Rd",
         "location": {
             "lat": "52.1996",
             "lng": "0.130012"
@@ -251,6 +265,7 @@
         ]
     },
     "5 Harvey Rd": {
+        "group": "Harvey Rd",
         "location": {},
         "name": "5 Harvey Rd",
         "roomIds": [
@@ -270,6 +285,7 @@
         "unlisted": true
     },
     "5 Mortimer Rd": {
+        "group": "Mortimer Rd",
         "location": {
             "lat": "52.2014",
             "lng": "0.132072"
@@ -287,6 +303,7 @@
         ]
     },
     "6 Gresham Rd": {
+        "group": "Gresham Rd",
         "location": {
             "lat": "52.1996",
             "lng": "0.130012"
@@ -303,6 +320,7 @@
         ]
     },
     "6 Harvey Rd": {
+        "group": "Harvey Rd",
         "location": {},
         "name": "6 Harvey Rd",
         "roomIds": [
@@ -319,6 +337,7 @@
         "unlisted": true
     },
     "6 Mortimer Rd": {
+        "group": "Mortimer Rd",
         "location": {
             "lat": "52.2014",
             "lng": "0.132008"
@@ -332,6 +351,7 @@
         ]
     },
     "7 Mortimer Rd": {
+        "group": "Mortimer Rd",
         "location": {
             "lat": "52.2013",
             "lng": "0.131922"
@@ -347,6 +367,7 @@
         ]
     },
     "8 Mortimer Rd": {
+        "group": "Mortimer Rd",
         "location": {
             "lat": "52.2012",
             "lng": "0.131868"
@@ -364,6 +385,7 @@
         ]
     },
     "Caius Court": {
+        "group": null,
         "location": {
             "lat": "52.2059",
             "lng": "0.116987"
@@ -372,6 +394,7 @@
         "roomIds": []
     },
     "Gonville Court": {
+        "group": null,
         "location": {
             "lat": "52.2062",
             "lng": "0.117019"
@@ -396,6 +419,7 @@
         ]
     },
     "Harvey Court": {
+        "group": null,
         "location": {
             "lat": "52.2024",
             "lng": "0.110807"
@@ -419,6 +443,7 @@
         ]
     },
     "K Block": {
+        "group": null,
         "location": {
             "lat": "52.2027",
             "lng": "0.111505"
@@ -439,6 +464,7 @@
         ]
     },
     "Springfield": {
+        "group": null,
         "location": {
             "lat": "52.2007",
             "lng": "0.112197"
@@ -456,6 +482,7 @@
         ]
     },
     "St Mary's Court": {
+        "group": null,
         "location": {
             "lat": "52.2057",
             "lng": "0.118157"
@@ -490,6 +517,7 @@
         ]
     },
     "St Michael's Court": {
+        "group": null,
         "location": {
             "lat": "52.206",
             "lng": "0.118629"
@@ -564,6 +592,7 @@
         ]
     },
     "Tree Court": {
+        "group": null,
         "location": {
             "lat": "52.206",
             "lng": "0.117567"
