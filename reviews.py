@@ -1,6 +1,7 @@
 import os
 import re
 import json
+from datetime import datetime
 
 # external dependencies
 import requests
@@ -302,22 +303,31 @@ def parse_places():
 	with open('places.json', 'w') as a:
 		json.dump(places, a, sort_keys=True, indent=4, separators=(',', ': '))
 
+def get_all_the_things():
+	d = datetime.now()
+
+	print "Downloading reviews"
+	download_reviews()
+
+	# Reviews map to rooms, so parse these before fetching anything else
+	print "Downloading other things"
+	parse_reviews()
+	download_photos()
+	download_residents()
+
+	# parse the rest
+	print "Parsing other things"
+	parse_photos()
+	parse_residents()
+
+	# Y U SO SLOW?
+	print "Downloading details"
+	download_features()
+	print "Parsing details"
+	parse_features()
+
+	d2 = datetime.now()
+	print "Took", d2 - d
 
 
-# download_reviews()
-# parse_reviews()
-# download_photos()
-# parse_photos()
-
-# parse_reviews()
-# parse_photos()
-# parse_places()
-# download_residents()
-
-# download_features()
-
-parse_reviews()
-parse_photos()
-parse_places()
-parse_residents()
-parse_descriptions()
+get_all_the_things()
