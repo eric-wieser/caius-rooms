@@ -44,7 +44,7 @@
 			<table class="table table-condensed table-hover sortable">
 				<thead>
 					<tr>
-						<th data-defaultsort='disabled' style="text-align: right">Room</th>
+						<th style="text-align: right">Room</th>
 						<th class="rule-right">Block</th>
 						<th>Rent</th>
 						<th>Area</th>
