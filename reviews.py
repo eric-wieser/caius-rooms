@@ -249,13 +249,13 @@ def parse_places():
 			'name': '4 St Pauls Rd'
 		}, {
 			'name': '35-37 Chesterton Rd',
-			"location": {"lat": 52.2129, "lng": 0.119669}
+			"location": {"lat": "52.2129", "lng": "0.119669"}
 		}, {
 			'name': '1a Rose Crescent',
-			"location": {"lat": 52.2063, "lng": 0.118154}
+			"location": {"lat": "52.2063", "lng": "0.118154"}
 		}, {
 			'name': '43 Glisson Rd',
-			"location": {"lat": 52.198, "lng": 0.1325}
+			"location": {"lat": "52.198", "lng": "0.1325"}
 		}
 	]
 	for s in secret:
