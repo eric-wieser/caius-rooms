@@ -63,7 +63,12 @@
 								% end
 								<a href="/rooms/{{room['id']}}">{{room['number'] or room['name']}}</a>
 							</td>
-							<td class="rule-right" data-value="{{room['place']['group'] or ''}} | {{room['place']['name']}}">{{room['place']['name']}}</td>
+							<td class="rule-right" data-value="{{room['place']['group'] or ''}} | {{room['place']['name']}}">
+								{{room['place']['name']}}
+								% if room['place'].get('unlisted'):
+									<span class="label label-danger" title="Possibly not a real building">unlisted</span>
+								% end
+							</td>
 							<td>
 								%if 'details' in room and 'Estimated Rent' in room['details']:
 									{{room['details']['Estimated Rent']}}
