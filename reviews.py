@@ -223,9 +223,10 @@ def parse_features():
 
 			data = {}
 			for row in rows:
-				prop = row.contents[0].get_text()
-				value = row.contents[1][1:].strip()
-				data[prop] = value
+				if row.contents:
+					prop = row.contents[0].get_text()
+					value = row.contents[1][1:].strip()
+					data[prop] = value
 
 			room['details'] = data
 
