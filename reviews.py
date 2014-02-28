@@ -28,7 +28,7 @@ def download_reviews():
 	for i in range(1000):
 		r = requests.get('http://www.caiusjcr.org.uk/roomCaius/Reviews.php?roomid={}'.format(i))
 
-		if u'data-roomname="<br />' in r.text:
+		if u'data-roomname="<br />' in r.text or r.text.startswith('<b>Fatal error</b>'):
 			print "Fail", i
 		else:
 
