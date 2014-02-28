@@ -170,7 +170,7 @@ def parse_residents():
 
 			year = int(year.rstrip(u'\u2014'))
 
-			reviews = [r for r in room['reviews'] if r['date'] == year]
+			reviews = [r for r in room['reviews'] if r['date']-1 == year]
 
 			if not reviews:
 				r = {
