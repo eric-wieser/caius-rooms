@@ -235,26 +235,33 @@ def parse_places():
 	pattern = re.compile(r'locations\["(.*?)"\].*new google\.maps\.LatLng\(\s*([\d.]+)\s*,\s*([\d.]+)\s*\)')
 	places = {}
 
-	places['5 Harvey Rd'] = {
-		'name': '5 Harvey Rd',
-		"location": {},
-		"roomIds": []
-	}
-	places['6 Harvey Rd'] = {
-		'name': '6 Harvey Rd',
-		"location": {},
-		"roomIds": []
-	}
-	places['3 St Pauls Rd'] = {
-		'name': '3 St Pauls Rd',
-		"location": {},
-		"roomIds": []
-	}
-	places['4 St Pauls Rd'] = {
-		'name': '4 St Pauls Rd',
-		"location": {},
-		"roomIds": []
-	}
+	# secret places. No one must know of these?
+	secret = [
+		{
+			'name': '5 Harvey Rd'
+		}, {
+			'name': '6 Harvey Rd'
+		}, {
+			'name': '3 St Pauls Rd'
+		}, {
+			'name': '4 St Pauls Rd'
+		}, {
+			'name': '35-37 Chesterton Rd',
+			"location": {"lat": 52.2129, "lng": 0.119669}
+		}, {
+			'name': '1a Rose Crescent',
+			"location": {"lat": 52.2063, "lng": 0.118154}
+		}, {
+			'name': '43 Glisson Rd',
+			"location": {"lat": 52.198, "lng": 0.1325}
+		}
+	]
+	for s in secret:
+		s['roomIds'] = []
+		s['unlisted'] = True
+		s['location'] = s.get('location', {})
+		places[s['name']] = s
+
 
 	with open('dump/other/index.php') as f:
 		while next(f) != 'var locations = new Array();\n':
