@@ -10,7 +10,6 @@ with open('places.json') as f:
 	places = json.load(f)
 
 
-
 for i, room in data.iteritems():
 	room['place'] = places[room['place']]
 
@@ -24,7 +23,12 @@ def show_rooms():
 	if request.query.place:
 		return template('rooms', rooms={
 			k: v for k, v in data.iteritems()
-			if v['place'] == request.query.place
+			if v['place']['name'] == request.query.place
+		})
+	elif request.query.group:
+		return template('rooms', rooms={
+			k: v for k, v in data.iteritems()
+			if v['place']['group'] == request.query.group
 		})
 	else:
 		return template('rooms', rooms=data)

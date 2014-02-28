@@ -178,16 +178,5 @@
 				</tbody>
 			</table>
 		</div>
-		<script>
-		var thisRoom = {{! json.dumps(room['id']) }};
-		if(localStorage['favorited-' + thisRoom])
-			$('#favorite').addClass('btn-success');
-
-		$('.room').each(function() {
-			if(localStorage['favorited-' + $(this).data('roomid')]) {
-				$(this).addClass('success');
-			}
-		});
-		</script>
 	</body>
 </html>
