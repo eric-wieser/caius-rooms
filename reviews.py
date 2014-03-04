@@ -7,23 +7,17 @@ from datetime import datetime
 import requests
 from bs4 import BeautifulSoup
 
-def logged_in_session(user, pwd):
-	s = requests.session()
-	s.mount('http://www.caiusjcr.org.uk', requests.adapters.HTTPAdapter(max_retries=5))
-	s.max_redirects = 3
+import getpass
 
-	# make roomCaius aware we're logging in
-	s.get('http://www.caiusjcr.org.uk/roomCaius/index.php')
+from raven import get_url
 
-	# now log in
-	r = s.post('https://raven.cam.ac.uk/auth/authenticate2.html', data={
-		'userid': user,
-		'url': 'http://www.caiusjcr.org.uk/roomCaius/index.php',
-		'pwd': pwd,
-		'ver': 1,
-	})
+def download_index():
+	r = get_url('http://www.caiusjcr.org.uk/roomCaius/index.php')
 
-	return s
+	with open('dump/index.php', 'w') as f:
+		f.write(r.encode('utf8'))
+
+download_index()
 
 def download_reviews():
 	for i in range(1000):
@@ -62,17 +56,14 @@ def download_residents():
 
 def download_features():
 	""" This takes a really long time! """
-	s = logged_in_session('efw27', raw_input('password'))
-
-
 	with open('places.json') as f:
 		places = json.load(f)
 
 	for place in places.values():
-		r = s.get('http://www.caiusjcr.org.uk/roomCaius/index.php?location={}'.format(place['name'].replace(' ', '%20')), allow_redirects=False)
+		r = get_url('http://www.caiusjcr.org.uk/roomCaius/index.php?location={}'.format(place['name'].replace(' ', '%20')), allow_redirects=False)
 
 		with open('dump/features/place-{}.html'.format(place['name']), 'w') as f:
-			f.write(r.text.encode('utf8'))
+			f.write(r.encode('utf8'))
 
 		print place['name']
 
@@ -336,7 +327,6 @@ def get_all_the_things():
 	parse_residents()
 	parse_places()
 
-	# Y U SO SLOW?
 	print "Downloading details"
 	download_features()
 	print "Parsing details"
@@ -346,4 +336,8 @@ def get_all_the_things():
 	print "Took", d2 - d
 
 
-get_all_the_things()
+# # get_all_the_things()
+# parse_reviews()
+# parse_some_things()
+
+download_index()
