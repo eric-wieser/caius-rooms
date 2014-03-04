@@ -44,7 +44,10 @@
 				<div class="col-md-6">
 					% reviews = [r for r in room['reviews'] if r['rating'] is not None]
 					<h1>
-						{{room['name']}} 
+						{{room['name']}}
+						% if room['owner']:
+							<span class="label label-danger" title="{{room['owner']}}">reserved</span>
+						%end
 						% if reviews:
 							% mean_score = sum(r['rating'] for r in reviews) * 1.0 / len(reviews) 
 							<small>{{ '{:.1f}'.format(mean_score) }}/10</small>
