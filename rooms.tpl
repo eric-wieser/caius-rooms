@@ -29,18 +29,38 @@
 	</head>
 	<body>
 		<a class="hidden-xs" href="https://github.com/eric-wieser/caius-rooms">
-			<img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png" alt="Fork me on GitHub">
+			<img style="position: absolute; top: 0; right: 0; border: 0; z-index: 1;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png" alt="Fork me on GitHub">
 		</a>
 		<div class="container">
-			% for i, room in rooms.iteritems():
+			% for room in rooms:
 			% 	reviews = [r for r in room['reviews'] if r['rating'] is not None]
 			% 	room['mean_score'] = sum(r['rating'] for r in reviews) * 1.0 / len(reviews) if reviews else None
 			%	n = len(reviews)
 			% 	room['bayesian_rank'] = (3 + n * room['mean_score'] ) / (1 + n) if reviews else None
 			% end
-			% rooms = rooms.values()
 
-			<h1>Rooms <small>({{len(rooms)}} in the ballot)</small></h1>
+			% filtered_rooms = rooms
+			% for filter in filters:
+				% filtered_rooms = [room for room in filtered_rooms if filter(room)]
+			% end
+
+			% filtered_rooms.sort(key=lambda r: (r['bayesian_rank'], len(r['images']), -r['id']), reverse=True)
+
+			<h1>
+				
+				% if len(filtered_rooms) == len(rooms):
+					Rooms <small>({{len(rooms)}} in the ballot)</small>
+				% else:
+					<a href="?">Rooms</a> <small title="{{'\n'.join(filter.description for filter in filters)}}">
+						(showing {{len(filtered_rooms)}} of {{len(rooms)}})
+					</small>
+				% end
+			</h1>
+			<ul class="list-group">
+				% for filter in filters:
+					<li class="list-group-item">{{filter.description}}</li>
+				% end
+			</ul>
 			<table class="table table-condensed table-hover sortable">
 				<thead>
 					<tr>
@@ -50,11 +70,12 @@
 						<th>Area</th>
 						<th class="rule-right">Rating</th>
 						<th data-defaultsort='disabled' colspan="3" class="rule-right" style="text-align: center">Feedback</th>
-						<th data-defaultsort='disabled' colspan="4" style="text-align: center">Features</th>
+						<th data-defaultsort='disabled' colspan="3" class="rule-right" style="text-align: center">Features</th>
+						<th>Owner</th>
 					</tr>
 				</thead>
 				<tbody>
-					% for room in sorted(rooms, key=lambda r: (r['bayesian_rank'], len(r['images']), -r['id']), reverse=True):
+					% for room in filtered_rooms:
 						<tr class="room" data-roomid="{{room['id']}}">
 							% d = room.get('details', {})
 							<td class="shrink" style="text-align: right">
@@ -63,9 +84,17 @@
 								% end
 								<a href="/rooms/{{room['id']}}">{{room['number'] or room['name']}}</a>
 							</td>
-							<td class="rule-right" data-value="{{room['place']['group'] or ''}} | {{room['place']['name']}}">
-								{{room['place']['name']}}
-								% if room['place'].get('unlisted'):
+							% place = room['place']
+							<td class="rule-right" data-value="{{room['place']['group'] or ''}} | {{place['name']}}">
+								% if place['group']:
+									<a href="?place={{place['name'].replace(' ', '+')}}">{{ place['name'].split(place['group'], 1)[0].strip() }}<a/>
+									<a href="?group={{place['group'].replace(' ', '+')}}">
+										{{ place['group'] }}
+									<a/>
+								% else:
+									<a href="?place={{place['name']}}">{{place['name']}}</a>
+								% end
+								% if place.get('unlisted'):
 									<span class="label label-danger" title="Possibly not a real building">unlisted</span>
 								% end
 							</td>
@@ -163,7 +192,7 @@
 									<span class="glyphicon glyphicon-tint text-muted" title="Possible Washbasin"></span>
 								%end
 							</td>
-							<td class="shrink center">
+							<td class="shrink center  rule-right">
 								% p = d.get('Piano')
 								% if p in ('Y', 'Yes'):
 									<span class="glyphicon glyphicon-music text-success" title="Piano"></span>
@@ -172,6 +201,11 @@
 								% else:
 									<span class="glyphicon glyphicon-music text-muted" title="Possible Piano"></span>
 								%end
+							</td>
+							<td>
+								% if room['owner']:
+									<small>{{room['owner']}}</small>
+								% end
 							</td>
 						</tr>
 					% end
