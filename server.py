@@ -7,13 +7,15 @@ with open('all.json') as f:
 	rooms_by_id = json.load(f)
 
 with open('places.json') as f:
-	places = json.load(f)
+	places_by_id = json.load(f)
 
 rooms = []
 
 for i, room in rooms_by_id.iteritems():
-	room['place'] = places[room['place']]
+	room['place'] = places_by_id[room['place']]
 	rooms.append(room)
+
+places = places_by_id.values()
 
 for room in rooms:
 	reviews = [r for r in room['reviews'] if r['rating'] is not None]
@@ -83,7 +85,7 @@ def place_route_filter(config):
 	regexp = r'[a-z0-9-]+'
 
 	def to_python(match):
-		for place in places.values():
+		for place in places:
 			if to_url(place) == match:
 				return place
 
@@ -135,17 +137,22 @@ def show_random_room():
 
 @app.route(r'/places/random')
 def show_random_room():
-	redirect(app.get_url('place', place=random.choice(places.values())))
+	redirect(app.get_url('place', place=random.choice(places)))
 
 @app.route(r'/places/random/photos')
 def show_random_room():
-	redirect(app.get_url('place-photos', place=random.choice(places.values())))
+	redirect(app.get_url('place-photos', place=random.choice(places)))
 
 @app.route(r'/rooms/<room:room>')
 def show_room(room):
 	apply_reserved_rooms()
 	return template('room', room=room)
 
+
+@app.route(r'/places', name="place-list")
+def show_place():
+	apply_reserved_rooms()
+	return template('places', places=places)
 
 @app.route(r'/places/<place:place>', name="place")
 def show_place(place):
