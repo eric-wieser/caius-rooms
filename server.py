@@ -15,6 +15,13 @@ for i, room in rooms_by_id.iteritems():
 	room['place'] = places[room['place']]
 	rooms.append(room)
 
+for room in rooms:
+	reviews = [r for r in room['reviews'] if r['rating'] is not None]
+	room['mean_score'] = sum(r['rating'] for r in reviews) * 1.0 / len(reviews) if reviews else None
+	n = len(reviews)
+	room['bayesian_rank'] = (3 + n * room['mean_score'] ) / (1 + n) if reviews else None
+
+
 def apply_reserved_rooms():
 	self = apply_reserved_rooms
 
@@ -64,12 +71,14 @@ def filter_group(g):
 	filt.description = "Only buildings on {}".format(g)
 	return filt
 
+app = Bottle()
+SimpleTemplate.defaults["get_url"] = app.get_url
 
-@route('/static/<path:path>', name='static')
+@app.route('/static/<path:path>', name='static')
 def static(path):
-    return static_file(path, root='static')
+	return static_file(path, root='static')
 
-@route(r'/rooms')
+@app.route(r'/rooms')
 def show_rooms():
 	filters = []
 	if not request.query.unlisted:
@@ -83,11 +92,11 @@ def show_rooms():
 
 	return template('rooms', rooms=rooms, filters=filters)
 
-@route(r'/rooms/random')
+@app.route(r'/rooms/random')
 def show_random_room():
 	redirect('/rooms/{}'.format(random.choice(rooms)['id']))
 
-@route(r'/rooms/<room>')
+@app.route(r'/rooms/<room>')
 def show_room(room):
 	apply_reserved_rooms()
 	if room in rooms_by_id:
@@ -96,8 +105,34 @@ def show_room(room):
 	else:
 		raise HTTPError(404)
 
+def slug(s):
+	return s.lower().replace(' ', '-').replace("'", '')
+
+
+def place_route_filter(config):
+	''' Matches a place name'''
+	regexp = r'[a-z0-9-]+'
+
+	def to_python(match):
+		print match
+		for place in places.values():
+			if to_url(place) == match:
+				return place
+
+	def to_url(place):
+		return place['name'].lower().replace(' ', '-').replace("'", '')
+
+	return regexp, to_python, to_url
+
+app.router.add_filter('place', place_route_filter)
+
+@app.route(r'/places/<place:place>', name="place")
+def show_place(place):
+	apply_reserved_rooms()
+	return template('place', place=place, rooms=rooms, filters=[])
+
 import socket
 if socket.gethostname() == 'pip':
-	run(host='efw27.user.srcf.net', port=8098, server='cherrypy')
+	app.run(host='efw27.user.srcf.net', port=8098, server='cherrypy')
 else:
-	run(host='localhost', port=8080, debug=True)
+	app.run(host='efw27.cai.private.cam.ac.uk', port=8080, debug=True)
