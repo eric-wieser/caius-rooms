@@ -1,4 +1,5 @@
 % rebase layout.tpl place=place
+% import itertools
 
 <div class="container">
 	% filtered_rooms = [r for r in rooms if r['place'] == place]
@@ -71,5 +72,4 @@
 	% except KeyError:
 		% pass
 	% end
-
 </div>

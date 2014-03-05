@@ -63,6 +63,12 @@
 				margin-bottom: 25px;
 			}
 
+			.cropped-photo {
+				background-size: cover;
+   				background-repeat: no-repeat;
+   				background-position: 50% 50%;
+			}
+
 		</style>
 		<script>
 		$(function() {
@@ -119,6 +125,9 @@
 							});
 							</script>
 						% elif defined('place'):
+							<li{{! ' class="active"' if defined('is_photos') else '' }}><a href="{{ get_url('place-photos', place=place) }}">
+								<span class="glyphicon glyphicon-picture"></span> Photos
+							</a></li>
 							<li><a href='/places/random'>
 								<span class="glyphicon glyphicon-random"></span> Random
 							</a></li>

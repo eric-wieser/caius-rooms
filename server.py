@@ -135,6 +135,10 @@ def show_place(place):
 	apply_reserved_rooms()
 	return template('place', place=place, rooms=rooms, filters=[])
 
+@app.route(r'/places/<place:place>/photos', name="place-photos")
+def show_place_photos(place):
+	return template('place-photos', place=place, rooms=rooms, filters=[])
+
 import socket
 if socket.gethostname() == 'pip':
 	app.run(host='efw27.user.srcf.net', port=8098, server='cherrypy')
