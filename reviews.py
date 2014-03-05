@@ -14,10 +14,8 @@ from raven import get_url
 def download_index():
 	r = get_url('http://www.caiusjcr.org.uk/roomCaius/index.php')
 
-	with open('dump/index.php', 'w') as f:
+	with open('dump/other/index.php', 'w') as f:
 		f.write(r.encode('utf8'))
-
-download_index()
 
 def download_reviews():
 	for i in range(1000):
@@ -312,6 +310,8 @@ def parse_some_things():
 def get_all_the_things():
 	d = datetime.now()
 
+	download_index()
+
 	print "Downloading reviews"
 	download_reviews()
 
@@ -336,8 +336,14 @@ def get_all_the_things():
 	print "Took", d2 - d
 
 
-# # get_all_the_things()
+# get_all_the_things()
+
+
+print "Downloading details"
+download_features()
+print "Parsing details"
+parse_features()
+
 # parse_reviews()
 # parse_some_things()
 
-download_index()
