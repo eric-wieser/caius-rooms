@@ -74,6 +74,43 @@ def filter_group(g):
 app = Bottle()
 SimpleTemplate.defaults["get_url"] = app.get_url
 
+def slug(s):
+	return s.lower().replace(' ', '-').replace("'", '')
+
+
+def place_route_filter(config):
+	''' Matches a place name'''
+	regexp = r'[a-z0-9-]+'
+
+	def to_python(match):
+		for place in places.values():
+			if to_url(place) == match:
+				return place
+
+		raise HTTPError(404, "No matching place")
+
+	def to_url(place):
+		return place['name'].lower().replace(' ', '-').replace("'", '')
+
+	return regexp, to_python, to_url
+
+def room_route_filter(config):
+	''' Matches a room id'''
+	regexp = r'[0-9]+'
+
+	def to_python(match):
+		if match in rooms_by_id:
+			return rooms_by_id[match]
+		raise HTTPError(404, "No matching room")
+
+	def to_url(room):
+		return room['id']
+
+	return regexp, to_python, to_url
+
+app.router.add_filter('room', room_route_filter)
+app.router.add_filter('place', place_route_filter)
+
 @app.route('/static/<path:path>', name='static')
 def static(path):
 	return static_file(path, root='static')
@@ -104,34 +141,11 @@ def show_random_room():
 def show_random_room():
 	redirect(app.get_url('place-photos', place=random.choice(places.values())))
 
-@app.route(r'/rooms/<room>')
+@app.route(r'/rooms/<room:room>')
 def show_room(room):
 	apply_reserved_rooms()
-	if room in rooms_by_id:
-		room = rooms_by_id[room]
-		return template('room', room=room)
-	else:
-		raise HTTPError(404)
+	return template('room', room=room)
 
-def slug(s):
-	return s.lower().replace(' ', '-').replace("'", '')
-
-
-def place_route_filter(config):
-	''' Matches a place name'''
-	regexp = r'[a-z0-9-]+'
-
-	def to_python(match):
-		for place in places.values():
-			if to_url(place) == match:
-				return place
-
-	def to_url(place):
-		return place['name'].lower().replace(' ', '-').replace("'", '')
-
-	return regexp, to_python, to_url
-
-app.router.add_filter('place', place_route_filter)
 
 @app.route(r'/places/<place:place>', name="place")
 def show_place(place):
@@ -141,6 +155,12 @@ def show_place(place):
 @app.route(r'/places/<place:place>/photos', name="place-photos")
 def show_place_photos(place):
 	return template('place-photos', place=place, rooms=rooms, filters=[])
+
+
+def error_handler(res):
+	return template('error', e=res)
+
+app.default_error_handler = error_handler
 
 import socket
 if socket.gethostname() == 'pip':
