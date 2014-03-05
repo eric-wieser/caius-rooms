@@ -94,10 +94,10 @@
 						% end
 					</ul>
 					<ul class="nav navbar-nav navbar-right">
-						<li><a href='random'>
-							<span class="glyphicon glyphicon-random"></span> Random
-						</a></li>
 						% if defined('room'):
+							<li><a href='/rooms/random'>
+								<span class="glyphicon glyphicon-random"></span> Random
+							</a></li>
 							<li><a href='#' id="favorite" title="Record as favorite on this PC">
 								<span class="glyphicon glyphicon-star"></span> Favorite
 							</a></li>
@@ -118,6 +118,10 @@
 								}
 							});
 							</script>
+						% elif defined('place'):
+							<li><a href='/places/random'>
+								<span class="glyphicon glyphicon-random"></span> Random
+							</a></li>
 						% end
 					</ul>
 				</div>

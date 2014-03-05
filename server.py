@@ -96,6 +96,10 @@ def show_rooms():
 def show_random_room():
 	redirect('/rooms/{}'.format(random.choice(rooms)['id']))
 
+@app.route(r'/places/random')
+def show_random_room():
+	redirect(app.get_url('place', place=random.choice(places.values())))
+
 @app.route(r'/rooms/<room>')
 def show_room(room):
 	apply_reserved_rooms()
