@@ -1,22 +1,30 @@
 % import json
 
-% parts = []
-
-% if defined('room'):
-	% place = room['place']
-% end
-
-% if defined('place'):
-	% if place['group']:
-		% parts.append(("/rooms?group=" + place['group'], place['group']))
-		% parts.append((get_url('place', place=place), place['name'].split(place['group'], 1)[0]))
+% if defined('title'):
+	% if isinstance(title, str):
+		% parts = [('', title)]
 	% else:
-		% parts.append((get_url('place', place=place), place['name']))
+		% parts = [('', t) if isinstance(t, str) else t for t in title]
 	% end
-% end
+% else:
+	% parts = []
 
-% if defined('room'):
-	% parts.append(('/rooms/{}'.format(room['id']), room['number']))
+	% if defined('room'):
+		% place = room['place']
+	% end
+
+	% if defined('place'):
+		% if place['group']:
+			% parts.append(("/rooms?group=" + place['group'], place['group']))
+			% parts.append((get_url('place', place=place), place['name'].split(place['group'], 1)[0]))
+		% else:
+			% parts.append((get_url('place', place=place), place['name']))
+		% end
+	% end
+
+	% if defined('room'):
+		% parts.append(('/rooms/{}'.format(room['id']), room['number']))
+	% end
 % end
 
 <!doctype html>
