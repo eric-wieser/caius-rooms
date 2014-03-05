@@ -1,11 +1,8 @@
 % rebase layout room=room
 
 <div class="container" style="margin-bottom: 6em">
-	<div style="position: fixed; bottom: 1em; right: 1em">
-
-	</div>
 	% d = room.get('details', {})
-	<div class="row">
+	<div id="info" class="row anchor">
 		<div class="col-md-6">
 			% reviews = [r for r in room['reviews'] if r['rating'] is not None]
 			<h1>
@@ -111,7 +108,7 @@
 		</div>
 	</div>
 
-	<div id="photos">
+	<div id="photos" class="anchor">
 		% if not room['images']:
 			<div class="alert alert-warning">No photos</div>
 		% end
@@ -122,7 +119,7 @@
 			</p>
 		% end
 	</div>
-	<div id="reviews">
+	<div id="reviews" class="anchor">
 		% if not room['reviews']:
 			<div class="alert alert-warning">No reviews</div>
 		% end

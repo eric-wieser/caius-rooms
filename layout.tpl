@@ -23,7 +23,7 @@
 	% end
 
 	% if defined('room'):
-		% parts.append(('/rooms/{}'.format(room['id']), room['number']))
+		% parts.append(('#', room['number']))
 	% end
 % end
 
@@ -79,6 +79,13 @@
    				background-position: 50% 50%;
 			}
 
+			.anchor:before {
+				content:"";
+				display:block;
+				height:70px;
+				margin:-70px 0 0;
+			}
+
 		</style>
 		<script>
 		$(function() {
@@ -87,8 +94,8 @@
 		</script>
 		<title>{{' | '.join([name for url, name in parts][::-1] + ['RoomPicks']) }}</title>
 	</head>
-	<body>
-		<nav class="navbar navbar-default  navbar-fixed-top" role="navigation">
+	<body data-spy="scroll" data-target="#page-specific-nav">
+		<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
 			<div class="container-fluid">
 				<div class="navbar-header">
 					<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#collapsible-nav">
@@ -109,40 +116,48 @@
 							<li class="active"><a href="{{url}}">{{name}}</a></li>
 						% end
 					</ul>
-					<ul class="nav navbar-nav navbar-right">
-						% if defined('room'):
-							<li><a href='/rooms/random'>
-								<span class="glyphicon glyphicon-random"></span> Random
-							</a></li>
-							<li><a href='#' id="favorite" title="Record as favorite on this PC">
-								<span class="glyphicon glyphicon-star"></span> Favorite
-							</a></li>
-
-							<script>
-							var thisRoom = {{! json.dumps(room['id']) }};
-							if(localStorage['favorited-' + thisRoom])
-								$('#favorite').parent().addClass('alert-success');
-
-							$('#favorite').click(function() {
-								if(localStorage['favorited-' + thisRoom]) {
-									delete localStorage['favorited-' + thisRoom];
-									$('#favorite').parent().removeClass('alert-success');
-								}
-								else {
-									localStorage['favorited-' + thisRoom] = true;
+					<div id="page-specific-nav">
+						<ul class="nav navbar-nav navbar-right">
+							% if defined('room'):
+								<li style="display: none"><a href="#info"></a></li>
+								<li><a href="#photos">
+									<span class="glyphicon glyphicon-picture"></span> Photos
+								</a></li>
+								<li><a href="#reviews">
+									<span class="glyphicon glyphicon-comment"></span> Reviews
+								</a></li>
+								<li><a href='#' id="favorite" title="Record as favorite on this PC">
+									<span class="glyphicon glyphicon-star"></span> Favorite
+								</a></li>
+								<li><a href='/rooms/random'>
+									<span class="glyphicon glyphicon-random"></span> Random
+								</a></li>
+								<script>
+								var thisRoom = {{! json.dumps(room['id']) }};
+								if(localStorage['favorited-' + thisRoom])
 									$('#favorite').parent().addClass('alert-success');
-								}
-							});
-							</script>
-						% elif defined('place'):
-							<li{{! ' class="active"' if get('is_photos') else '' }}><a href="{{ get_url('place-photos', place=place) }}">
-								<span class="glyphicon glyphicon-picture"></span> Photos
-							</a></li>
-							<li><a href='/places/random{{'/photos' if get('is_photos') else '' }}'>
-								<span class="glyphicon glyphicon-random"></span> Random
-							</a></li>
-						% end
-					</ul>
+
+								$('#favorite').click(function() {
+									if(localStorage['favorited-' + thisRoom]) {
+										delete localStorage['favorited-' + thisRoom];
+										$('#favorite').parent().removeClass('alert-success');
+									}
+									else {
+										localStorage['favorited-' + thisRoom] = true;
+										$('#favorite').parent().addClass('alert-success');
+									}
+								});
+								</script>
+							% elif defined('place'):
+								<li{{! ' class="active"' if get('is_photos') else '' }}><a href="{{ get_url('place-photos', place=place) }}">
+									<span class="glyphicon glyphicon-picture"></span> Photos
+								</a></li>
+								<li><a href='/places/random{{'/photos' if get('is_photos') else '' }}'>
+									<span class="glyphicon glyphicon-random"></span> Random
+								</a></li>
+							% end
+						</ul>
+					</div>
 				</div>
 			</div>
 		</nav>
