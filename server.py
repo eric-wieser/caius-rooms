@@ -20,7 +20,7 @@ for place in places:
 	place['rooms'] = [rooms_by_id[str(i)] for i in place['roomIds']]
 
 for room in rooms:
-	reviews = [r for r in room['reviews'] if r['rating'] is not None]
+	reviews = [r for r in room['reviews'] if r['rating'] not in (None, 1)]
 	room['mean_score'] = sum(r['rating'] for r in reviews) * 1.0 / len(reviews) if reviews else None
 	n = len(reviews)
 	room['bayesian_rank'] = (3 + n * room['mean_score'] ) / (1 + n) if reviews else None
