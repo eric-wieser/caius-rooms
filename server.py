@@ -100,6 +100,10 @@ def show_random_room():
 def show_random_room():
 	redirect(app.get_url('place', place=random.choice(places.values())))
 
+@app.route(r'/places/random/photos')
+def show_random_room():
+	redirect(app.get_url('place-photos', place=random.choice(places.values())))
+
 @app.route(r'/rooms/<room>')
 def show_room(room):
 	apply_reserved_rooms()

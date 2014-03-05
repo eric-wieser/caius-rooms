@@ -125,10 +125,10 @@
 							});
 							</script>
 						% elif defined('place'):
-							<li{{! ' class="active"' if defined('is_photos') else '' }}><a href="{{ get_url('place-photos', place=place) }}">
+							<li{{! ' class="active"' if get('is_photos') else '' }}><a href="{{ get_url('place-photos', place=place) }}">
 								<span class="glyphicon glyphicon-picture"></span> Photos
 							</a></li>
-							<li><a href='/places/random'>
+							<li><a href='/places/random{{'/photos' if get('is_photos') else '' }}'>
 								<span class="glyphicon glyphicon-random"></span> Random
 							</a></li>
 						% end
