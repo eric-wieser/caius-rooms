@@ -35,12 +35,15 @@ def get_url(url, *args, **kwargs):
 	while True:
 		r = s.get(url, *args, **kwargs)
 
+
 		# no authentication required
-		if not r.url.startswith('https://raven.cam.ac.uk/auth/authenticate.html'):
+		if not (
+				r.url.startswith('https://raven.cam.ac.uk/auth/authenticate.html') or
+				'Click <a href="/roomCaius">here to reauthenticate</a>' in r.text):
 			return r.text
 
 		# authentication not recognized
-		elif s == logged_in_session.cached:
+		elif s is logged_in_session.cached:
 			print "Session expired"
 			logged_in_session.cached = None
 			s = logged_in_session('efw27')
