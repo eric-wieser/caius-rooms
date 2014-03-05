@@ -118,7 +118,6 @@ def place_route_filter(config):
 	regexp = r'[a-z0-9-]+'
 
 	def to_python(match):
-		print match
 		for place in places.values():
 			if to_url(place) == match:
 				return place

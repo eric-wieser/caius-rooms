@@ -17,7 +17,7 @@
 			<li class="list-group-item">{{filter.description}}</li>
 		% end
 	</ul>
-	% include room-table.tpl rooms=filtered_rooms
+	% include room-table.tpl rooms=filtered_rooms, skip_place=True
 
 	<div id="map" style="height: 400px"></div>
 	% try:

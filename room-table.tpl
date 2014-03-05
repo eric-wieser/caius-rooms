@@ -1,8 +1,12 @@
 <table class="table table-condensed table-hover sortable">
 		<thead>
 			<tr>
-				<th style="text-align: right">Room</th>
-				<th class="rule-right">Block</th>
+				% if get('skip_place'):
+					<th class="rule-right" style="text-align: right">Room</th>
+				% else:
+					<th style="text-align: right">Room</th>
+					<th class="rule-right">Block</th>
+				% end
 				<th>Rent</th>
 				<th>Area</th>
 				<th class="rule-right">Rating</th>
@@ -15,26 +19,28 @@
 			% for room in rooms:
 				<tr class="room" data-roomid="{{room['id']}}">
 					% d = room.get('details', {})
-					<td class="shrink" style="text-align: right">
+					<td class="shrink{{ ' rule-right' if get('skip_place') else '' }}" style="text-align: right">
 						% if d.get('Type') == 'Suite':
 							<span class="glyphicon glyphicon-th-large text-muted" title="Suite"></span>
 						% end
 						<a href="/rooms/{{room['id']}}">{{room['number'] or room['name']}}</a>
 					</td>
-					% place = room['place']
-					<td class="rule-right" data-value="{{room['place']['group'] or ''}} | {{place['name']}}">
-						% if place['group']:
-							<a href="{{ get_url('place', place=place) }}">{{ place['name'].split(place['group'], 1)[0].strip() }}<a/>
-							<a href="?group={{place['group'].replace(' ', '+')}}">
-								{{ place['group'] }}
-							<a/>
-						% else:
-							<a href="{{ get_url('place', place=place) }}">{{place['name']}}</a>
-						% end
-						% if place.get('unlisted'):
-							<span class="label label-danger" title="Possibly not a real building">unlisted</span>
-						% end
-					</td>
+					% if not get('skip_place'):
+						% place = room['place']
+						<td class="rule-right" data-value="{{room['place']['group'] or ''}} | {{place['name']}}">
+							% if place['group']:
+								<a href="{{ get_url('place', place=place) }}">{{ place['name'].split(place['group'], 1)[0].strip() }}<a/>
+								<a href="?group={{place['group'].replace(' ', '+')}}">
+									{{ place['group'] }}
+								<a/>
+							% else:
+								<a href="{{ get_url('place', place=place) }}">{{place['name']}}</a>
+							% end
+							% if place.get('unlisted'):
+								<span class="label label-danger" title="Possibly not a real building">unlisted</span>
+							% end
+						</td>
+					% end
 					<td>
 						%if 'details' in room and 'Estimated Rent' in room['details']:
 							{{room['details']['Estimated Rent']}}
