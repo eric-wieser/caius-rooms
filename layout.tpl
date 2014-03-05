@@ -56,8 +56,10 @@
 				height: 25px;
 				padding-top: 5px;
 				background-color: #f5f5f5;
-				overflow: hidden;
 				text-align: center;
+			}
+			#footer p {
+				margin: 0;
 			}
 
 
@@ -148,7 +150,7 @@
 
 		<div id="footer">
 			<div class="container">
-				<p class="text-muted">Developed by Eric Wieser. Data courtesy of <a href="http://www.caiusjcr.org.uk/roomCaius/index.php">RoomCaius</a></p>
+				<p class="text-muted">Developed by Eric Wieser. Data from of <a href="http://www.caiusjcr.org.uk/roomCaius/index.php">RoomCaius</a>. No guarantee of consistency is made</p>
 			</div>
 		</div>
 	</body>
