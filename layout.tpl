@@ -121,16 +121,16 @@
 							<script>
 							var thisRoom = {{! json.dumps(room['id']) }};
 							if(localStorage['favorited-' + thisRoom])
-								$('#favorite').addClass('btn-success');
+								$('#favorite').parent().addClass('alert-success');
 
 							$('#favorite').click(function() {
 								if(localStorage['favorited-' + thisRoom]) {
 									delete localStorage['favorited-' + thisRoom];
-									$('#favorite').removeClass('btn-success');
+									$('#favorite').parent().removeClass('alert-success');
 								}
 								else {
 									localStorage['favorited-' + thisRoom] = true;
-									$('#favorite').addClass('btn-success');
+									$('#favorite').parent().addClass('alert-success');
 								}
 							});
 							</script>
