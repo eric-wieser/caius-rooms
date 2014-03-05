@@ -146,15 +146,21 @@
 				</div>
 			</div>
 
-			<div class="images">
-				%for image in room['images']:
+			<div id="photos">
+				% if not room['images']:
+					<div class="alert alert-warning">No photos</div>
+				% end
+				% for image in room['images']:
 					<p>
 						<img src="{{ image['href'] }}" class="img-rounded img-responsive" />
 						{{ image['caption'] }}
 					</p>
-				%end
+				% end
 			</div>
-			<div class="reviews">
+			<div id="reviews">
+				% if not room['reviews']:
+					<div class="alert alert-warning">No reviews</div>
+				% end
 				%for review in room['reviews']:
 					<div>
 						<h2>{{review['date']}}
