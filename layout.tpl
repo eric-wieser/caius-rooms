@@ -140,7 +140,7 @@
 
 		<div id="footer">
 			<div class="container">
-				<p class="text-muted">Developed by Eric Wieser. Data courtesy of <a href="www.caiusjcr.org.uk/roomCaius/index.php">RoomCaius</a></p>
+				<p class="text-muted">Developed by Eric Wieser. Data courtesy of <a href="http://www.caiusjcr.org.uk/roomCaius/index.php">RoomCaius</a></p>
 			</div>
 		</div>
 	</body>
