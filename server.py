@@ -16,6 +16,8 @@ for i, room in rooms_by_id.iteritems():
 	rooms.append(room)
 
 places = places_by_id.values()
+for place in places:
+	place['rooms'] = [rooms_by_id[str(i)] for i in place['roomIds']]
 
 for room in rooms:
 	reviews = [r for r in room['reviews'] if r['rating'] is not None]

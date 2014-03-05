@@ -2,9 +2,9 @@
 
 % if defined('title'):
 	% if isinstance(title, str):
-		% parts = [('', title)]
+		% parts = [('', title, None)]
 	% else:
-		% parts = [('', t) if isinstance(t, str) else t for t in title]
+		% parts = [('', t, None) if isinstance(t, str) else t for t in title]
 	% end
 % else:
 	% parts = []
@@ -15,15 +15,15 @@
 
 	% if defined('place'):
 		% if place['group']:
-			% parts.append(("/rooms?group=" + place['group'], place['group']))
-			% parts.append((get_url('place', place=place), place['name'].split(place['group'], 1)[0]))
+			% parts.append(("/rooms?group=" + place['group'], place['group'], None))
+			% parts.append((get_url('place', place=place), place['name'].split(place['group'], 1)[0], None))
 		% else:
-			% parts.append((get_url('place', place=place), place['name']))
+			% parts.append((get_url('place', place=place), place['name'], None))
 		% end
 	% end
 
 	% if defined('room'):
-		% parts.append(('#', room['number']))
+		% parts.append(('#', room['number'], None))
 	% end
 % end
 
@@ -92,7 +92,7 @@
 			$('.glyphicon[title]').tooltip();
 		});
 		</script>
-		<title>{{' | '.join([name for url, name in parts][::-1] + ['RoomPicks']) }}</title>
+		<title>{{' | '.join([name for url, name, html in parts][::-1] + ['RoomPicks']) }}</title>
 	</head>
 	<body data-spy="scroll" data-target="#page-specific-nav">
 		<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -104,16 +104,29 @@
 						<span class="icon-bar"></span>
 						<span class="icon-bar"></span>
 					</button>
-					<a class="navbar-brand" href="/rooms" title="For when you don't yet have the Caius">RoomPicks</a>
+					% if False and defined('room'):
+						<a class="navbar-brand" href="/rooms" title="For when you don't yet have the Caius">
+							RoomPicks <span class="glyphicon glyphicon-home"></span>
+						</a>
+					% elif False and defined('place'):
+						<a class="navbar-brand" href="/places" title="For when you don't yet have the Caius">
+							RoomPicks <span class="glyphicon glyphicon-map-marker"></span>
+						</a>
+					% else:
+						<a class="navbar-brand" href="/places" title="For when you don't yet have the Caius">RoomPicks</a>
+					% end
 				</div>
 				<div class="collapse navbar-collapse" id="collapsible-nav">
 					<ul class="nav navbar-nav navbar-left">
-						% for url, name in parts[:-1]:
-							<li><a href="{{url}}">{{name}}</a></li>
+						% for url, name, html in parts[:-1]:
+							<li><a href="{{url}}">{{!html or name}}</a></li>
 						% end
 						% if parts:
-							% url, name = parts[-1]
-							<li class="active"><a href="{{url}}">{{name}}</a></li>
+							% url, name, html = parts[-1]
+							<li class="active"><a href="{{url}}">{{!html or name}}</a></li>
+						% end
+						% if get('extra_nav'):
+							% extra_nav()
 						% end
 					</ul>
 					<div id="page-specific-nav">
@@ -153,6 +166,10 @@
 									<span class="glyphicon glyphicon-picture"></span> Photos
 								</a></li>
 								<li><a href='/places/random{{'/photos' if get('is_photos') else '' }}'>
+									<span class="glyphicon glyphicon-random"></span> Random
+								</a></li>
+							% elif defined('random'):
+								<li><a href='{{random}}'>
 									<span class="glyphicon glyphicon-random"></span> Random
 								</a></li>
 							% end
