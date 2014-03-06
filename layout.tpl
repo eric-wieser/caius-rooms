@@ -96,7 +96,7 @@
 	</head>
 	<body data-spy="scroll" data-target="#page-specific-nav">
 		<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
-			<div class="container-fluid">
+			<div class="container">
 				<div class="navbar-header">
 					<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#collapsible-nav">
 						<span class="sr-only">Toggle navigation</span>
@@ -139,6 +139,9 @@
 								<li><a href="#reviews">
 									<span class="glyphicon glyphicon-comment"></span> Reviews
 								</a></li>
+								<li><a href="http://www.caiusjcr.org.uk/roomCaius/index.php?location={{room['place']['name']}}#room-{{room['id']}}"  target="_blank" title="View on roomCaius">
+									<span class="glyphicon glyphicon-new-window"></span> roomCaius
+								</a></li>
 								<li><a href='#' id="favorite" title="Record as favorite on this PC">
 									<span class="glyphicon glyphicon-star"></span> Favorite
 								</a></li>
@@ -164,6 +167,9 @@
 							% elif defined('place'):
 								<li{{! ' class="active"' if get('is_photos') else '' }}><a href="{{ get_url('place-photos', place=place) }}">
 									<span class="glyphicon glyphicon-picture"></span> Photos
+								</a></li>
+								<li><a href="http://www.caiusjcr.org.uk/roomCaius/index.php?location={{place['name']}}"  target="_blank" title="View on roomCaius">
+									<span class="glyphicon glyphicon-new-window"></span> roomCaius
 								</a></li>
 								<li><a href='/places/random{{'/photos' if get('is_photos') else '' }}'>
 									<span class="glyphicon glyphicon-random"></span> Random
