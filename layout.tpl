@@ -188,7 +188,7 @@
 
 		<div id="footer">
 			<div class="container">
-				<p class="text-muted">Developed by Eric Wieser. Data from of <a href="http://www.caiusjcr.org.uk/roomCaius/index.php">RoomCaius</a>. No guarantee of consistency is made</p>
+				<p class="text-muted">Developed by Eric Wieser. Data from <a href="http://www.caiusjcr.org.uk/roomCaius/index.php">RoomCaius</a>. No guarantee of consistency is made</p>
 			</div>
 		</div>
 	</body>
