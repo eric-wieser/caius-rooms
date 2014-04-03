@@ -1,12 +1,12 @@
 % rebase layout room=room
 
-<div class="container" style="margin-bottom: 6em">
+<div class="container" style="margin-bottom: 6em" itemscope itemtype="http://schema.org/Place">
 	% d = room.get('details', {})
 	<div id="info" class="row anchor">
 		<div class="col-md-6">
 			% reviews = [r for r in room['reviews'] if r['rating'] is not None]
 			<h1>
-				{{room['name']}}
+				<span itemprop="name">{{room['name']}}</span>
 				% if room['owner']:
 					<span class="label label-danger" title="{{room['owner']}}">reserved</span>
 				%end
