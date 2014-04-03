@@ -12,7 +12,9 @@ def logged_in_session(user, pwd=None):
 		s.max_redirects = 3
 
 		# make roomCaius aware we're logging in
-		s.get('http://www.caiusjcr.org.uk/roomCaius/index.php')
+		r = s.get('http://www.caiusjcr.org.uk/roomCaius/index.php')
+
+		a = r.text
 
 		# now log in
 		r = s.post('https://raven.cam.ac.uk/auth/authenticate2.html', data={
@@ -21,6 +23,8 @@ def logged_in_session(user, pwd=None):
 			'pwd': pwd,
 			'ver': 1,
 		})
+
+		a = r.text
 
 		logged_in_session.cached = s
 
