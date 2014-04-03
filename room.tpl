@@ -1,6 +1,6 @@
 % rebase layout room=room
 
-<div class="container" style="margin-bottom: 6em" itemscope itemtype="http://schema.org/Place">
+<div class="container" style="margin-bottom: 6em" itemscope itemtype="http://schema.org/Product">
 	% d = room.get('details', {})
 	<div id="info" class="row anchor">
 		<div class="col-md-6">
