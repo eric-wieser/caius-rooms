@@ -124,17 +124,20 @@
 			<div class="alert alert-warning">No reviews</div>
 		% end
 		%for review in room['reviews']:
-			<div>
+			<div itemprop="review" itemscope itemtype="http://schema.org/Review">
 				<h2>{{review['date']}}
 					% if review['rating'] is not None:
-						<small>{{review['rating']}}/10</small>
+						<small itemprop="reviewRating" itemscope itemtype="http://schema.org/Rating">
+							<span itemprop="ratingValue">{{review['rating']}}</span><!--
+							-->/<span itemprop="bestRating">10</span>
+						</small>
 					% end
 				</h2>
 				% if 'resident' in review:
-					<a href="mailto:{{review['resident']['email']}}">{{review['resident']['name']}}</a>
+					<a itemprop="author" href="mailto:{{review['resident']['email']}}">{{review['resident']['name']}}</a>
 				% end
 				% if 'sections' in review:
-					<dl class="review dl-horizontal">
+					<dl class="review dl-horizontal" itemprop="reviewBody">
 						%for item in review['sections']:
 							%if item['value']:
 								<dt>{{item['name']}}</dt>
