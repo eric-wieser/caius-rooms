@@ -57,7 +57,8 @@
 					}
 				]
 			});
-			new google.maps.Marker({position: loc}).setMap(map)
+			new google.maps.Marker({position: loc}).setMap(map);
+
 			var active = false;
 			mapElem.on('click', function(e) {
 				active = true;
