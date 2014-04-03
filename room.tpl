@@ -11,8 +11,13 @@
 					<span class="label label-danger" title="{{room['owner']}}">reserved</span>
 				%end
 				% if reviews:
-					% mean_score = sum(r['rating'] for r in reviews) * 1.0 / len(reviews) 
-					<small>{{ '{:.1f}'.format(mean_score) }}/10</small>
+					% mean_score = sum(r['rating'] for r in reviews) * 1.0 / len(reviews)
+					<small itemprop="aggregateRating" itemscope itemtype="http://schema.org/AggregateRating">
+						<span itemprop="ratingValue">{{ '{:.1f}'.format(mean_score) }}</span><!--
+						-->/<span itemprop="bestRating">10</span>
+						<meta itemprop="ratingCount" content="{{len(reviews)}}" />
+						<meta itemprop="reviewCount" content="{{len(reviews)}}" />
+					</small>
 				% end
 
 			</h1>
