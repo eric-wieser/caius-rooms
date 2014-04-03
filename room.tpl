@@ -26,7 +26,13 @@
 					% if prop not in ('Network', 'Piano', 'Washbasin', 'George Foreman nearby'):
 						<tr>
 							<th scope="row">{{prop}}</th>
-							<td>{{value}}</td>
+							% if prop == 'Estimated Rent':
+								<td itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+									<span itemprop="price">{{value}}</span>
+								</td>
+							% else:
+								<td>{{value}}</td>
+							% end
 						</tr>
 					%end
 				% end
