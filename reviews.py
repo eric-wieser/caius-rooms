@@ -336,14 +336,4 @@ def get_all_the_things():
 	print "Took", d2 - d
 
 
-# get_all_the_things()
-
-
-print "Downloading details"
-download_features()
-print "Parsing details"
-parse_features()
-
-# parse_reviews()
-# parse_some_things()
-
+get_all_the_things()
