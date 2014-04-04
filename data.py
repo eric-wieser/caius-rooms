@@ -59,7 +59,7 @@ def process_links(item):
 		('gyp room', lambda scanner, token: ('TEXT', token)),
 	] + [
 		(
-			re.escape(nearby_room['number']) + r'\b',
+			r'\b' + re.escape(nearby_room['number']) + r'\b',
 			lambda scanner, token, nearby_room=nearby_room: ('ROOM', (token, nearby_room))
 		)
 		for nearby_room in nearby_rooms
