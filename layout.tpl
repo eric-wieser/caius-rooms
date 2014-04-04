@@ -94,7 +94,7 @@
 		</script>
 		<title>{{' | '.join([name for url, name, html in parts][::-1] + ['RoomPicks']) }}</title>
 	</head>
-	<body data-spy="scroll" data-target="#page-specific-nav">
+	<body data-spy="scroll" data-target="#page-specific-nav" itemscope itemtype="http://schema.org/WebPage">
 		<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
 			<div class="container">
 				<div class="navbar-header">
@@ -117,7 +117,7 @@
 					% end
 				</div>
 				<div class="collapse navbar-collapse" id="collapsible-nav">
-					<ul class="nav navbar-nav navbar-left">
+					<ul class="nav navbar-nav navbar-left" itemprop="breadcrumb">
 						% for url, name, html in parts[:-1]:
 							<li><a href="{{url}}">{{!html or name}}</a></li>
 						% end
