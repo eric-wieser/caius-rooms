@@ -152,12 +152,29 @@
 						%for item in review['sections']:
 							%if item['value']:
 								<dt>{{item['name']}}</dt>
-								<dd style="white-space: pre-wrap">{{item['value']}}</dd>
+								<dd style="white-space: pre-wrap">{{! item['value'] }}</dd>
 							%end
 						%end
 					</dl>
 				% end
 			</div>
 		%end
+		% if room['references']:
+			<h3>References</h3>
+			<ul>
+				% for reference in room['references']:
+					<li>
+						<a href="/rooms/{{ reference['review']['room']['id'] }}">
+							{{ reference['review']['room']['name'] }}
+						</a>
+						<span class="text-muted">
+							- {{ reference['review']['date'] }}
+							- {{ reference['name'] }}
+						</span>
+						<p>{{! reference['value'] }}</p>
+					</li>
+				% end
+			</ul>
+		% end
 	</div>
 </div>

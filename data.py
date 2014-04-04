@@ -1,5 +1,6 @@
 import json
 import os
+import re
 
 with open('all.json') as f:
 	rooms_by_id = json.load(f)
@@ -22,6 +23,7 @@ for room in rooms:
 	room['mean_score'] = sum(r['rating'] for r in reviews) * 1.0 / len(reviews) if reviews else None
 	n = len(reviews)
 	room['bayesian_rank'] = (3 + n * room['mean_score'] ) / (1 + n) if reviews else None
+	room['references'] = []
 
 def apply_reserved_rooms():
 	self = apply_reserved_rooms
@@ -46,3 +48,45 @@ def apply_reserved_rooms():
 apply_reserved_rooms.cache_time = 0
 
 apply_reserved_rooms()
+
+def process_links(item):
+	from bottle import html_escape
+
+	room = item['review']['room']
+	nearby_rooms = room['place']['rooms']
+
+	scanner = re.Scanner([
+		('gyp room', lambda scanner, token: ('TEXT', token)),
+	] + [
+		(
+			re.escape(nearby_room['number']) + r'\b',
+			lambda scanner, token, nearby_room=nearby_room: ('ROOM', (token, nearby_room))
+		)
+		for nearby_room in nearby_rooms
+	] + [
+		('.+?\b', lambda scanner, token: ('TEXT', token)),
+		('.', lambda scanner, token: ('TEXT', token))
+	], flags=re.IGNORECASE | re.DOTALL)
+
+	results, remainder = scanner.scan(item['value'])
+	assert not remainder
+
+	item['value'] = ''.join(
+		html_escape(value) if t == 'TEXT' else
+		'<a href="/rooms/{}">{}</a>'.format(value[1]['id'], html_escape(value[0]))
+		for t, value in results
+	)
+
+	for t, value in results:
+		if t == 'ROOM':
+			refered = value[1]
+			if not any(x is item for x in refered['references']) and refered is not room:
+				refered['references'].append(item)
+
+for room in rooms:
+	for review in room['reviews']:
+		review['room'] = room
+		for item in review.get('sections', []):
+			item['review'] = review
+			if item['value']:
+				process_links(item)
