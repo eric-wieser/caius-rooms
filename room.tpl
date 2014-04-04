@@ -160,7 +160,7 @@
 			</div>
 		%end
 		% if room['references']:
-			<h3>References</h3>
+			<h3 id="references">References</h3>
 			<ul>
 				% for reference in room['references']:
 					<li>
