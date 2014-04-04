@@ -117,13 +117,21 @@
 					% end
 				</div>
 				<div class="collapse navbar-collapse" id="collapsible-nav">
-					<ul class="nav navbar-nav navbar-left" itemprop="breadcrumb">
+					<ul class="nav navbar-nav navbar-left">
 						% for url, name, html in parts[:-1]:
-							<li><a href="{{url}}">{{!html or name}}</a></li>
+							<li itemscope itemtype="http://data-vocabulary.org/Breadcrumb">
+								<a href="{{url}}" itemprop="url"><span itemprop="title">
+									{{!html or name}}
+								</span></a>
+							</li>
 						% end
 						% if parts:
 							% url, name, html = parts[-1]
-							<li class="active"><a href="{{url}}">{{!html or name}}</a></li>
+							<li itemscope itemtype="http://data-vocabulary.org/Breadcrumb" class="active">
+								<a href="{{url}}" itemprop="url"><span itemprop="title">
+									{{!html or name}}
+								</span></a>
+							</li>
 						% end
 						% if get('extra_nav'):
 							% extra_nav()
