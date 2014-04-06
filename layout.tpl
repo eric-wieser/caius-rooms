@@ -34,15 +34,10 @@
 	    <meta http-equiv="X-UA-Compatible" content="IE=edge">
 	    <meta name="viewport" content="width=device-width, initial-scale=1">
 		<link rel="icon" type="image/png" href="http://cdn.dustball.com/house.png">
-		<script src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
-
 		<link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
-		<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
-   		<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&amp;sensor=false"></script>
 
 
 		<link href="/static/bootstrap-sortable.css" rel="stylesheet">
-		<script src="/static/bootstrap-sortable.js"></script>
 		<style>
 			td.shrink { width: 1px; white-space: nowrap; }
 			td.center { text-align: center; }
@@ -87,11 +82,6 @@
 			}
 
 		</style>
-		<script>
-		$(function() {
-			$('.glyphicon[title]').tooltip();
-		});
-		</script>
 		<title>{{' | '.join([name for url, name, html in parts][::-1] + ['RoomPicks']) }}</title>
 	</head>
 	<body data-spy="scroll" data-target="#page-specific-nav" itemscope itemtype="http://schema.org/WebPage">
@@ -192,7 +182,17 @@
 				</div>
 			</div>
 		</nav>
+		<script src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
+
 		% include
+
+		<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+		<script src="/static/bootstrap-sortable.js"></script>
+		<script>
+		$(function() {
+			$('.glyphicon[title]').tooltip();
+		});
+		</script>
 
 		<div id="footer">
 			<div class="container">
