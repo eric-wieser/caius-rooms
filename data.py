@@ -83,10 +83,14 @@ def process_links(item):
 			if not any(x is item for x in refered['references']) and refered is not room:
 				refered['references'].append(item)
 
-for room in rooms:
-	for review in room['reviews']:
-		review['room'] = room
-		for item in review.get('sections', []):
-			item['review'] = review
-			if item['value']:
-				process_links(item)
+def find_references():
+	for room in rooms:
+		for review in room['reviews']:
+			review['room'] = room
+			for item in review.get('sections', []):
+				item['review'] = review
+				if item['value']:
+					process_links(item)
+
+from threading import Thread
+# Thread(target=find_references).run()
