@@ -71,6 +71,10 @@ app.router.add_filter('place', place_route_filter)
 def static(path):
 	return static_file(path, root='static')
 
+@app.route(r'/')
+def show_rooms():
+	return template('index')
+
 @app.route(r'/rooms')
 def show_rooms():
 	filters = []
