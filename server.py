@@ -123,8 +123,13 @@ def error_handler(res):
 
 app.default_error_handler = error_handler
 
-import socket
-if socket.gethostname() == 'pip':
-	app.run(host='efw27.user.srcf.net', port=8098, server='cherrypy')
+if __name__ == '__main__':
+	import socket
+	if socket.gethostname() == 'pip':
+		app.run(host='efw27.user.srcf.net', port=8098, server='cherrypy')
+	else:
+		app.run(host='localhost', port=8080, debug=True)
 else:
-	app.run(host='localhost', port=8080, debug=True)
+	import bottle
+	bottle.debug(True)
+
