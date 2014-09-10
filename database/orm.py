@@ -59,13 +59,30 @@ class Cluster(Base):
 	id         = Column(Integer,                         primary_key=True)
 	name       = Column(String(255),                     nullable=False)
 	parent_id  = Column(Integer, ForeignKey(id))
-	forms_name = Column(Boolean)
+	type       = Column(Enum("staircase", "building", "road"))
 
 	latitude  = Column(Float)
 	longitude = Column(Float)
 
 	parent = relationship(lambda: Cluster, backref="children", remote_side=[id])
 
+	__table_args__ = (UniqueConstraint(parent_id, name, name='_child_name_uc'),)
+
+	@property
+	def path(self):
+		if self.parent is None:
+			return [self.name]
+		else:
+			return self.parent.path + [self.name]
+
+	def __repr__(self):
+		return "<Cluster {}>".format(' / '.join(self.path))
+
+
+RoomView = Enum(
+	"Overlooking a street",
+	"Overlooking a court or garden"
+)
 
 class Room(Base):
 	""" A physical room, with time-invariant properties """
@@ -77,8 +94,48 @@ class Room(Base):
 
 	is_suite  = Column(Boolean)
 
+	bedroom_x = Column(Integer)
+	bedroom_y = Column(Integer)
+	bedroom_view = Column(RoomView)
+
+	living_room_x = Column(Integer)
+	living_room_y = Column(Integer)
+	living_room_view = Column(RoomView)
+
 	listings = relationship(lambda: RoomListing, backref="room")
 	parent   = relationship(lambda: Cluster,     backref="rooms")
+
+	def pretty_name(self, relative_to=None):
+		def get_parent(x):
+			if x.parent == relative_to:
+				return None
+			return x.parent
+
+		name = self.name
+		parent = get_parent(self)
+
+		if parent and parent.type == 'staircase':
+			name = parent.name + name
+			parent = get_parent(parent)
+		else:
+			name = "Room {}".format(name)
+
+		if parent:
+			assert parent.type == 'building'
+			building_name = parent.name
+			road = parent.parent
+			if road and road.type == 'road':
+				if road != relative_to:
+					building_name = "{} {}".format(building_name, road.name)
+				else:
+					building_name = "House {}".format(building_name)
+
+			return "{}, {}".format(building_name, name)
+		else:
+			return name
+
+	def __repr__(self):
+		return "<Room: {}>".format(self.pretty_name())
 
 
 class Ballot(Base):

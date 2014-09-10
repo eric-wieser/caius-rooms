@@ -7,7 +7,6 @@ def init(mode):
 	global engine
 	if mode == 'real':
 		engine = create_engine(
-			'<snip>',
 			pool_recycle=3600
 		)
 	elif mode == 'dev':
