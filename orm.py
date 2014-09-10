@@ -19,9 +19,9 @@ Relationships:
   Review -< ReviewSection...
   ReviewSection >- ReviewHeading
 
-  Room >- Group
+  Room >- Cluster
 
-  Group >- Group
+  Cluster >- Cluster
 """
 from sqlalchemy import Column, ForeignKey, UniqueConstraint
 from sqlalchemy import (
@@ -56,17 +56,15 @@ class Cluster(Base):
 	""" (nestable) Groups of nearby physical rooms """
 	__tablename__ = prefix + 'clusters'
 
-	id        = Column(Integer,                         primary_key=True)
-	name      = Column(String(255),                     nullable=False)
-	parent_id = Column(Integer, ForeignKey(id))
-
-	type      = Column(Enum("Corridor", "Staircase", "House", "Other"))
+	id         = Column(Integer,                         primary_key=True)
+	name       = Column(String(255),                     nullable=False)
+	parent_id  = Column(Integer, ForeignKey(id))
+	forms_name = Column(Boolean)
 
 	latitude  = Column(Float)
 	longitude = Column(Float)
 
-	parent = relationship(lambda: Cluster, backref="children")
-
+	parent = relationship(lambda: Cluster, backref="children", remote_side=[id])
 
 
 class Room(Base):
@@ -121,7 +119,7 @@ class Occupancy(Base):
 	listing_id  = Column(CRSID, ForeignKey(RoomListing.id), nullable=False)
 
 	listing     = relationship(lambda: RoomListing, backref="occupancies")
-	resident    = relationship(lambda: Resident, backref="occupancies")
+	resident    = relationship(lambda: Person, backref="occupancies")
 	reviews     = relationship(lambda: Review,   backref="occupancy", order_by=lambda: Review.published_at)
 
 	__table_args__ = (UniqueConstraint(resident_id, listing_id, name='_resident_listing_uc'),)
@@ -148,7 +146,7 @@ class ReviewHeading(Base):
 	id       = Column(Integer,     primary_key=True)
 	name     = Column(String(255), nullable=False)
 	position = Column(Integer,     nullable=False)
-	prompt   = Column(Text,        nullable=False)
+	prompt   = Column(Text)
 
 
 class ReviewSection(Base):
