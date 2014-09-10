@@ -29,6 +29,7 @@ from sqlalchemy import Column, ForeignKey, UniqueConstraint
 from sqlalchemy import (
 	Boolean,
 	Date,
+	DateTime,
 	Enum,
 	Float,
 	Integer,
@@ -234,6 +235,7 @@ class Occupancy(Base):
 	id          = Column(Integer,                             primary_key=True)
 	resident_id = Column(CRSID,   ForeignKey(Person.crsid),   nullable=False)
 	listing_id  = Column(Integer, ForeignKey(RoomListing.id), nullable=False)
+	chosen_at   = Column(DateTime)
 
 	listing     = relationship(lambda: RoomListing, backref="occupancies")
 	resident    = relationship(lambda: Person, backref="occupancies")
@@ -245,7 +247,7 @@ class Review(Base):
 	__tablename__ = prefix + 'reviews'
 
 	id           = Column(Integer, primary_key=True)
-	published_at = Column(Date)
+	published_at = Column(DateTime)
 	rating       = Column(SmallInteger)
 	occupancy_id = Column(Integer, ForeignKey(Occupancy.id), nullable=False)
 
