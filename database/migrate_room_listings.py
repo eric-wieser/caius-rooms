@@ -1,7 +1,6 @@
 import db
 import orm
 import olddb
-import re
 
 db.init('dev')
 

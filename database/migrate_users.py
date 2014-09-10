@@ -1,3 +1,7 @@
+import db
+import orm
+import olddb
+
 import ldap
 import sys
 
@@ -12,12 +16,6 @@ def get_name(crsid):
 		attrlist=['displayName']
 	)
 	return d[0][1]['displayName']
-
-import db
-import orm
-from sqlalchemy.orm import aliased
-from sqlalchemy.orm.exc import NoResultFound
-import olddb
 
 db.init('dev')
 

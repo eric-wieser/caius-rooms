@@ -1,45 +1,20 @@
 import db
 import orm
+import olddb
+
+import re
 from sqlalchemy.orm import aliased
 from sqlalchemy.orm.exc import NoResultFound
-import olddb
-import re
+
+import migrate_utils
 
 db.init('dev')
 
 new_session = db.Session()
 old_session = olddb.Session()
 
-def get_location(old_room):
-	loc_name = old_room.location.replace("Rd", "Road")
-	try:
-		return new_session.query(orm.Cluster).filter(orm.Cluster.name == loc_name).one()
-	except NoResultFound:
-		pass
-
-	number, place = loc_name.split(" ", 1)
-	try:
-		clusteralias = aliased(orm.Cluster)
-		return (
-			new_session.query(orm.Cluster)
-				.filter(orm.Cluster.name == number)
-				.join(clusteralias, orm.Cluster.parent)
-				.filter(clusteralias.name == place).one()
-		)
-	except NoResultFound:
-		print number, place
-		raise
-
-def sanitize_view(v):
-	if not v:
-		return None
-	elif v in ("Unspecified", "N/A", "[unknown]"):
-		return None
-	else:
-		return v
-
 for old_room in old_session.query(olddb.orm.accom_guide_rooms):
-	location = get_location(old_room)
+	location = migrate_utils.get_location(new_session, old_room)
 
 	if old_room.staircase != 'None':
 		try:
@@ -63,12 +38,13 @@ for old_room in old_session.query(olddb.orm.accom_guide_rooms):
 
 	 	bedroom_x=int(old_room.bed_x or 0) or None,
 	 	bedroom_y=int(old_room.bed_y or 0) or None,
-	 	bedroom_view=sanitize_view(old_room.position),
+	 	bedroom_view=migrate_utils.sanitize_view(old_room.position),
 
 	 	living_room_x=int(old_room.living_x or 0) or None,
 	 	living_room_y=int(old_room.living_y or 0) or None,
-	 	living_room_view=sanitize_view(old_room.livingroom_position)
+	 	living_room_view=migrate_utils.sanitize_view(old_room.livingroom_position)
 	)
+	print new_room
 	new_session.add(new_room)
 
 new_session.commit()
