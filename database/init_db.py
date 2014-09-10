@@ -1,5 +1,8 @@
 import db
 import orm
+import os
+
+os.remove('test.db')
 
 db.init('dev')
 orm.Base.metadata.create_all(db.engine)
