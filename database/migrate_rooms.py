@@ -3,6 +3,7 @@ import orm
 from sqlalchemy.orm import aliased
 from sqlalchemy.orm.exc import NoResultFound
 import olddb
+import re
 
 db.init('dev')
 
@@ -38,7 +39,6 @@ def sanitize_view(v):
 		return v
 
 for old_room in old_session.query(olddb.orm.accom_guide_rooms):
-
 	location = get_location(old_room)
 
 	if old_room.staircase != 'None':
@@ -50,10 +50,14 @@ for old_room in old_session.query(olddb.orm.accom_guide_rooms):
 		except NoResultFound:
 			location = orm.Cluster(name=old_room.staircase, type="staircase", parent=location)
 
+	if old_room.comment:
+		name = re.search(r'\d+/\d+', old_room.comment).group(0)
+	else:
+		name = old_room.room
 
 	new_room = orm.Room(
 		id=old_room.id,
-		name=old_room.room,
+		name=name,
 		parent=location,
 	 	is_suite=old_room.type == 'Suite',
 

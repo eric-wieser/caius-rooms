@@ -23,6 +23,8 @@ Relationships:
 
   Cluster >- Cluster
 """
+import datetime
+
 from sqlalchemy import Column, ForeignKey, UniqueConstraint
 from sqlalchemy import (
 	Boolean,
@@ -37,7 +39,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import relationship, backref, column_property, composite
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.sql.expression import select
+from sqlalchemy.sql.expression import select, extract, case
 
 # we share a DB with the gcsu, so use a unique prefix
 prefix = '_room_picks_'
@@ -71,12 +73,56 @@ class Cluster(Base):
 	@property
 	def path(self):
 		if self.parent is None:
-			return [self.name]
+			return [self]
 		else:
-			return self.parent.path + [self.name]
+			return self.parent.path + [self]
 
 	def __repr__(self):
-		return "<Cluster {}>".format(' / '.join(self.path))
+		return "<Cluster {}>".format(' / '.join(c.name for c in self.path))
+
+	def pretty_name(self, relative_to=None):
+		"""
+		Produce a pretty name relative to a Cluster. Traversing down the tree
+		of Clusters, changing `relative_to` as we go gives:
+
+			1 Mortimer road
+			House 1
+
+		or
+
+			Tree court, Staircase S
+			Staircase S
+		"""
+		def get_parent(x):
+			if x.parent == relative_to:
+				return None
+			return x.parent
+
+
+		if self.type == 'staircase':
+			parent = get_parent(self)
+			if parent:
+				return '{}, {} Staircase'.format(
+					parent.pretty_name(relative_to),
+					self.name
+				)
+			else:
+				return '{} Staircase'.format(self.name)
+
+
+		if self.type == 'building':
+			road = self.parent
+
+			if road and road.type == 'road':
+
+				# add the road name
+				if road != relative_to:
+					return "{} {}".format(self.name, road.name)
+				else:
+					return "House {}".format(self.name)
+
+
+		return self.name
 
 
 RoomView = Enum(
@@ -106,6 +152,20 @@ class Room(Base):
 	parent   = relationship(lambda: Cluster,     backref="rooms")
 
 	def pretty_name(self, relative_to=None):
+		"""
+		Produce a pretty name relative to a Cluster. Traversing down the tree
+		of Clusters, changing `relative_to` as we go gives:
+
+			1 Mortimer road, Room 5
+			House 1, Room 5
+			Room 5
+
+		or
+
+			Tree court, S5
+			S5
+			Room 5
+		"""
 		def get_parent(x):
 			if x.parent == relative_to:
 				return None
@@ -121,16 +181,7 @@ class Room(Base):
 			name = "Room {}".format(name)
 
 		if parent:
-			assert parent.type == 'building'
-			building_name = parent.name
-			road = parent.parent
-			if road and road.type == 'road':
-				if road != relative_to:
-					building_name = "{} {}".format(building_name, road.name)
-				else:
-					building_name = "House {}".format(building_name)
-
-			return "{}, {}".format(building_name, name)
+			return "{}, {}".format(parent.pretty_name(relative_to), name)
 		else:
 			return name
 
@@ -143,11 +194,20 @@ class Ballot(Base):
 	__tablename__ = prefix + 'ballots'
 
 	id        = Column(Integer, primary_key=True)
-	name      = Column(String(255))
 	opens_at  = Column(Date)
 	closes_at = Column(Date)
+	type      = Column(Enum('ugrad', '4th', 'grad'), nullable=False)
 
 	room_listings = relationship(lambda: RoomListing, backref="ballot")
+
+	rental_year = column_property(
+		extract('year', opens_at) + case(whens=[
+			(extract('month', opens_at) > 8, 1)
+		], else_=0)
+	)
+
+	def __repr__(self):
+		return "<Ballot for {} ({})>".format(self.rental_year, self.type)
 
 
 class RoomListing(Base):
@@ -171,9 +231,9 @@ class RoomListing(Base):
 class Occupancy(Base):
 	__tablename__ = prefix + 'occupancies'
 
-	id          = Column(Integer,                           primary_key=True)
-	resident_id = Column(CRSID, ForeignKey(Person.crsid),   nullable=False)
-	listing_id  = Column(CRSID, ForeignKey(RoomListing.id), nullable=False)
+	id          = Column(Integer,                             primary_key=True)
+	resident_id = Column(CRSID,   ForeignKey(Person.crsid),   nullable=False)
+	listing_id  = Column(Integer, ForeignKey(RoomListing.id), nullable=False)
 
 	listing     = relationship(lambda: RoomListing, backref="occupancies")
 	resident    = relationship(lambda: Person, backref="occupancies")
