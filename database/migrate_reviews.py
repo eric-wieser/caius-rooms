@@ -23,7 +23,6 @@ def problem(old, new):
 for old_review in old_session.query(olddb.orm.accom_guide_input).order_by(olddb.orm.accom_guide_input.submitted_ts.desc()):
 	ts = datetime.datetime.fromtimestamp(old_review.submitted_ts)
 	if ts in seen_ts:
-		duplicates += 1
 		continue
 	seen_ts.add(ts)
 

@@ -38,8 +38,9 @@ from sqlalchemy import (
 	String,
 	Text,
 )
-from sqlalchemy.orm import relationship, backref, column_property, composite
+from sqlalchemy.orm import relationship, backref, column_property
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.sql.expression import select, extract, case
 
 # we share a DB with the gcsu, so use a unique prefix
@@ -202,11 +203,15 @@ class Ballot(Base):
 
 	room_listings = relationship(lambda: RoomListing, backref="ballot")
 
-	rental_year = column_property(
-		extract('year', opens_at) + case(whens=[
-			(extract('month', opens_at) > 8, 1)
+	@hybrid_property
+	def rental_year(self):
+		return self.opens_at.year - (self.opens_at.month < 9)
+
+	@rental_year.expression
+	def rental_year(cls):
+		return extract('year', cls.opens_at) - case(whens=[
+			(extract('month', cls.opens_at) < 9, 1)
 		], else_=0)
-	)
 
 	def __repr__(self):
 		return "<Ballot for {} ({})>".format(self.rental_year, self.type)

@@ -1,7 +1,8 @@
 import re
+import datetime
 
 from sqlalchemy.orm import aliased
-from sqlalchemy.orm.exc import NoResultFound
+from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 
 import db
 import orm
@@ -32,8 +33,10 @@ def get_location(new_session, loc_name):
 
 		raise NewLocation("New location #{}, {}.format(number, place)", orm.Cluster(
 			name=number,
+			type="building",
 			parent=orm.Cluster(
 				name=place,
+				type="road",
 				parent=root
 			)
 		))
@@ -60,6 +63,7 @@ def get_location_with_stair(new_session, loc_name, staircase):
 		except NoResultFound:
 			print "New staircase {} in {}".format(staircase, location)
 			location = orm.Cluster(name=staircase, type="staircase", parent=location)
+
 
 	return location
 
@@ -103,25 +107,24 @@ def try_recover_ballot(new_session, year):
 	)
 
 	# assume undergrad?
-	try:
-		return ballots.filter(orm.Ballot.type == 'ugrad').first()
-	except NoResultFound:
-		pass
+	ballot = ballots.filter(orm.Ballot.type == 'ugrad').first()
+	if ballot:
+		return ballot
 
 	# or not
-	try:
-		return ballots.first()
-	except NoResultFound:
-		pass
+	ballot = ballots.first()
+	if ballot:
+		return ballot
 
 	# or roll a new one
-	return orm.Ballot(
+	ballot = orm.Ballot(
 		is_reconstructed=True,
-
 		type='ugrad',
 		opens_at=datetime.date(year + 1, 1, 1)
 	)
+	new_session.add(ballot)
 
+	print "New ballot for", repr(ballot.rental_year), repr(year)
 
 def try_recover_listing(new_session, room, ts):
 	if ts.month > 9:
@@ -130,13 +133,16 @@ def try_recover_listing(new_session, room, ts):
 		guessed_ballot_year = ts.year - 1
 
 	# see if we have a listing already
+	query = (new_session
+		.query(orm.RoomListing)
+		.join(orm.Ballot)
+		.filter(orm.RoomListing.room == room)
+		.filter(orm.Ballot.rental_year == guessed_ballot_year)
+	)
 	try:
-		return (new_session
-			.query(orm.RoomListing)
-			.join(orm.Ballot)
-			.filter(orm.RoomListing.room == room)
-			.filter(orm.Ballot.rental_year == guessed_ballot_year)
-		).one()
+		return query.one()
+	except MultipleResultsFound:
+		return query.filter(orm.Ballot.type == 'ugrad').one()
 	except NoResultFound:
 		pass
 
