@@ -45,7 +45,8 @@ from sqlalchemy import (
 	Unicode,
 	UnicodeText,
 )
-from sqlalchemy.orm import relationship, backref, column_property
+from sqlalchemy import func
+from sqlalchemy.orm import relationship, backref, column_property, aliased
 from sqlalchemy.orm.session import object_session
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.hybrid import hybrid_property
@@ -76,7 +77,11 @@ class Cluster(Base):
 	latitude  = Column(Float)
 	longitude = Column(Float)
 
-	parent = relationship(lambda: Cluster, backref="children", remote_side=[id])
+	parent = relationship(lambda: Cluster,
+		backref="children",
+		remote_side=[id],
+		lazy="joined",
+		join_depth=4)
 
 	__table_args__ = (UniqueConstraint(parent_id, name, name='_child_name_uc'),)
 
@@ -135,6 +140,36 @@ class Cluster(Base):
 		return self.name
 
 
+	@property
+	def geocoords(self):
+		parent = self.parent
+		while parent:
+			if parent.latitude and parent.longitude:
+				return parent.latitude, parent.longitude
+			parent = parent.parent
+
+	@property
+	def all_rooms_q(self):
+		l1 = aliased(Cluster)
+		l2 = aliased(Cluster)
+		l3 = aliased(Cluster)
+		l4 = aliased(Cluster)
+
+		rooms = object_session(self).query(Room)
+
+		j1 = rooms.join(l1)
+		j2 = j1.join(l2, l1.parent_id == l2.id)
+		j3 = j2.join(l3, l2.parent_id == l3.id)
+		j4 = j3.join(l4, l3.parent_id == l4.id)
+
+		return (
+			j1.filter(l1.id == self.id)
+		).union(
+			j2.filter(l2.id == self.id),
+			j3.filter(l3.id == self.id),
+			j4.filter(l4.id == self.id)
+		)
+
 RoomView = Enum(
 	"Overlooking a street",
 	"Overlooking a court or garden"
@@ -167,6 +202,41 @@ class Room(Base):
 			if parent.latitude and parent.longitude:
 				return parent.latitude, parent.longitude
 			parent = parent.parent
+
+	@property
+	def all_photos_q(self):
+		return (object_session(self)
+			.query(Photo)
+			.join(Occupancy)
+			.join(RoomListing)
+			.filter(RoomListing.room == self)
+		)
+
+	@property
+	def all_reviews_q(self):
+		return (object_session(self)
+			.query(Review)
+			.join(Occupancy)
+			.join(RoomListing)
+			.filter(RoomListing.room == self)
+		)
+
+	@property
+	def adjusted_rating(self):
+		q = (object_session(self)
+			.query(
+				func.sum(Review.rating),
+				func.count(Review.rating)
+			)
+			.filter(Review.rating != None)
+			.join(Occupancy)
+			.join(RoomListing)
+			.filter(RoomListing.room_id == self.id)
+		)
+		sum_ratings, num_ratings = q.one()
+
+		return (3 + sum_ratings) / (1 + num_ratings) if num_ratings else None
+
 
 	def pretty_name(self, relative_to=None):
 		"""
@@ -327,6 +397,11 @@ class ReviewSection(Base):
 	_order = column_property(
 		select([ReviewHeading.position]).where(ReviewHeading.id == heading_id)
 	)
+
+	@property
+	def html_content(self):
+		return ''.join('<p>' + line + '</p>' for line in self.content.split('\n\n'))
+
 
 #Read: https://research.microsoft.com/pubs/64525/tr-2006-45.pdf
 class Photo(Base):
