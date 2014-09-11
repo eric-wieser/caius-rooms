@@ -8,9 +8,15 @@ Notation:
 
 Relationships:
 
-  RoomListing -- (Room >< Ballot)
+  BallotSeason -< BallotEvent
+
+  BallotEvent >- BallotType
+
+  RoomListing -< RoomListingAudience
 
   RoomListing -< Occupancy...
+
+  RoomListing -- (Room >< BallotSeason)
 
   Occupancy >- User
   Occupancy -< Review...
@@ -150,7 +156,6 @@ class Room(Base):
 	living_room_y = Column(Integer)
 	living_room_view = Column(RoomView)
 
-	listings = relationship(lambda: RoomListing, backref="room")
 	parent   = relationship(lambda: Cluster,     backref="rooms")
 
 	def pretty_name(self, relative_to=None):
@@ -190,40 +195,52 @@ class Room(Base):
 	def __repr__(self):
 		return "<Room: {}>".format(self.pretty_name())
 
+class BallotType(Base):
+	""" A type of ballot """
+	__tablename__ = prefix + 'ballot_types'
 
-class Ballot(Base):
-	""" A ballot event """
-	__tablename__ = prefix + 'ballots'
-
-	id               = Column(Integer, primary_key=True)
-	opens_at         = Column(Date)
-	closes_at        = Column(Date)
-	type             = Column(Enum('ugrad', '4th', 'grad'), nullable=False)
-	is_reconstructed = Column(Boolean, default=False, nullable=False)
-
-	room_listings = relationship(lambda: RoomListing, backref="ballot")
-
-	@hybrid_property
-	def rental_year(self):
-		return self.opens_at.year - (self.opens_at.month < 9)
-
-	@rental_year.expression
-	def rental_year(cls):
-		return extract('year', cls.opens_at) - case(whens=[
-			(extract('month', cls.opens_at) < 9, 1)
-		], else_=0)
+	id   = Column(Integer, primary_key=True)
+	name = Column(String(255))
 
 	def __repr__(self):
-		return "<Ballot for {} ({})>".format(self.rental_year, self.type)
+		return "BallotType(name={})".format(self.name)
+
+
+class BallotSeason(Base):
+	""" A year in which a ballot occurs """
+	__tablename__ = prefix + 'ballot_seasons'
+
+	year          = Column(Integer, primary_key=True)
+
+	def __repr__(self):
+		return "BallotSeason(year={})".format(self.year)
+
+
+class BallotEvent(Base):
+	__tablename__ = prefix + 'ballot_events'
+
+	id        = Column(Integer, primary_key=True)
+	type_id   = Column(Integer, ForeignKey(BallotType.id),     nullable=False)
+	season_id = Column(Integer, ForeignKey(BallotSeason.year), nullable=False)
+	opens_at  = Column(Date)
+	closes_at = Column(Date)
+
+	type      = relationship(lambda: BallotType,   backref="events")
+	season    = relationship(lambda: BallotSeason, backref="events")
+
+	__table_args__ = (UniqueConstraint(type_id, season_id, name='_season_type_uc'),)
+
+	def __repr__(self):
+		return "<BallotEvent(year={}, type={}, ...)>".format(self.season.year, self.type.name)
 
 
 class RoomListing(Base):
 	""" A listing of a room within a ballot, with time-variant properties """
 	__tablename__ = prefix + 'room_listings'
 
-	id        = Column(Integer, primary_key=True)
-	ballot_id = Column(Integer, ForeignKey(Ballot.id))
-	room_id   = Column(Integer, ForeignKey(Room.id))
+	id               = Column(Integer, primary_key=True)
+	ballot_season_id = Column(Integer, ForeignKey(BallotSeason.year))
+	room_id          = Column(Integer, ForeignKey(Room.id))
 
 	rent          = Column(Numeric(6, 2))
 	has_piano     = Column(Boolean)
@@ -232,7 +249,22 @@ class RoomListing(Base):
 	has_uniofcam  = Column(Boolean)
 	has_ethernet  = Column(Boolean)
 
-	__table_args__ = (UniqueConstraint(ballot_id, room_id, name='_ballot_room_uc'),)
+	room          = relationship(lambda: Room, backref="listings")
+	ballot_season = relationship(lambda: BallotSeason, backref="room_listings")
+
+	__table_args__ = (UniqueConstraint(ballot_season_id, room_id, name='_ballot_room_uc'),)
+
+class RoomListingAudience(Base):
+	__tablename__ = prefix + 'room_listing_audiences'
+
+	id              = Column(Integer, primary_key=True)
+	room_listing_id = Column(Integer, ForeignKey(RoomListing.id))
+	ballot_type_id  = Column(Integer, ForeignKey(BallotType.id))
+
+	room_listing = relationship(lambda: RoomListing, backref="audiences")
+	ballot_type  = relationship(lambda: BallotType, backref="all_room_listings")
+
+	__table_args__ = (UniqueConstraint(room_listing_id, ballot_type_id, name='_listing_type_uc'),)
 
 
 class Occupancy(Base):

@@ -126,18 +126,23 @@ def try_recover_ballot(new_session, year):
 
 	print "New ballot for", repr(ballot.rental_year), repr(year)
 
-def try_recover_listing(new_session, room, ts):
-	if ts.month > 9:
-		guessed_ballot_year = ts.year
+def get_year(ts, from_start=True):
+	threshold = 9 if from_start else 7
+
+	if ts.month >= threshold:
+		return ts.year
 	else:
-		guessed_ballot_year = ts.year - 1
+		return ts.year - 1
+
+def try_recover_listing(new_session, room, ts):
+	guessed_ballot_year = get_year(ts)
 
 	# see if we have a listing already
 	query = (new_session
 		.query(orm.RoomListing)
-		.join(orm.Ballot)
+		.join(orm.BallotSeason)
 		.filter(orm.RoomListing.room == room)
-		.filter(orm.Ballot.rental_year == guessed_ballot_year)
+		.filter(orm.BallotSeason.year == guessed_ballot_year)
 	)
 	try:
 		return query.one()
@@ -147,12 +152,21 @@ def try_recover_listing(new_session, room, ts):
 		pass
 
 	# get all ballots for the year
-	ballot = try_recover_ballot(new_session, guessed_ballot_year)
+	ballot_season = get_ballot_season(new_session, guessed_ballot_year)
 
 	return orm.RoomListing(
 		room=room,
-		ballot=ballot
+		ballot_season=ballot_season
 	)
+
+def get_ballot_season(new_session, year):
+	try:
+		return (new_session
+			.query(orm.BallotSeason)
+			.filter(orm.BallotSeason.year == year)
+		).one()
+	except NoResultFound:
+		return orm.BallotSeason(year=year)
 
 def sanitize_view(v):
 	if not v:

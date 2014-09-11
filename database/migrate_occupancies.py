@@ -9,22 +9,27 @@ new_session = db.Session()
 old_session = olddb.Session()
 
 for reservation in old_session.query(olddb.orm.accom_guide_reservation):
+
+	ballot_event = (new_session
+		.query(orm.BallotEvent)
+		.filter(orm.BallotEvent.id == reservation.ballot)
+	).one()
+
 	try:
 		# get the listing we already have for this entry
 		listing = (new_session
 			.query(orm.RoomListing)
 			.filter(orm.RoomListing.room_id == reservation.room)
-			.filter(orm.RoomListing.ballot_id == reservation.ballot)
+			.filter(orm.RoomListing.ballot_season == ballot_event.season)
 			.one()
 		)
 	except NoResultFound:
 		# we found a listing that wasn't in the most recent ballot
 		room = new_session.query(orm.Room).filter(orm.Room.id == reservation.room).one()
-		ballot = new_session.query(orm.Ballot).filter(orm.Ballot.id == reservation.ballot).one()
 
 		listing = orm.RoomListing(
 			room=room,
-			ballot=ballot
+			ballot_season=ballot_event.season
 		)
 		new_session.add(listing)
 

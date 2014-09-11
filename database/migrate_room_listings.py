@@ -7,22 +7,44 @@ db.init('dev')
 new_session = db.Session()
 old_session = olddb.Session()
 
-print new_session.query(orm.Ballot).filter(orm.Ballot.rental_year==2014)
+this_season = (new_session
+	.query(orm.BallotSeason)
+	.filter(orm.BallotSeason.year == 2014)
+).one()
 
-ballots = new_session.query(orm.Ballot).filter(orm.Ballot.rental_year==2014)
-b4 = ballots.filter(orm.Ballot.type == '4th').one()
-bu = ballots.filter(orm.Ballot.type == 'ugrad').one()
+bt_ugrad = (new_session
+	.query(orm.BallotType)
+	.filter(orm.BallotType.name == 'Undergraduate')
+).one()
+
+bt_fourth = (new_session
+	.query(orm.BallotType)
+	.filter(orm.BallotType.name == '4th year')
+).one()
+
+bt_grad = (new_session
+	.query(orm.BallotType)
+	.filter(orm.BallotType.name == 'Graduate')
+).one()
 
 for old_room in old_session.query(olddb.orm.accom_guide_rooms):
 	new_room = new_session.query(orm.Room).filter(orm.Room.id == old_room.id).one()
 
+	rent = old_room.rent or None
+
 	if old_room.ballot_type == 1:
-		ballot = bu
-	elif old_room.rent:
-		ballot = b4
+		audiences = [
+			orm.RoomListingAudience(ballot_type=bt_ugrad),
+			orm.RoomListingAudience(ballot_type=bt_fourth)
+		]
+	elif rent:
+		audiences = [
+			orm.RoomListingAudience(ballot_type=bt_fourth)
+		]
 	else:
-		print "skipping", new_room
-		continue
+		audiences = [
+			orm.RoomListingAudience(ballot_type=bt_grad)
+		]
 
 	def parse_bool(x):
 		if x is None or x == '':
@@ -35,9 +57,10 @@ for old_room in old_session.query(olddb.orm.accom_guide_rooms):
 
 	listing = orm.RoomListing(
 		room=new_room,
-		ballot=ballot,
+		ballot_season=this_season,
+		audiences=audiences,
 
-		rent=old_room.rent,
+		rent=rent,
 
 		has_piano     = parse_bool(old_room.piano),
 		has_washbasin = parse_bool(old_room.washbasin),
@@ -46,6 +69,3 @@ for old_room in old_session.query(olddb.orm.accom_guide_rooms):
 	)
 	new_session.add(listing)
 new_session.commit()
-
-for r in bu.room_listings:
-	print r.room
