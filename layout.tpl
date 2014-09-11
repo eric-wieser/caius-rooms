@@ -10,20 +10,17 @@
 	% parts = []
 
 	% if defined('room'):
-		% place = room['place']
+		% place = room.parent
 	% end
 
 	% if defined('place'):
-		% if place['group']:
-			% parts.append(("/rooms?group=" + place['group'], place['group'], None))
-			% parts.append((get_url('place', place=place), place['name'].split(place['group'], 1)[0], None))
-		% else:
-			% parts.append((get_url('place', place=place), place['name'], None))
+		% for part in place.path:
+			% parts.append(("/locations/{}".format(part.id), part.pretty_name(part.parent), None))
 		% end
 	% end
 
 	% if defined('room'):
-		% parts.append(('#', room['number'], None))
+		% parts.append(('#', room.pretty_name(room.parent), None))
 	% end
 % end
 
@@ -36,6 +33,7 @@
 		<link rel="icon" type="image/png" href="http://cdn.dustball.com/house.png">
 		<link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
 
+		<script src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
 
 		<link href="/static/bootstrap-sortable.css" rel="stylesheet">
 		<style>
@@ -137,9 +135,6 @@
 								<li><a href="#reviews">
 									<span class="glyphicon glyphicon-comment"></span> Reviews
 								</a></li>
-								<li><a href="http://www.caiusjcr.org.uk/roomCaius/index.php?location={{room['place']['name']}}#room-{{room['id']}}"  target="_blank" title="View on roomCaius">
-									<span class="glyphicon glyphicon-new-window"></span> roomCaius
-								</a></li>
 								<li><a href='#' id="favorite" title="Record as favorite on this PC">
 									<span class="glyphicon glyphicon-star"></span> Favorite
 								</a></li>
@@ -147,7 +142,7 @@
 									<span class="glyphicon glyphicon-random"></span> Random
 								</a></li>
 								<script>
-								var thisRoom = {{! json.dumps(room['id']) }};
+								var thisRoom = {{! json.dumps(room.id) }};
 								if(localStorage['favorited-' + thisRoom])
 									$('#favorite').parent().addClass('alert-success');
 
@@ -182,7 +177,6 @@
 				</div>
 			</div>
 		</nav>
-		<script src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
 
 		% include
 
