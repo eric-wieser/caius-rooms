@@ -40,7 +40,7 @@ def get_location(new_session, loc_name):
 
 def get_location_with_stair(new_session, loc_name, staircase):
 	# fix K stair / K block confusion / random A staircase
-	if staircase == 'K' and loc_name == 'Harvey Court':
+	if staircase == 'K' and loc_name == 'Harvey Court' or loc_name == 'K Block':
 		staircase = None
 		loc_name = 'K Block'
 	elif loc_name == '4 Rose Crescent':
@@ -50,7 +50,6 @@ def get_location_with_stair(new_session, loc_name, staircase):
 		location = get_location(new_session, loc_name)
 	except NewLocation as e:
 		location = e.args[1]
-		new_locs.add(location)
 
 	if staircase != 'None' and staircase:
 		try:
@@ -61,7 +60,6 @@ def get_location_with_stair(new_session, loc_name, staircase):
 		except NoResultFound:
 			print "New staircase {} in {}".format(staircase, location)
 			location = orm.Cluster(name=staircase, type="staircase", parent=location)
-			new_locs.add(location)
 
 	return location
 

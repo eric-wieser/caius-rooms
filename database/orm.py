@@ -214,7 +214,7 @@ class Ballot(Base):
 
 class RoomListing(Base):
 	""" A listing of a room within a ballot, with time-variant properties """
-	__tablename__ = prefix + 'ballot_room'
+	__tablename__ = prefix + 'room_listings'
 
 	id        = Column(Integer, primary_key=True)
 	ballot_id = Column(Integer, ForeignKey(Ballot.id))
@@ -240,23 +240,21 @@ class Occupancy(Base):
 
 	listing     = relationship(lambda: RoomListing, backref="occupancies")
 	resident    = relationship(lambda: Person, backref="occupancies")
-	reviews     = relationship(lambda: Review,   backref="occupancy", order_by=lambda: Review.published_at)
+	reviews     = relationship(lambda: Review, backref="occupancy", order_by=lambda: Review.published_at)
+	photos      = relationship(lambda: Photo,  backref="occupancy", order_by=lambda: Photo.published_at)
 
 	__table_args__ = (UniqueConstraint(resident_id, listing_id, name='_resident_listing_uc'),)
+
 
 class Review(Base):
 	__tablename__ = prefix + 'reviews'
 
-	id           = Column(Integer, primary_key=True)
-	published_at = Column(DateTime)
+	id           = Column(Integer,  primary_key=True)
+	published_at = Column(DateTime, nullable=False)
 	rating       = Column(SmallInteger)
 	occupancy_id = Column(Integer, ForeignKey(Occupancy.id), nullable=False)
 
 	sections     = relationship(lambda: ReviewSection, backref='review', order_by=lambda: ReviewSection._order)
-
-
-	def __repr__(self):
-		return "<Review(published_at={}, title={})>".format(self.published_at, self.title)
 
 
 class ReviewHeading(Base):
@@ -270,7 +268,7 @@ class ReviewHeading(Base):
 
 
 class ReviewSection(Base):
-	""" A heading within a review """
+	""" A section of content within a review """
 	__tablename__ = prefix + 'review_sections'
 
 	review_id  = Column(Integer, ForeignKey(Review.id),        primary_key=True, nullable=False)
@@ -282,3 +280,16 @@ class ReviewSection(Base):
 	_order = column_property(
 		select([ReviewHeading.position]).where(ReviewHeading.id == heading_id)
 	)
+
+#Read: https://research.microsoft.com/pubs/64525/tr-2006-45.pdf
+class Photo(Base):
+	__tablename__ = prefix + 'photos'
+
+	id           = Column(Integer,    primary_key=True)
+	published_at = Column(DateTime,   nullable=False)
+	caption      = Column(Text)
+	width        = Column(Integer,    nullable=False)
+	height       = Column(Integer,    nullable=False)
+	mime_type    = Column(String(32), nullable=False)
+	# TODO: store image somewhere
+	occupancy_id = Column(Integer, ForeignKey(Occupancy.id), nullable=False)
