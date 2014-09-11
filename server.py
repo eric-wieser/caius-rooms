@@ -1,7 +1,13 @@
 import random
 
+import sqlalchemy
+from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 from bottle import *
+from bottle.ext.sqlalchemy import SQLAlchemyPlugin
+
 from data import rooms, places, rooms_by_id, apply_reserved_rooms
+import database.orm as m
+
 
 def filter_graduate():
 	def filt(r):
@@ -29,6 +35,12 @@ def filter_group(g):
 
 app = Bottle()
 SimpleTemplate.defaults["get_url"] = app.get_url
+
+app.install(SQLAlchemyPlugin(
+	engine=sqlalchemy.create_engine('sqlite:///database/test.db'),
+	metadata=m.Base.metadata,
+	keyword='db'
+))
 
 def slug(s):
 	return s.lower().replace(' ', '-').replace("'", '')
@@ -101,10 +113,14 @@ def show_random_room():
 def show_random_room():
 	redirect(app.get_url('place-photos', place=random.choice(places)))
 
-@app.route(r'/rooms/<room:room>')
-def show_room(room):
-	apply_reserved_rooms()
-	return template('room', room=room)
+
+@app.route(r'/rooms/<room_id>')
+def show_room(room_id, db):
+	try:
+		room = db.query(m.Room).filter(m.Room.id == room_id).one()
+		return template('room', room=room)
+	except NoResultFound:
+		raise HTTPError(404, "No matching room")
 
 
 @app.route(r'/places', name="place-list")
