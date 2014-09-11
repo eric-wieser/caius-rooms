@@ -128,6 +128,20 @@ def show_place():
 	apply_reserved_rooms()
 	return template('places', places=places)
 
+@app.route(r'/locations', name="location-list")
+def show_place(db):
+	root = db.query(m.Cluster).filter(m.Cluster.parent == None).one()
+	return template('locations', location=root)
+
+@app.route(r'/locations/<loc_id>', name="location-list")
+def show_place(loc_id, db):
+	try:
+		location = db.query(m.Cluster).filter(m.Cluster.id == loc_id).one()
+		return template('locations', location=location)
+	except NoResultFound:
+		raise HTTPError(404, "No matching location")
+
+
 @app.route(r'/places/<place:place>', name="place")
 def show_place(place):
 	apply_reserved_rooms()
