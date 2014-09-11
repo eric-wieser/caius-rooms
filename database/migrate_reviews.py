@@ -86,12 +86,26 @@ for old_review in old_session.query(olddb.orm.accom_guide_input).order_by(olddb.
 		for heading in new_session.query(orm.ReviewHeading)
 	]
 
+	def fix_encoding(s):
+		# fix whatever garbage encoding the old db had
+		try:
+			return s.decode('utf-8')
+		except:
+			pass
+
+		try:
+			return s.decode('latin1')
+		except:
+			pass
+
+		return s
+
 	review = orm.Review(
 		published_at=ts,
 		rating=old_review.marks,
 		sections=[
 			orm.ReviewSection(
-				content=content,
+				content=fix_encoding(content),
 				heading=heading
 			)
 			for heading, content in sections

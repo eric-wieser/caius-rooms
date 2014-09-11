@@ -42,9 +42,11 @@ from sqlalchemy import (
 	Numeric,
 	SmallInteger,
 	String,
+	Unicode,
 	UnicodeText,
 )
 from sqlalchemy.orm import relationship, backref, column_property
+from sqlalchemy.orm.session import object_session
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.sql.expression import select, extract, case
@@ -60,14 +62,14 @@ class Person(Base):
 	__tablename__ = prefix + 'people'
 
 	crsid   = Column(CRSID,  primary_key=True)
-	name    = Column(String(255))
+	name    = Column(Unicode(255))
 
 class Cluster(Base):
 	""" (nestable) Groups of nearby physical rooms """
 	__tablename__ = prefix + 'clusters'
 
 	id         = Column(Integer,                         primary_key=True)
-	name       = Column(String(255),                     nullable=False)
+	name       = Column(Unicode(255),                    nullable=False)
 	parent_id  = Column(Integer, ForeignKey(id))
 	type       = Column(Enum("staircase", "building", "road"))
 
@@ -144,7 +146,7 @@ class Room(Base):
 	__tablename__ = prefix + 'rooms'
 
 	id        = Column(Integer,                         primary_key=True)
-	name      = Column(String(255),                     nullable=False)
+	name      = Column(Unicode(255),                    nullable=False)
 	parent_id = Column(Integer, ForeignKey(Cluster.id), nullable=False)
 
 	is_suite  = Column(Boolean)
@@ -209,7 +211,7 @@ class BallotType(Base):
 	__tablename__ = prefix + 'ballot_types'
 
 	id   = Column(Integer, primary_key=True)
-	name = Column(String(255))
+	name = Column(Unicode(255))
 
 	def __repr__(self):
 		return "BallotType(name={})".format(self.name)
@@ -308,7 +310,7 @@ class ReviewHeading(Base):
 	__tablename__ = prefix + 'review_headings'
 
 	id       = Column(Integer,     primary_key=True)
-	name     = Column(String(255), nullable=False)
+	name     = Column(Unicode(255), nullable=False)
 	position = Column(Integer,     nullable=False)
 	prompt   = Column(UnicodeText)
 
