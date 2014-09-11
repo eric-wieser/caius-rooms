@@ -11,13 +11,7 @@ db.init('dev')
 new_session = db.Session()
 old_session = olddb.Session()
 
-count = 0
-
-new_locs = set()
-
 seen_ts = set()
-duplicates = 0
-success = 0
 
 def problem(old, new):
 	if old == 'None' or not old:
