@@ -18,3 +18,6 @@ print "migrate_occupancies: Done"
 
 import migrate_reviews
 print "migrate_reviews: Done"
+
+import migrate_photos
+print "migrate_photos: Done"
