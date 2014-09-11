@@ -58,7 +58,7 @@ def place_route_filter(config):
 		raise HTTPError(404, "No matching place")
 
 	def to_url(place):
-		return place['name'].lower().replace(' ', '-').replace("'", '')
+		return slug(place.name)
 
 	return regexp, to_python, to_url
 
@@ -142,10 +142,13 @@ def show_place(loc_id, db):
 		raise HTTPError(404, "No matching location")
 
 
-@app.route(r'/places/<place:place>', name="place")
-def show_place(place):
-	apply_reserved_rooms()
-	return template('place', place=place, rooms=rooms, filters=[])
+@app.route(r'/places/<place_id>', name="place")
+def show_place(place_id, db):
+	try:
+		location = db.query(m.Cluster).filter(m.Cluster.id == place_id).one()
+		return template('place', location=location, filters=[])
+	except NoResultFound:
+		raise HTTPError(404, "No matching location")
 
 @app.route(r'/places/<place:place>/photos', name="place-photos")
 def show_place_photos(place):

@@ -1,7 +1,19 @@
+% import database.orm as m
+
 <table class="table table-condensed table-hover sortable">
 	<thead>
+		% skip_place = True
+		% for room in rooms:
+			% containing_place = room.parent
+			% if containing_place.type == 'staircase' and containing_place != relative_to:
+				% containing_place = containing_place.parent
+			% end
+			% if containing_place != relative_to:
+				% skip_place = False
+			% end
+		% end
 		<tr>
-			% if get('skip_place'):
+			% if skip_place:
 				<th class="rule-right" style="text-align: right">Room</th>
 			% else:
 				<th style="text-align: right">Room</th>
@@ -17,91 +29,67 @@
 	</thead>
 	<tbody>
 		% for room in rooms:
-			<tr class="room" data-roomid="{{room['id']}}">
-				% d = room.get('details', {})
-				<td class="shrink{{ ' rule-right' if get('skip_place') else '' }}" style="text-align: right">
-					% if d.get('Type') == 'Suite':
+			% containing_place = room.parent
+			% if containing_place.type == 'staircase' and containing_place != relative_to:
+				% containing_place = containing_place.parent
+			% end
+
+			% if room.listings:
+				% last_listing = room.listings[0]
+			% end
+			<tr class="room" data-roomid="{{ room.id }}">
+				<td class="shrink{{ ' rule-right' if skip_place else '' }}" style="text-align: right">
+					% if room.is_suite:
 						<span class="glyphicon glyphicon-th-large text-muted" title="Suite"></span>
 					% end
-					<a href="/rooms/{{room['id']}}">{{room['number'] or room['name']}}</a>
+					<a href="/rooms/{{room.id}}">{{room.pretty_name(containing_place) }}</a>
 				</td>
-				% if not get('skip_place'):
-					% place = room['place']
-					<td class="rule-right" data-value="{{room['place']['group'] or ''}} | {{place['name']}}">
-						% if place['group']:
-							<a href="{{ get_url('place', place=place) }}">{{ place['name'].split(place['group'], 1)[0].strip() }}<a/>
-							<a href="?group={{place['group'].replace(' ', '+')}}">
-								{{ place['group'] }}
-							<a/>
-						% else:
-							<a href="{{ get_url('place', place=place) }}">{{place['name']}}</a>
-						% end
-						% if place.get('unlisted'):
-							<span class="label label-danger" title="Possibly not a real building">unlisted</span>
-						% end
+				% if not skip_place:
+					<td class="rule-right">
+						<a href="{{ get_url('place', place_id=containing_place.id) }}">{{ containing_place.pretty_name(relative_to) }}</a>
 					</td>
 				% end
 				<td>
-					%if 'details' in room and 'Estimated Rent' in room['details']:
-						{{room['details']['Estimated Rent']}}
+					% if last_listing and last_listing.rent:
+						£{{ last_listing.rent }}
 					% end
 				</td>
-				% b_space = d.get('Bedroom')
-				% b_space = b_space and b_space.split(' sqr ft', 1)[0]
-				% b_w, b_h = 0, 0
-				% if b_space:
-					% try:
-						% b_w, b_h = map(int, b_space.split('*'))
-					% except ValueError:
-						% b_space = None
-					% end
-				% end
+				% b_w, b_h = room.bedroom_x, room.bedroom_y
+				% l_w, l_h = room.living_room_x, room.living_room_y
 
-				% l_space = d.get('Living Room', '')
-				% l_space = l_space and l_space.split(' sqr ft', 1)[0]
-				% l_w, l_h = 0, 0
-				% if l_space:
-					% try:
-						% l_w, l_h = map(int, l_space.split('*'))
-					% except ValueError:
-						% l_space = None
-					% end
-				% end
-
-				% area = b_w * b_h + l_w * l_h
-				<td data-value="{{area if b_space or l_space else -1}}">
-					% if b_space or l_space:
+				% area = (b_w * b_h if b_w else 0) + (l_w * l_h if l_w else 0)
+				<td data-value="{{area if b_w or l_w else -1}}">
+					% if b_w or l_w:
 						{{area}}<span class="hidden-xs">&nbsp;ft&sup2;</span>
 					% end
 					<span class="hidden-xs text-muted">
-						% if b_space and l_space:
+						% if b_w and l_w:
 							({{b_w}}&times;{{b_h}} + {{l_w}}&times;{{l_h}})
-						% elif b_space:
+						% elif b_w:
 							({{b_w}}&times;{{b_h}})
-						% elif l_space:
+						% elif l_w:
 							({{l_w}}&times;{{l_h}})
 						% end
 					</span>
 				</td>
-				<td class="rule-right" data-value="{{room['bayesian_rank'] or 0}}">
-					%if room['mean_score'] is not None:
-						{{ '{:.1f}'.format(room['mean_score']) }}<span class="hidden-xs">/10</span>
+				<td class="rule-right" data-value="{{room.adjusted_rating or 0}}">
+					%if room.adjusted_rating is not None:
+						{{ '{:.1f}'.format(room.adjusted_rating) }}<span class="hidden-xs">/10</span>
 					% end
 				</td>
 				<td class="shrink center">
-					% if room['reviews']:
-						% n = sum(r['rating'] != None for r in room['reviews'])
+					% n = room.all_reviews_q.count()
+					% if n != 0:
 						% m = '1 review' if n == 1 else '{} reviews'.format(n)
-						% if n != 0:
-						<a href="/rooms/{{room['id']}}#reviews" style="color: inherit; text-decoration: none">
+						<a href="/rooms/{{room.id}}#reviews" style="color: inherit; text-decoration: none">
 							<span class="hidden-xs" style="display: inline-block; width: 2ex; text-align: right">{{ n if n != 1 else '' }}</span>
 							<span class="glyphicon glyphicon-comment" title="{{m}}"></span>
-						% end
+						</a>
 					% end
 				</td>
 				<td class="shrink center">
-					% if room['reviews']:
-						% n = sum('resident' in r for r in room['reviews'])
+					% if False and room.reviews:
+						% n = sum('resident' in r for r in room.reviews)
 						% m = '1 recorded resident' if n == 1 else '{} recorded residents'.format(n)
 						% if n != 0:
 							<span class="hidden-xs" style="display: inline-block; width: 2ex; text-align: right">{{ n if n != 1 else '' }}</span>
@@ -110,49 +98,48 @@
 					% end
 				</td>
 				<td class="shrink center rule-right">
-					% if room['images']:
-						% n = len(room['images'])
+					% n = room.all_photos_q.count()
+					% if n:
 						% m = '1 photo' if n == 1 else '{} photos'.format(n)
-						<a href="/rooms/{{room['id']}}#photos" style="color: inherit; text-decoration: none">
+						<a href="/rooms/{{room.id}}#photos" style="color: inherit; text-decoration: none">
 							<span class="hidden-xs" style="display: inline-block; width: 2ex; text-align: right">{{ n if n != 1 else '' }}</span>
 							<span class="glyphicon glyphicon-picture" title="{{m}}"></span>
 						</a>
 					% end
 				</td>
-				% d = room.get('details', {})
 				<td class="shrink center">
-					% n = d.get('Network')
-					% if n in ('Y', 'Yes'):
-						<span class="glyphicon glyphicon-cloud text-success" title="Network"></span>
-					% elif n in ('N', 'No'):
-						<span class="glyphicon glyphicon-cloud text-danger" title="No Network"></span>
+					% n = last_listing and last_listing.has_ethernet
+					% if n == True:
+						<span class="glyphicon glyphicon-cloud text-success" title="Ethernet"></span>
+					% elif n == False:
+						<span class="glyphicon glyphicon-cloud text-danger" title="No Ethernet"></span>
 					% else:
-						<span class="glyphicon glyphicon-cloud text-muted" title="Possible Network"></span>
+						<span class="glyphicon glyphicon-cloud text-muted" title="Possible Ethernet"></span>
 					% end
 				</td>
 				<td class="shrink center">
-					% w = d.get('Washbasin')
-					% if w in ('Y', 'Yes'):
+					% w = last_listing and last_listing.has_washbasin
+					% if w == True:
 						<span class="glyphicon glyphicon-tint text-success" title="Washbasin"></span>
-					% elif w in ('N', 'No'):
-						% pass
+					% elif w == False:
+						<span class="glyphicon glyphicon-tint text-danger" title="No Washbasin"></span>
 					% else:
 						<span class="glyphicon glyphicon-tint text-muted" title="Possible Washbasin"></span>
-					%end
+					% end
 				</td>
 				<td class="shrink center  rule-right">
-					% p = d.get('Piano')
-					% if p in ('Y', 'Yes'):
+					% p = last_listing and last_listing.has_piano
+					% if p == True:
 						<span class="glyphicon glyphicon-music text-success" title="Piano"></span>
-					% elif p in ('N', 'No'):
-						% pass
+					% elif p == False:
+						<span class="glyphicon glyphicon-music text-danger" title="No Piano"></span>
 					% else:
 						<span class="glyphicon glyphicon-music text-muted" title="Possible Piano"></span>
-					%end
+					% end
 				</td>
 				<td>
-					% if room['owner']:
-						<small>{{room['owner']}}</small>
+					% if last_listing.occupancies and last_listing.occupancies[0].resident:
+						<small>{{last_listing.occupancies[0].resident.name}}</small>
 					% end
 				</td>
 			</tr>

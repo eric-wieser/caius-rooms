@@ -90,7 +90,6 @@
 			</div>
 			<div id="map"></div>
 			% lat_lon = room.geocoords
-			{{lat_lon}}
 			% if lat_lon:
 				<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&amp;sensor=false"></script>
 				<script>
@@ -148,6 +147,7 @@
 					<p>
 						<img src="http://gcsu.soc.srcf.net/roomCaius/photo.php?id={{ photo.id }}.jpg" class="img-rounded img-responsive" />
 						{{ photo.caption }}
+						<span class="text-muted">{{ photo.published_at }}</span>
 					</p>
 					% any_photos = True
 				% end
@@ -179,11 +179,11 @@
 								<dl class="review dl-horizontal" itemprop="reviewBody">
 									%for item in review.sections:
 										<dt>{{ item.heading.name }}</dt>
-										<dd style="white-space: pre-wrap">{{! item.content }}</dd>
+										<dd style="white-space: pre-wrap">{{! item.html_content }}</dd>
 									%end
 								</dl>
 							% end
-							<small>{{ review.published_at }}</small>
+							<span class="text-muted">{{ review.published_at }}</span>
 						</div>
 					% end
 				% end
