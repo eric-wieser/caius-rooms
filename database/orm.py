@@ -257,7 +257,7 @@ class RoomListing(Base):
 	has_uniofcam  = Column(Boolean)
 	has_ethernet  = Column(Boolean)
 
-	room          = relationship(lambda: Room, backref="listings")
+	room          = relationship(lambda: Room, backref=backref("listings", order_by=ballot_season_id.desc()))
 	ballot_season = relationship(lambda: BallotSeason, backref="room_listings")
 
 	__table_args__ = (UniqueConstraint(ballot_season_id, room_id, name='_ballot_room_uc'),)
@@ -285,8 +285,8 @@ class Occupancy(Base):
 
 	listing     = relationship(lambda: RoomListing, backref="occupancies")
 	resident    = relationship(lambda: Person, backref="occupancies")
-	reviews     = relationship(lambda: Review, backref="occupancy", order_by=lambda: Review.published_at)
-	photos      = relationship(lambda: Photo,  backref="occupancy", order_by=lambda: Photo.published_at)
+	reviews     = relationship(lambda: Review, backref="occupancy", order_by=lambda: Review.published_at.desc())
+	photos      = relationship(lambda: Photo,  backref="occupancy", order_by=lambda: Photo.published_at.desc())
 
 	__table_args__ = (UniqueConstraint(resident_id, listing_id, name='_resident_listing_uc'),)
 
