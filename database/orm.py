@@ -235,7 +235,7 @@ class Room(Base):
 		)
 		sum_ratings, num_ratings = q.one()
 
-		return (3 + sum_ratings) / (1 + num_ratings) if num_ratings else None
+		return (3.0 + sum_ratings) / (1 + num_ratings) if num_ratings else None
 
 
 	def pretty_name(self, relative_to=None):
