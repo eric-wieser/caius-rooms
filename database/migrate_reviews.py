@@ -81,15 +81,21 @@ for old_review in old_session.query(olddb.orm.accom_guide_input).order_by(olddb.
 		expected = ['noise', 'lighting', 'heating', 'kitchen', 'bathroom', 'furniture', 'worst', 'best', 'general']
 		return next(e for e in expected if e in lower)
 
+	sections = [
+		(heading, getattr(old_review, heading_to_colname(heading)))
+		for heading in new_session.query(orm.ReviewHeading)
+	]
+
 	review = orm.Review(
 		published_at=ts,
 		rating=old_review.marks,
 		sections=[
 			orm.ReviewSection(
-				content=getattr(old_review, heading_to_colname(heading)),
+				content=content,
 				heading=heading
 			)
-			for heading in new_session.query(orm.ReviewHeading)
+			for heading, content in sections
+			if content
 		],
 		occupancy=occupancy,
 	)
