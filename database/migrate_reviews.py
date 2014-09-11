@@ -3,7 +3,7 @@ import orm
 import olddb
 import datetime
 import re
-from sqlalchemy.orm.exc import NoResultFound
+from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 
 import migrate_utils
 
@@ -75,15 +75,76 @@ def try_recover_room(review):
 
 	return orm.Room(
 		name=name,
-		parent=location,
-		living_room_view=migrate_utils.sanitize_view(review.livingroom_position),
-		bedroom_view=migrate_utils.sanitize_view(review.position)
+		parent=location
 	)
+
+def try_recover_ballot(year):
+	# get all ballots for the year
+	ballots = (new_session
+		.query(orm.Ballot)
+		.filter(orm.Ballot.rental_year == year)
+		.order_by(orm.Ballot.opens_at.desc())
+	)
+
+	# assume undergrad?
+	try:
+		return ballots.filter(orm.Ballot.type == 'ugrad').first()
+	except NoResultFound:
+		pass
+
+	# or not
+	try:
+		return ballots.first()
+	except NoResultFound:
+		pass
+
+	# or roll a new one
+	return orm.Ballot(
+		is_reconstructed=True,
+
+		type='ugrad',
+		opens_at=datetime.date(year + 1, 1, 1)
+	)
+
+
+def try_recover_listing(room, ts):
+	if ts.month > 9:
+		guessed_ballot_year = ts.year
+	else:
+		guessed_ballot_year = ts.year - 1
+
+	# see if we have a listing already
+	try:
+		return (new_session
+			.query(orm.RoomListing)
+			.join(orm.Ballot)
+			.filter(orm.RoomListing.room == room)
+			.filter(orm.Ballot.rental_year == guessed_ballot_year)
+		).one()
+	except NoResultFound:
+		pass
+
+	# get all ballots for the year
+	ballot = try_recover_ballot(guessed_ballot_year)
+
+	return orm.RoomListing(
+		room=room,
+		ballot=ballot
+	)
+
 
 seen_ts = set()
 duplicates = 0
+success = 0
 
-for old_review in old_session.query(olddb.orm.accom_guide_input):
+def problem(old, new):
+	if old == 'None' or not old:
+		old = None
+	if new == 'None' or not new:
+		new = None
+	return old and old != new
+
+for old_review in old_session.query(olddb.orm.accom_guide_input).order_by(olddb.orm.accom_guide_input.submitted_ts.desc()):
 	ts = datetime.datetime.fromtimestamp(old_review.submitted_ts)
 	if ts in seen_ts:
 		duplicates += 1
@@ -103,12 +164,6 @@ for old_review in old_session.query(olddb.orm.accom_guide_input):
 			continue
 
 		# We've found a room - check it actually matches the review
-		def problem(old, new):
-			if old == 'None' or not old:
-				old = None
-			if new == 'None' or not new:
-				new = None
-			return old and old != new
 
 		if problem(old_review.location, old_room.location):
 			print "Review location:", old_review.location
@@ -125,6 +180,42 @@ for old_review in old_session.query(olddb.orm.accom_guide_input):
 			print "Room   location:", old_room.location
 
 
-print duplicates
+	# add any new view data (skip conflicts)
+	living_room_view = migrate_utils.sanitize_view(old_review.livingroom_position)
+	bedroom_view = migrate_utils.sanitize_view(old_review.position)
 
-# new_session.commit()
+	if living_room_view and not room.living_room_view:
+		room.living_room_view = living_room_view
+	if bedroom_view and not room.bedroom_view:
+		room.bedroom_view = bedroom_view
+
+
+	listing = try_recover_listing(room, ts)
+	if listing.occupancies:
+		occupancy = listing.occupancies[0]
+	else:
+		occupancy = orm.Occupancy(
+			listing=listing
+		)
+
+	def heading_to_colname(h):
+		lower = heading.name.lower()
+		expected = ['noise', 'lighting', 'heating', 'kitchen', 'bathroom', 'furniture', 'worst', 'best', 'general']
+		return next(e for e in expected if e in lower)
+
+	review = orm.Review(
+		published_at=ts,
+		rating=old_review.marks,
+		sections=[
+			orm.ReviewSection(
+				content=getattr(old_review, heading_to_colname(heading)),
+				heading=heading
+			)
+			for heading in new_session.query(orm.ReviewHeading)
+		],
+		occupancy=occupancy,
+	)
+
+	new_session.add(review)
+
+new_session.commit()

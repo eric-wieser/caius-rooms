@@ -194,10 +194,11 @@ class Ballot(Base):
 	""" A ballot event """
 	__tablename__ = prefix + 'ballots'
 
-	id        = Column(Integer, primary_key=True)
-	opens_at  = Column(Date)
-	closes_at = Column(Date)
-	type      = Column(Enum('ugrad', '4th', 'grad'), nullable=False)
+	id               = Column(Integer, primary_key=True)
+	opens_at         = Column(Date)
+	closes_at        = Column(Date)
+	type             = Column(Enum('ugrad', '4th', 'grad'), nullable=False)
+	is_reconstructed = Column(Boolean, default=False, nullable=False)
 
 	room_listings = relationship(lambda: RoomListing, backref="ballot")
 
@@ -233,7 +234,7 @@ class Occupancy(Base):
 	__tablename__ = prefix + 'occupancies'
 
 	id          = Column(Integer,                             primary_key=True)
-	resident_id = Column(CRSID,   ForeignKey(Person.crsid),   nullable=False)
+	resident_id = Column(CRSID,   ForeignKey(Person.crsid))
 	listing_id  = Column(Integer, ForeignKey(RoomListing.id), nullable=False)
 	chosen_at   = Column(DateTime)
 
