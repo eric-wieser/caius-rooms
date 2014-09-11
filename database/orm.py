@@ -42,7 +42,7 @@ from sqlalchemy import (
 	Numeric,
 	SmallInteger,
 	String,
-	Text,
+	UnicodeText,
 )
 from sqlalchemy.orm import relationship, backref, column_property
 from sqlalchemy.ext.declarative import declarative_base
@@ -310,7 +310,7 @@ class ReviewHeading(Base):
 	id       = Column(Integer,     primary_key=True)
 	name     = Column(String(255), nullable=False)
 	position = Column(Integer,     nullable=False)
-	prompt   = Column(Text)
+	prompt   = Column(UnicodeText)
 
 
 class ReviewSection(Base):
@@ -319,7 +319,7 @@ class ReviewSection(Base):
 
 	review_id  = Column(Integer, ForeignKey(Review.id),        primary_key=True, nullable=False)
 	heading_id = Column(Integer, ForeignKey(ReviewHeading.id), primary_key=True, nullable=False)
-	content    = Column(Text)
+	content    = Column(UnicodeText)
 
 	heading = relationship(lambda: ReviewHeading)
 
@@ -333,7 +333,7 @@ class Photo(Base):
 
 	id           = Column(Integer,    primary_key=True)
 	published_at = Column(DateTime,   nullable=False)
-	caption      = Column(Text)
+	caption      = Column(UnicodeText)
 	width        = Column(Integer,    nullable=False)
 	height       = Column(Integer,    nullable=False)
 	mime_type    = Column(String(32), nullable=False)
