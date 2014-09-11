@@ -32,6 +32,8 @@ for old_photo in old_session.query(olddb.orm.accom_guide_photos).order_by(olddb.
 		)
 
 	photo = orm.Photo(
+		id=old_photo.id,
+
 		published_at=ts,
 		caption=old_photo.comment,
 
