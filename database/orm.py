@@ -158,6 +158,14 @@ class Room(Base):
 
 	parent   = relationship(lambda: Cluster,     backref="rooms")
 
+	@property
+	def geocoords(self):
+		parent = self.parent
+		while parent:
+			if parent.latitude and parent.longitude:
+				return parent.latitude, parent.longitude
+			parent = parent.parent
+
 	def pretty_name(self, relative_to=None):
 		"""
 		Produce a pretty name relative to a Cluster. Traversing down the tree
