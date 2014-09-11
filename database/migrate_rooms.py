@@ -14,7 +14,7 @@ new_session = db.Session()
 old_session = olddb.Session()
 
 for old_room in old_session.query(olddb.orm.accom_guide_rooms):
-	location = migrate_utils.get_location(new_session, old_room)
+	location = migrate_utils.get_location(new_session, old_room.location)
 
 	if old_room.staircase != 'None':
 		try:
