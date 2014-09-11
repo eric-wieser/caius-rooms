@@ -2,9 +2,10 @@ import db
 import orm
 import os
 
-os.remove('test.db')
+# os.remove('test.db')
 
 db.init('dev')
+orm.Base.metadata.drop_all(db.engine)
 orm.Base.metadata.create_all(db.engine)
 
 session = db.Session()
