@@ -159,35 +159,52 @@
 	</div>
 	<div id="reviews" class="anchor">
 		% for listing in room.listings:
-			<div>
-				<h2>{{ listing.ballot_season.year }}</h2>
-				% for occupancy in listing.occupancies:
-					% if occupancy.resident:
-						<a itemprop="author" href="mailto:{{occupancy.resident.crsid}}">{{occupancy.resident.name}}</a>
-					% end
-					% for review in occupancy.reviews:
-						<div itemprop="review" itemscope itemtype="http://schema.org/Review">
-							<h2>Review
-								% if review.rating is not None:
-									<small itemprop="reviewRating" itemscope itemtype="http://schema.org/Rating">
-										<span itemprop="ratingValue">{{ review.rating }}</span><!--
-										-->/<span itemprop="bestRating">10</span>
-									</small>
-								% end
-							</h2>
-							% if review.sections:
-								<dl class="review dl-horizontal" itemprop="reviewBody">
-									%for item in review.sections:
-										<dt>{{ item.heading.name }}</dt>
-										<dd style="white-space: pre-wrap">{{! item.html_content }}</dd>
-									%end
-								</dl>
+			% for occupancy in listing.occupancies:
+				% for review in occupancy.reviews:
+					<div itemprop="review" itemscope itemtype="http://schema.org/Review">
+						<h2>{{ listing.ballot_season.year }}
+							% if review.rating is not None:
+								<small itemprop="reviewRating" itemscope itemtype="http://schema.org/Rating">
+									<span itemprop="ratingValue">{{ review.rating }}</span><!--
+									-->/<span itemprop="bestRating">10</span>
+								</small>
 							% end
-							<span class="text-muted">{{ review.published_at }}</span>
-						</div>
-					% end
+						</h2>
+						% if occupancy.resident:
+							<a itemprop="author" href="mailto:{{occupancy.resident.crsid}}">{{occupancy.resident.name}}</a>
+						% end
+						% if review.sections:
+							<div class="row" style="margin-top: -10px">
+								<div class="col-md-5">
+									% for section in review.sections:
+										% if section.heading.is_summary:
+											<h3>{{ section.heading.name }}</h3>
+											{{! section.html_content }}
+										% end
+									% end
+								</div>
+								<div class="col-md-7" style="margin-top: 20px">
+									<dl class="dl-horizontal">
+										% for section in review.sections:
+											% if not section.heading.is_summary:
+												<dt>{{ section.heading.name }}</dt>
+												<dd>{{! section.html_content }}</dd>
+											% end
+										% end
+									</dl>
+								</div>
+							</div>
+						% end
+						<div class="text-right"><small class="text-muted text-right">{{ review.published_at }}</small></div>
+					</div>
 				% end
-			</div>
+				% if not occupancy.reviews and occupancy.resident:
+					<div itemprop="review" itemscope itemtype="http://schema.org/Review">
+						<h2>{{ listing.ballot_season.year }}</h2>
+						<a itemprop="author" href="mailto:{{occupancy.resident.crsid}}">{{occupancy.resident.name}}</a>
+					</div>
+				% end
+			% end
 		%end
 		% if False and room['references']:
 			<h3 id="references">References</h3>
