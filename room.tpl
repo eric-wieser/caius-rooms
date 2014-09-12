@@ -158,11 +158,12 @@
 		% end
 	</div>
 	<div id="reviews" class="anchor">
+					V{{ version }}
 		% for listing in room.listings:
 			% for occupancy in listing.occupancies:
 				% for review in occupancy.reviews:
 					<hr />
-					% include review.tpl review=review
+					% include review.tpl review=review, version=version
 				% end
 				% if not occupancy.reviews and occupancy.resident:
 					<div itemprop="review" itemscope itemtype="http://schema.org/Review">

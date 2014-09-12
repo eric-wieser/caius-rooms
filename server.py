@@ -118,7 +118,7 @@ def show_random_room():
 def show_room(room_id, db):
 	try:
 		room = db.query(m.Room).filter(m.Room.id == room_id).one()
-		return template('room', room=room)
+		return template('room', room=room, version=request.query.v)
 	except NoResultFound:
 		raise HTTPError(404, "No matching room")
 
