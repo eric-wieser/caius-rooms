@@ -15,7 +15,7 @@ def get_name(crsid):
 		filterstr="uid={}".format(crsid),
 		attrlist=['displayName']
 	)
-	return d[0][1]['displayName']
+	return d[0][1]['displayName'][0].decode('utf-8')
 
 db.init('dev')
 
@@ -28,9 +28,13 @@ for user in old_session.query(olddb.orm.accom_guide_person):
 
 	if user.CRSID.lower() != user.CRSID:
 		continue
+	try:
+		name = get_name(user.CRSID.lower())
+	except:
+		name = user.Name
 
 	p = orm.Person(
-		name=user.Name,
+		name=name,
 		crsid=user.CRSID.lower()
 	)
 	new_session.add(p)
