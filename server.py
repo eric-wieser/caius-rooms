@@ -84,8 +84,8 @@ def static(path):
 	return static_file(path, root='static')
 
 @app.route(r'/')
-def show_rooms():
-	return template('index')
+def show_rooms(db):
+	return template('index', db=db)
 
 @app.route(r'/rooms')
 def show_rooms():
@@ -123,10 +123,17 @@ def show_room(room_id, db):
 		raise HTTPError(404, "No matching room")
 
 
+@app.route(r'/reviews', name="reviews")
+def show_latest_reviews(db):
+	occupancy = db.query(m.Occupancy).filter(m.Occupancy.resident_id == 'efw27').one()
+	return template('new-review', occupancy=occupancy)
+
+
 @app.route(r'/reviews/new', name="new-review")
 def show_place(db):
 	occupancy = db.query(m.Occupancy).filter(m.Occupancy.resident_id == 'efw27').one()
 	return template('new-review', occupancy=occupancy)
+
 
 
 @app.route(r'/places', name="place-list")
