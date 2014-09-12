@@ -1,4 +1,5 @@
 <div itemprop="review" itemscope itemtype="http://schema.org/Review">
+	<div style="position: relative; top: -50px" id="review-{{review.id}}"></div>
 	<div class="row">
 		<div class="col-md-2">
 			<h2>{{ review.occupancy.listing.ballot_season.year }}
@@ -44,7 +45,9 @@
 						% end
 					% end
 				</dl>
-				<div class="text-right"><small class="text-muted text-right">{{ review.published_at }}</small></div>
+				<div class="text-right">
+					<a href="#review-{{review.id}}"><small class="text-muted text-right">{{ review.published_at }}</small></a>
+				</div>
 			</div>
 		% end
 	</div>
