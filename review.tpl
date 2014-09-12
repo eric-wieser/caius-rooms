@@ -1,6 +1,21 @@
 <div itemprop="review" itemscope itemtype="http://schema.org/Review">
 	<div style="position: relative; top: -50px" id="review-{{review.id}}"></div>
 	<div class="row">
+		% for photo in review.occupancy.photos:
+			<div class="col-sm-2 col-xs-3">
+				<p>
+					<a href="http://gcsu.soc.srcf.net/roomCaius/photo.php?id={{ photo.id }}.jpg"
+					   title="{{ photo.caption }}&#10;{{ photo.published_at }}"
+					   target="_blank">
+						<img src="http://gcsu.soc.srcf.net/roomCaius/photo.php?id={{ photo.id }}.jpg"
+						     class="img-rounded img-responsive" />
+					</a>
+				</p>
+			</div>
+			% any_photos = True
+		% end
+	</div>
+	<div class="row">
 		<div class="col-md-2">
 			<h2>{{ review.occupancy.listing.ballot_season.year }}
 				% if review.rating is not None:
