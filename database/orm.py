@@ -378,10 +378,11 @@ class ReviewHeading(Base):
 	""" A heading within a review """
 	__tablename__ = prefix + 'review_headings'
 
-	id       = Column(Integer,     primary_key=True)
-	name     = Column(Unicode(255), nullable=False)
-	position = Column(Integer,     nullable=False)
-	prompt   = Column(UnicodeText)
+	id         = Column(Integer,      primary_key=True)
+	name       = Column(Unicode(255), nullable=False)
+	is_summary = Column(Boolean,      nullable=False, default=False)
+	position   = Column(Integer,      nullable=False)
+	prompt     = Column(UnicodeText)
 
 
 class ReviewSection(Base):

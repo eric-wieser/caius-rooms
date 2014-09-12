@@ -20,9 +20,9 @@ headings = [
 		prompt="How many people do you share with? How far is it from your room? Does it have a bath?"),
 	orm.ReviewHeading(name="Furniture",
 		prompt="What furniture comes with the room? What electrical lighting is provided?"),
-	orm.ReviewHeading(name="Best Features"),
-	orm.ReviewHeading(name="Worst Features"),
-	orm.ReviewHeading(name="General Comments",
+	orm.ReviewHeading(name="Best Features", is_summary=True),
+	orm.ReviewHeading(name="Worst Features", is_summary=True),
+	orm.ReviewHeading(name="General Comments", is_summary=True,
 		prompt="Number of sockets, if recently redecorated, special features, comments on location")
 ]
 
