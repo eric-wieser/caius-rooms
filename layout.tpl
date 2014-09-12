@@ -130,16 +130,16 @@
 							% if defined('room'):
 								<li style="display: none"><a href="#info"></a></li>
 								<li><a href="#photos">
-									<span class="glyphicon glyphicon-picture"></span> Photos
+									<span class="glyphicon glyphicon-picture"></span> <span class="hidden-sm">Photos</span>
 								</a></li>
 								<li><a href="#reviews">
-									<span class="glyphicon glyphicon-comment"></span> Reviews
+									<span class="glyphicon glyphicon-comment"></span> <span class="hidden-sm">Reviews</span>
 								</a></li>
 								<li><a href='#' id="favorite" title="Record as favorite on this PC">
-									<span class="glyphicon glyphicon-star"></span> Favorite
+									<span class="glyphicon glyphicon-star"></span> <span class="hidden-sm">Favorite</span>
 								</a></li>
 								<li><a href='/rooms/random'>
-									<span class="glyphicon glyphicon-random"></span> Random
+									<span class="glyphicon glyphicon-random"></span> <span class="hidden-sm">Random</span>
 								</a></li>
 								<script>
 								var thisRoom = {{! json.dumps(room.id) }};
