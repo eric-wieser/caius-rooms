@@ -72,12 +72,13 @@
 						% if section.heading.is_summary:
 							<h3 class="pull-left" style="margin-top: -3px; margin-left: -35px">
 								% if "Best" in section.heading.name:
-									<span class="text-success glyphicon glyphicon-thumbs-up"></span>
+									% icon = 'text-success glyphicon glyphicon-thumbs-up'
 								% elif "Worst" in section.heading.name:
-									<span class="text-danger glyphicon glyphicon-thumbs-down"></span>
+									% icon = 'text-danger glyphicon glyphicon-thumbs-down'
 								% else:
-									<span class="glyphicon glyphicon-info-sign"></span>
+									% icon = 'glyphicon glyphicon-info-sign'
 								% end
+								<span class="{{ icon }}" title="{{ section.heading.name }}"></span>
 								<span class="hidden">{{ section.heading.name }}</span>
 							</h3>
 							{{! section.html_content }}
@@ -96,7 +97,7 @@
 					% for section in review.sections:
 						% if not section.heading.is_summary:
 							<div class="pull-left" style="margin-left: -20px">
-								<span class="{{ icons.get(section.heading.name) or '' }}"></span>
+								<span class="{{ icons.get(section.heading.name) or '' }}" title="{{ section.heading.name }}"></span>
 								<span class="hidden">{{ section.heading.name }}</span>
 							</div>
 							{{! section.html_content }}
