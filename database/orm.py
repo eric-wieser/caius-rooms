@@ -401,7 +401,7 @@ class ReviewSection(Base):
 
 	@property
 	def html_content(self):
-		return ''.join('<p>' + line + '</p>' for line in self.content.split('\n\n'))
+		return ''.join('<p>' + line.replace('\n', '<br />') + '</p>' for line in self.content.split('\n\n'))
 
 
 #Read: https://research.microsoft.com/pubs/64525/tr-2006-45.pdf
