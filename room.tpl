@@ -158,7 +158,6 @@
 		% end
 	</div>
 	<div id="reviews" class="anchor">
-					V{{ version }}
 		% for listing in room.listings:
 			% for occupancy in listing.occupancies:
 				% for review in occupancy.reviews:
