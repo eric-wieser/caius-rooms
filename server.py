@@ -174,7 +174,14 @@ def show_place(place_id, db):
 
 @app.route(r'/users')
 def show_place(db):
-	return template('users', users=db.query(m.Person).order_by(m.Person.crsid))
+	from sqlalchemy.orm import joinedload, subqueryload
+
+	users = db.query(m.Person).options(
+		joinedload(m.Person.occupancies).load_only(),
+		joinedload(m.Person.occupancies).subqueryload(m.Occupancy.reviews).load_only(m.Review.id),
+		joinedload(m.Person.occupancies).subqueryload(m.Occupancy.photos).load_only(m.Photo.id)
+	).order_by(m.Person.crsid)
+	return template('users', users=users)
 
 
 
