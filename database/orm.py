@@ -88,7 +88,8 @@ class Cluster(Base):
 	@property
 	def path(self):
 		if self.parent is None:
-			return [self]
+			# don't list the root node
+			return []
 		else:
 			return self.parent.path + [self]
 

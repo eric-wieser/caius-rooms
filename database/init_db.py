@@ -31,7 +31,7 @@ for i, h in enumerate(headings):
 	session.add(h)
 	session.commit()
 
-groupings = [
+groupings = orm.Cluster(name="Root", children=[
 	orm.Cluster(name="Old courts", children=[
 		orm.Cluster(name="Caius Court",     type="building", latitude=52.2062, longitude=0.117019),
 		orm.Cluster(name="Tree Court",      type="building", latitude=52.2059, longitude=0.116987),
@@ -86,8 +86,8 @@ groupings = [
 
 	orm.Cluster(name="35-37 Chesterton Road", type="building", latitude=52.2129, longitude=0.119669),
 	orm.Cluster(name="43 Glisson Road",       type="building", latitude=52.198, longitude=0.1325)
-]
+])
 
-session.add_all(groupings)
+session.add(groupings)
 session.commit()
 

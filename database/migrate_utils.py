@@ -29,13 +29,15 @@ def get_location(new_session, loc_name):
 				.filter(clusteralias.name == place).one()
 		)
 	except NoResultFound:
+		root = new_session.query(orm.Cluster).filter(orm.Cluster.parent == None).one()
+
 		raise NewLocation("New location #{}, {}.format(number, place)", orm.Cluster(
 			name=number,
 			type="building",
 			parent=orm.Cluster(
 				name=place,
 				type="road",
-				parent=None
+				parent=root
 			)
 		))
 
