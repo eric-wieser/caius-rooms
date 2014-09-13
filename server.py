@@ -172,6 +172,12 @@ def show_place(place_id, db):
 		raise HTTPError(404, "No matching location")
 
 
+@app.route(r'/users')
+def show_place(db):
+	return template('users', users=db.query(m.Person).order_by(m.Person.crsid))
+
+
+
 def error_handler(res):
 	return template('error', e=res)
 
