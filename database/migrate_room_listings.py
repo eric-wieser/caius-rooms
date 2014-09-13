@@ -34,16 +34,16 @@ for old_room in old_session.query(olddb.orm.accom_guide_rooms):
 
 	if old_room.ballot_type == 1:
 		audiences = [
-			orm.RoomListingAudience(ballot_type=bt_ugrad),
-			orm.RoomListingAudience(ballot_type=bt_fourth)
+			bt_ugrad,
+			bt_fourth
 		]
 	elif rent:
 		audiences = [
-			orm.RoomListingAudience(ballot_type=bt_fourth)
+			bt_fourth
 		]
 	else:
 		audiences = [
-			orm.RoomListingAudience(ballot_type=bt_grad)
+			bt_grad
 		]
 
 	def parse_bool(x):
@@ -58,7 +58,7 @@ for old_room in old_session.query(olddb.orm.accom_guide_rooms):
 	listing = orm.RoomListing(
 		room=new_room,
 		ballot_season=this_season,
-		audiences=audiences,
+		audience_types=audiences,
 
 		rent=rent,
 
