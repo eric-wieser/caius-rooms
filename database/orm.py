@@ -378,6 +378,10 @@ class Photo(Base):
 	# TODO: store image somewhere
 	occupancy_id = Column(Integer, ForeignKey(Occupancy.id), nullable=False, index=True)
 
+	@property
+	def href(self):
+		return 'http://gcsu.soc.srcf.net/roomCaius/photo.php?id={}.jpg'.format(self.id)
+
 
 # Now add a bunch of convenience columns to room objects
 Room.adjusted_rating = column_property(

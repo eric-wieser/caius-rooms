@@ -145,7 +145,7 @@
 			% for occupancy in listing.occupancies:
 				% for photo in occupancy.photos:
 					<p>
-						<img src="http://gcsu.soc.srcf.net/roomCaius/photo.php?id={{ photo.id }}.jpg" class="img-rounded img-responsive" />
+						<img src="{{photo.href}}" class="img-rounded img-responsive" />
 						{{ photo.caption }}
 						<span class="text-muted">{{ photo.published_at }}</span>
 					</p>
