@@ -31,7 +31,7 @@ Relationships:
 """
 import datetime
 
-from sqlalchemy import Column, ForeignKey, UniqueConstraint
+from sqlalchemy import Table, Column, ForeignKey, UniqueConstraint
 from sqlalchemy import (
 	Boolean,
 	Date,
@@ -279,6 +279,7 @@ class BallotEvent(Base):
 		return "<BallotEvent(year={}, type={}, ...)>".format(self.season.year, self.type.name)
 
 
+
 class RoomListing(Base):
 	""" A listing of a room within a ballot, with time-variant properties """
 	__tablename__ = prefix + 'room_listings'
@@ -294,23 +295,18 @@ class RoomListing(Base):
 	has_uniofcam  = Column(Boolean)
 	has_ethernet  = Column(Boolean)
 
-	room          = relationship(lambda: Room, backref=backref("listings", lazy='subquery', order_by=ballot_season_id.desc()))
-	ballot_season = relationship(lambda: BallotSeason, backref="room_listings")
+	room           = relationship(lambda: Room, backref=backref("listings", lazy='subquery', order_by=ballot_season_id.desc()))
+	ballot_season  = relationship(lambda: BallotSeason, backref="room_listings")
+	audience_types = relationship(lambda: BallotType, secondary=lambda: room_listing_audiences_assoc, backref="all_time_listings")
 
 	__table_args__ = (UniqueConstraint(ballot_season_id, room_id, name='_ballot_room_uc'),)
 
-class RoomListingAudience(Base):
-	__tablename__ = prefix + 'room_listing_audiences'
-
-	id              = Column(Integer, primary_key=True)
-	room_listing_id = Column(Integer, ForeignKey(RoomListing.id))
-	ballot_type_id  = Column(Integer, ForeignKey(BallotType.id))
-
-	room_listing = relationship(lambda: RoomListing, backref="audiences")
-	ballot_type  = relationship(lambda: BallotType, backref="all_room_listings")
-
-	__table_args__ = (UniqueConstraint(room_listing_id, ballot_type_id, name='_listing_type_uc'),)
-
+room_listing_audiences_assoc = Table(prefix + 'room_listing_audiences',	Base.metadata,
+	Column('id',              Integer, primary_key=True),
+	Column('room_listing_id', Integer, ForeignKey(RoomListing.id)),
+	Column('ballot_type_id',  Integer, ForeignKey(BallotType.id)),
+	UniqueConstraint('room_listing_id', 'ballot_type_id', name='_listing_type_uc')
+)
 
 class Occupancy(Base):
 	__tablename__ = prefix + 'occupancies'
