@@ -65,6 +65,16 @@ class Person(Base):
 	crsid   = Column(CRSID,  primary_key=True)
 	name    = Column(Unicode(255))
 
+	@property
+	def email(self):
+		return '{}@cam.ac.uk'.format(self.crsid.lower())
+
+	@property
+	def gravatar(self):
+		from md5 import md5
+		return 'http://www.gravatar.com/avatar/{}'.format(md5(self.email).digest())
+
+
 class Cluster(Base):
 	""" (nestable) Groups of nearby physical rooms """
 	__tablename__ = prefix + 'clusters'

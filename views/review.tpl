@@ -26,7 +26,7 @@
 				% end
 			</h2>
 			% if review.occupancy.resident:
-				<a itemprop="author" href="mailto:{{review.occupancy.resident.crsid}}@cam.ac.uk">
+				<a itemprop="author" href="mailto:{{review.occupancy.resident.email}}">
 					{{review.occupancy.resident.name}}
 				</a>
 			% end

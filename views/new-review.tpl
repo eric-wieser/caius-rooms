@@ -13,7 +13,7 @@
 							-->/<span itemprop="bestRating">10</span>
 						</small>
 					</h2>
-					<a itemprop="author" href="mailto:{{occupancy.resident.crsid}}@cam.ac.uk">
+					<a itemprop="author" href="mailto:{{occupancy.resident.email}}">
 						{{occupancy.resident.name}}
 					</a>
 				</div>
