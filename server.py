@@ -106,17 +106,19 @@ def show_rooms(db):
 	return template('rooms', rooms=db.query(m.Room).all(), filters=filters)
 
 @app.route(r'/rooms/random')
-def show_random_room():
-	redirect('/rooms/{}'.format(random.choice(rooms)['id']))
+def show_random_room(db):
+	rooms = db.query(m.Room)
+	redirect('/rooms/{}'.format(rooms[random.randrange(rooms.count())].id))
 
 @app.route(r'/places/random')
-def show_random_room():
-	redirect(app.get_url('place', place=random.choice(places)))
+def show_random_room(db):
+	locations = db.query(m.Cluster).filter_by(type='building')
+	redirect('/places/{}'.format(locations[random.randrange(locations.count())].id))
 
 @app.route(r'/places/random/photos')
-def show_random_room():
-	redirect(app.get_url('place-photos', place=random.choice(places)))
-
+def show_random_room(db):
+	locations = db.query(m.Cluster).filter_by(type='building')
+	redirect('/places/{}/photos'.format(locations[random.randrange(locations.count())].id))
 
 @app.route(r'/rooms/<room_id>')
 def show_room(room_id, db):
