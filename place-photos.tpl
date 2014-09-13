@@ -17,8 +17,8 @@
 % end
 
 <div class="container">
-	% filtered_rooms = [r for r in rooms if r['place'] == place]
-	% filtered_rooms.sort(key=lambda r: natural_keys(r['number']))
+	% filtered_rooms  = place.all_rooms_q.all()
+	% filtered_rooms.sort(key=lambda r: map(lambda l: l.name, r.parent.path + [r]))
 
 	% def grouper(n, iterable, fillvalue=None):
     	% "grouper(3, 'ABCDEFG', 'x') --> ABC DEF Gxx"
@@ -34,8 +34,12 @@
 
 	% def all_photos():
 		% for room in filtered_rooms:
-			% for photo in room['images']:
-				% yield room, photo
+			% for listing in room.listings:
+				% for occupancy in listing.occupancies:
+					% for photo in occupancy.photos:
+						% yield room, photo
+					% end
+				% end
 			% end
 		% end
 	% end
@@ -43,7 +47,7 @@
 	<div class="row">
 		% for room, photo in all_photos():
 			<div class="col-md-3 col-sm-4 col-xs-6">
-				<a href="/rooms/{{room['id']}}" title="{{photo['caption']}}" class="thumbnail cropped-photo" style="display: block; height: 200px; background-image: url({{ photo['href'] }}); margin: 15px 0px; position: relative; overflow: hidden" target="_blank"><span class="label label-default" style="display: block; position: absolute; top: 0; left: 0;">{{room['number']}}</span></a>
+				<a href="/rooms/{{room.id}}" title="{{ photo.caption }}" class="thumbnail cropped-photo" style="display: block; height: 200px; background-image: url({{ photo.href }}); margin: 15px 0px; position: relative; overflow: hidden" target="_blank"><span class="label label-default" style="display: block; position: absolute; top: 0; left: 0;">{{room.pretty_name(place)}}</span></a>
 			</div>
 		% end
 	</div>

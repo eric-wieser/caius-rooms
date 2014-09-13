@@ -29,12 +29,16 @@
 						<a style="margin-left: {{ 2 * level }}em; "
 						   href="/locations/{{ sub_loc.id }}">{{ sub_loc.pretty_name(sub_loc.parent) }}</a>
 					</td>
-					% if False:
-						% n = sum(room['owner'] is None for room in place['rooms'])
-						<td data-value="{{n}}">
-							{{ n }} / {{ len(place['rooms']) }}
-						</td>
-						% ratings = [r['mean_score'] for r in place['rooms'] if r['mean_score'] is not None]
+					% if sub_loc.rooms:
+						% if False:
+							% n = sum(room['owner'] is None for room in place['rooms'])
+							<td data-value="{{n}}">
+								{{ n }} / {{ len(place['rooms']) }}
+							</td>
+						% else:
+						<td></td>
+						% end
+						% ratings = [r.adjusted_rating for r in sub_loc.rooms if r.adjusted_rating is not None]
 						<td>
 							% if ratings:
 								{{ '{:.1f}'.format(sum(ratings) / len(ratings)) }}

@@ -139,16 +139,10 @@ def show_place(db):
 	return template('new-review', occupancy=occupancy)
 
 
-
-@app.route(r'/places', name="place-list")
-def show_place():
-	apply_reserved_rooms()
-	return template('places', places=places)
-
-@app.route(r'/locations', name="location-list")
+@app.route(r'/places', name="location-list")
 def show_place(db):
-	root = db.query(m.Cluster).filter(m.Cluster.parent == None).one()
-	return template('locations', location=root)
+	roots = db.query(m.Cluster).filter(m.Cluster.parent == None).all()
+	return template('locations', location=m.Cluster(children=roots, name="_"))
 
 @app.route(r'/locations/<loc_id>', name="location-list")
 def show_place(loc_id, db):
@@ -167,9 +161,13 @@ def show_place(place_id, db):
 	except NoResultFound:
 		raise HTTPError(404, "No matching location")
 
-@app.route(r'/places/<place:place>/photos', name="place-photos")
-def show_place_photos(place):
-	return template('place-photos', place=place, rooms=rooms, filters=[])
+@app.route(r'/places/<place_id>/photos', name="place-photos")
+def show_place(place_id, db):
+	try:
+		location = db.query(m.Cluster).filter(m.Cluster.id == place_id).one()
+		return template('place-photos', place=location, filters=[])
+	except NoResultFound:
+		raise HTTPError(404, "No matching location")
 
 
 def error_handler(res):

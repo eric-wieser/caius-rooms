@@ -7,7 +7,7 @@
 		% filtered_rooms = [room for room in filtered_rooms if filter(room)]
 	% end
 
-	% filtered_rooms.sort(key=lambda r: (r.adjusted_rating, r.all_photos_q.count(), -r.id), reverse=True)
+	% filtered_rooms.sort(key=lambda r: (r.adjusted_rating, r.photo_count, -r.id), reverse=True)
 	<p class="lead">
 		{{len(filtered_rooms)}} rooms
 	</p>
