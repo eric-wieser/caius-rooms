@@ -143,8 +143,8 @@ def show_place(db):
 
 @app.route(r'/places', name="location-list")
 def show_place(db):
-	roots = db.query(m.Cluster).filter(m.Cluster.parent == None).all()
-	return template('locations', location=m.Cluster(children=roots, name="_"))
+	root = db.query(m.Cluster).filter(m.Cluster.parent == None).one()
+	return template('locations', location=root)
 
 @app.route(r'/locations/<loc_id>', name="location-list")
 def show_place(loc_id, db):
