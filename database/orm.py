@@ -69,10 +69,12 @@ class Person(Base):
 	def email(self):
 		return '{}@cam.ac.uk'.format(self.crsid.lower())
 
-	@property
-	def gravatar(self):
+	def gravatar(self, size=None):
 		from md5 import md5
-		return 'http://www.gravatar.com/avatar/{}'.format(md5(self.email).digest())
+		return 'http://www.gravatar.com/avatar/{}?d=identicon{}'.format(
+			md5(self.email).hexdigest(),
+			'&s={}'.format(size) if size else ''
+		)
 
 
 class Cluster(Base):
