@@ -12,7 +12,7 @@ Relationships:
 
   BallotEvent >- BallotType
 
-  RoomListing -< RoomListingAudience
+  RoomListing -< BallotType
 
   RoomListing -< Occupancy...
 
