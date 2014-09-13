@@ -78,8 +78,8 @@
 					% end
 				</td>
 				<td class="shrink center">
-					% n = room.all_reviews_q.count()
-					% if n != 0:
+					% n = room.review_count
+					% if n:
 						% m = '1 review' if n == 1 else '{} reviews'.format(n)
 						<a href="/rooms/{{room.id}}#reviews" style="color: inherit; text-decoration: none">
 							<span class="hidden-xs" style="display: inline-block; width: 2ex; text-align: right">{{ n if n != 1 else '' }}</span>
@@ -88,8 +88,8 @@
 					% end
 				</td>
 				<td class="shrink center">
-					% if False and room.reviews:
-						% n = sum('resident' in r for r in room.reviews)
+					% n = room.resident_count
+					% if n:
 						% m = '1 recorded resident' if n == 1 else '{} recorded residents'.format(n)
 						% if n != 0:
 							<span class="hidden-xs" style="display: inline-block; width: 2ex; text-align: right">{{ n if n != 1 else '' }}</span>
@@ -98,7 +98,7 @@
 					% end
 				</td>
 				<td class="shrink center rule-right">
-					% n = room.all_photos_q.count()
+					% n = room.photo_count
 					% if n:
 						% m = '1 photo' if n == 1 else '{} photos'.format(n)
 						<a href="/rooms/{{room.id}}#photos" style="color: inherit; text-decoration: none">

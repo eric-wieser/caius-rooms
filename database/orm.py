@@ -46,7 +46,7 @@ from sqlalchemy import (
 	UnicodeText,
 )
 from sqlalchemy import func
-from sqlalchemy.orm import relationship, backref, column_property, aliased
+from sqlalchemy.orm import relationship, backref, column_property, aliased, join
 from sqlalchemy.orm.session import object_session
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.hybrid import hybrid_property
@@ -193,7 +193,7 @@ class Room(Base):
 	living_room_y = Column(Integer)
 	living_room_view = Column(RoomView)
 
-	parent   = relationship(lambda: Cluster,     backref="rooms")
+	parent   = relationship(lambda: Cluster, backref="rooms", lazy='joined')
 
 	@property
 	def geocoords(self):
@@ -202,41 +202,6 @@ class Room(Base):
 			if parent.latitude and parent.longitude:
 				return parent.latitude, parent.longitude
 			parent = parent.parent
-
-	@property
-	def all_photos_q(self):
-		return (object_session(self)
-			.query(Photo)
-			.join(Occupancy)
-			.join(RoomListing)
-			.filter(RoomListing.room == self)
-		)
-
-	@property
-	def all_reviews_q(self):
-		return (object_session(self)
-			.query(Review)
-			.join(Occupancy)
-			.join(RoomListing)
-			.filter(RoomListing.room == self)
-		)
-
-	@property
-	def adjusted_rating(self):
-		q = (object_session(self)
-			.query(
-				func.sum(Review.rating),
-				func.count(Review.rating)
-			)
-			.filter(Review.rating != None)
-			.join(Occupancy)
-			.join(RoomListing)
-			.filter(RoomListing.room_id == self.id)
-		)
-		sum_ratings, num_ratings = q.one()
-
-		return (3.0 + sum_ratings) / (1 + num_ratings) if num_ratings else None
-
 
 	def pretty_name(self, relative_to=None):
 		"""
@@ -319,8 +284,8 @@ class RoomListing(Base):
 	__tablename__ = prefix + 'room_listings'
 
 	id               = Column(Integer, primary_key=True)
-	ballot_season_id = Column(Integer, ForeignKey(BallotSeason.year))
-	room_id          = Column(Integer, ForeignKey(Room.id))
+	ballot_season_id = Column(Integer, ForeignKey(BallotSeason.year), index=True)
+	room_id          = Column(Integer, ForeignKey(Room.id), index=True)
 
 	rent          = Column(Numeric(6, 2))
 	has_piano     = Column(Boolean)
@@ -329,7 +294,7 @@ class RoomListing(Base):
 	has_uniofcam  = Column(Boolean)
 	has_ethernet  = Column(Boolean)
 
-	room          = relationship(lambda: Room, backref=backref("listings", order_by=ballot_season_id.desc()))
+	room          = relationship(lambda: Room, backref=backref("listings", lazy='subquery', order_by=ballot_season_id.desc()))
 	ballot_season = relationship(lambda: BallotSeason, backref="room_listings")
 
 	__table_args__ = (UniqueConstraint(ballot_season_id, room_id, name='_ballot_room_uc'),)
@@ -352,11 +317,11 @@ class Occupancy(Base):
 
 	id          = Column(Integer,                             primary_key=True)
 	resident_id = Column(CRSID,   ForeignKey(Person.crsid))
-	listing_id  = Column(Integer, ForeignKey(RoomListing.id), nullable=False)
+	listing_id  = Column(Integer, ForeignKey(RoomListing.id), nullable=False, index=True)
 	chosen_at   = Column(DateTime)
 
-	listing     = relationship(lambda: RoomListing, backref="occupancies")
-	resident    = relationship(lambda: Person, backref="occupancies")
+	listing     = relationship(lambda: RoomListing, backref=backref("occupancies", lazy='subquery'))
+	resident    = relationship(lambda: Person, backref="occupancies", lazy='joined')
 	reviews     = relationship(lambda: Review, backref="occupancy", order_by=lambda: Review.published_at.desc())
 	photos      = relationship(lambda: Photo,  backref="occupancy", order_by=lambda: Photo.published_at.desc())
 
@@ -369,7 +334,7 @@ class Review(Base):
 	id           = Column(Integer,  primary_key=True)
 	published_at = Column(DateTime, nullable=False)
 	rating       = Column(SmallInteger)
-	occupancy_id = Column(Integer, ForeignKey(Occupancy.id), nullable=False)
+	occupancy_id = Column(Integer, ForeignKey(Occupancy.id), nullable=False, index=True)
 
 	sections     = relationship(lambda: ReviewSection, backref='review', order_by=lambda: ReviewSection._order)
 
@@ -415,4 +380,37 @@ class Photo(Base):
 	height       = Column(Integer,    nullable=False)
 	mime_type    = Column(String(32), nullable=False)
 	# TODO: store image somewhere
-	occupancy_id = Column(Integer, ForeignKey(Occupancy.id), nullable=False)
+	occupancy_id = Column(Integer, ForeignKey(Occupancy.id), nullable=False, index=True)
+
+
+# Now add a bunch of convenience columns to room objects
+Room.adjusted_rating = column_property(
+	select([
+		(3.0 + func.sum(Review.rating)) / (1 + func.count(Review.rating))
+	])
+	.select_from(
+		join(Review, Occupancy).join(RoomListing)
+	)
+	.where(Room.id == RoomListing.room_id)
+)
+Room.review_count = column_property(
+	select([func.count(Review.id)])
+	.select_from(
+		join(Review, Occupancy).join(RoomListing)
+	)
+	.where(Room.id == RoomListing.room_id)
+)
+Room.photo_count = column_property(
+	select([func.count(Photo.id)])
+	.select_from(
+		join(Photo, Occupancy).join(RoomListing)
+	)
+	.where(Room.id == RoomListing.room_id)
+)
+Room.resident_count = column_property(
+	select([func.count(func.distinct(Occupancy.resident_id))])
+	.select_from(
+		join(Occupancy, RoomListing)
+	)
+	.where(Room.id == RoomListing.room_id)
+)

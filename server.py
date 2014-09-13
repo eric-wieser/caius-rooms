@@ -42,6 +42,12 @@ app.install(SQLAlchemyPlugin(
 	keyword='db'
 ))
 
+import logging
+
+l = logging.getLogger('sqlalchemy.engine')
+l.setLevel(logging.INFO)
+l.addHandler(logging.FileHandler('sql.log'))
+
 def slug(s):
 	return s.lower().replace(' ', '-').replace("'", '')
 
@@ -88,10 +94,8 @@ def show_rooms(db):
 	return template('index', db=db)
 
 @app.route(r'/rooms')
-def show_rooms():
+def show_rooms(db):
 	filters = []
-	if not request.query.unlisted:
-		filters.append(filter_graduate())
 	if request.query.vacant:
 		filters.append(filter_vacant())
 	if request.query.place:
@@ -99,7 +103,7 @@ def show_rooms():
 	if request.query.group:
 		filters.append(filter_group(request.query.group))
 
-	return template('rooms', rooms=rooms, filters=filters)
+	return template('rooms', rooms=db.query(m.Room).all(), filters=filters)
 
 @app.route(r'/rooms/random')
 def show_random_room():
