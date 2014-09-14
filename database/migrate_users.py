@@ -9,13 +9,29 @@ ldap.set_option(ldap.OPT_X_TLS_REQUIRE_CERT,ldap.OPT_X_TLS_NEVER)
 cam_ldap = ldap.initialize('ldaps://ldap.lookup.cam.ac.uk')
 
 def get_name(crsid):
-	d = cam_ldap.search_s(
+	""" Retrieve the ldap display name, if possible """
+	results = cam_ldap.search_s(
 		base="ou=people,o=University of Cambridge,dc=cam,dc=ac,dc=uk",
 		scope=ldap.SCOPE_SUBTREE,
 		filterstr="uid={}".format(crsid),
 		attrlist=['displayName']
 	)
-	return d[0][1]['displayName'][0].decode('utf-8')
+
+	if not results:
+		get_name.unlisted.add(crsid)
+		return
+
+	_, attrs = results[0]
+	displayNames = attrs.get('displayName')
+	if not displayNames:
+		get_name.no_name.add(crsid)
+		return
+
+	return displayNames[0].decode('utf-8')
+
+get_name.unlisted = set()
+get_name.no_name = set()
+
 
 db.init('dev')
 
@@ -26,17 +42,18 @@ for user in old_session.query(olddb.orm.accom_guide_person):
 	if any(x in user.CRSID for x in (u'-', u'MUSIC', u'RESERVED')):
 		continue
 
-	if user.CRSID.lower() != user.CRSID:
+	crsid = user.CRSID.lower()
+
+	if crsid != user.CRSID:
 		continue
-	try:
-		name = get_name(user.CRSID.lower())
-	except:
-		name = user.Name
 
 	p = orm.Person(
-		name=name,
-		crsid=user.CRSID.lower()
+		name=get_name(crsid) or user.Name,
+		crsid=crsid
 	)
 	new_session.add(p)
 
 new_session.commit()
+
+print "No displayName in LDAP - {}: {}".format(len(get_name.no_name),  ', '.join(sorted(get_name.no_name)))
+print "Not listed in LDAP - {}: {}"    .format(len(get_name.unlisted), ', '.join(sorted(get_name.unlisted)))
