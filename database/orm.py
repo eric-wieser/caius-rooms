@@ -70,7 +70,7 @@ class Person(Base):
 		return '{}@cam.ac.uk'.format(self.crsid.lower())
 
 	def gravatar(self, size=None):
-		from md5 import md5
+		from hashlib import md5
 		return 'http://www.gravatar.com/avatar/{}?d=identicon{}'.format(
 			md5(self.email).hexdigest(),
 			'&s={}'.format(size) if size else ''
