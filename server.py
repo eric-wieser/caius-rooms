@@ -5,33 +5,7 @@ from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 from bottle import *
 from bottle.ext.sqlalchemy import SQLAlchemyPlugin
 
-from data import rooms, places, rooms_by_id, apply_reserved_rooms
 import database.orm as m
-
-
-def filter_graduate():
-	def filt(r):
-		return not r['place'].get('unlisted')
-	filt.description = "Not showing graduate rooms"
-	return filt
-
-def filter_vacant():
-	def filt(r):
-		return r['owner'] is None
-	filt.description = "Not showing reserved rooms"
-	return filt
-
-def filter_place(p):
-	def filt(r):
-		return r['place']['name'] == p
-	filt.description = "Only rooms in {}".format(p)
-	return filt
-
-def filter_group(g):
-	def filt(r):
-		return r['place']['group'] == g
-	filt.description = "Only buildings on {}".format(g)
-	return filt
 
 app = Bottle()
 SimpleTemplate.defaults["get_url"] = app.get_url
@@ -47,43 +21,6 @@ import logging
 l = logging.getLogger('sqlalchemy.engine')
 l.setLevel(logging.INFO)
 l.addHandler(logging.FileHandler('sql.log'))
-
-def slug(s):
-	return s.lower().replace(' ', '-').replace("'", '')
-
-
-def place_route_filter(config):
-	''' Matches a place name'''
-	regexp = r'[a-z0-9-]+'
-
-	def to_python(match):
-		for place in places:
-			if to_url(place) == match:
-				return place
-
-		raise HTTPError(404, "No matching place")
-
-	def to_url(place):
-		return slug(place.name)
-
-	return regexp, to_python, to_url
-
-def room_route_filter(config):
-	''' Matches a room id'''
-	regexp = r'[0-9]+'
-
-	def to_python(match):
-		if match in rooms_by_id:
-			return rooms_by_id[match]
-		raise HTTPError(404, "No matching room")
-
-	def to_url(room):
-		return room['id']
-
-	return regexp, to_python, to_url
-
-app.router.add_filter('room', room_route_filter)
-app.router.add_filter('place', place_route_filter)
 
 @app.route('/static/<path:path>', name='static')
 def static(path):
