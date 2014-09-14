@@ -185,6 +185,30 @@ def show_place(db):
 
 
 
+@app.route(r'/ballots')
+def show_place(db):
+	from sqlalchemy.orm import joinedload, subqueryload
+
+	ballots = db.query(m.BallotSeason).options(
+		joinedload(m.BallotSeason.events),
+		joinedload(m.BallotSeason.room_listings).subqueryload(m.RoomListing.audience_types),
+	).order_by(m.BallotSeason.year.desc())
+	return template('ballots', ballots=ballots)
+
+
+@app.route(r'/ballots/<ballot_id>/edit')
+def show_place(ballot_id, db):
+	from sqlalchemy.orm import joinedload, subqueryload
+
+	ballot = db.query(m.BallotSeason).options(
+		joinedload(m.BallotSeason.events),
+		joinedload(m.BallotSeason.room_listings).subqueryload(m.RoomListing.audience_types),
+	).filter(m.BallotSeason.year == ballot_id).one()
+	return template('ballot', ballot_season=ballot, db=db)
+
+
+
+
 def error_handler(res):
 	return template('error', e=res)
 
