@@ -31,19 +31,18 @@ for old_room in old_session.query(olddb.orm.accom_guide_rooms):
 	new_room = new_session.query(orm.Room).filter(orm.Room.id == old_room.id).one()
 
 	rent = old_room.rent or None
-
-	if old_room.ballot_type == 1:
+	if not rent:
+		audiences = [
+			bt_grad
+		]
+	elif old_room.ballot_type == 1:
 		audiences = [
 			bt_ugrad,
 			bt_fourth
 		]
-	elif rent:
-		audiences = [
-			bt_fourth
-		]
 	else:
 		audiences = [
-			bt_grad
+			bt_fourth
 		]
 
 	def parse_bool(x):
