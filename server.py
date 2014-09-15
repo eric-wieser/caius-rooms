@@ -44,7 +44,18 @@ l.setLevel(logging.INFO)
 l.addHandler(logging.FileHandler('sql.log'))
 
 
+def get_authed_user(callback):
+	def wrapper(db, *args, **kwargs):
+		if 'user' in request.session:
+			request.user = db.query(m.Person).filter_by(crsid=request.session['user']).one()
+		return callback(*args, db=db, **kwargs)
+	return wrapper
 
+@app.hook('before_request')
+def no_authed_user():
+	request.user = None
+
+app.install(get_authed_user)
 
 # declare basic routes - index, static files, and error page
 @app.route('/static/<path:path>', name='static')
@@ -62,6 +73,19 @@ app.default_error_handler = error_handler
 
 
 # declare all our application specific routes
+
+@app.route('/login')
+def show_index(db):
+	request.session['user'] = 'efw27'
+	print request.session['user']
+	redirect(request.query.return_to or '/')
+
+@app.route('/logout')
+def show_index(db):
+	del request.session['user']
+	request.session.save()
+	redirect(request.query.return_to)
+
 
 with base_route(app, '/rooms'):
 	@app.route('')
@@ -177,14 +201,14 @@ with base_route(app, '/ballots'):
 
 # and now, setup the session middleware
 
-@hook('before_request')
+@app.hook('before_request')
 def setup_request():
-    request.session = request.environ['beaker.session']
+	request.session = request.environ['beaker.session']
 
 app = SessionMiddleware(app, {
 	'session.type': 'file',
 	'session.data_dir': './session/',
-	'session.auto': True,
+	'session.auto': True
 })
 
 

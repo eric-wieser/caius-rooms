@@ -1,4 +1,6 @@
 % import json
+% from bottle import request
+% import urllib
 
 % if defined('title'):
 	% if isinstance(title, str):
@@ -27,9 +29,9 @@
 <!doctype html>
 <html>
 	<head>
-	    <meta charset="utf-8">
-	    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-	    <meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<link rel="icon" type="image/png" href="http://cdn.dustball.com/house.png">
 		<link href="//netdna.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
 
@@ -68,8 +70,8 @@
 
 			.cropped-photo {
 				background-size: cover;
-   				background-repeat: no-repeat;
-   				background-position: 50% 50%;
+				background-repeat: no-repeat;
+				background-position: 50% 50%;
 			}
 
 			.anchor:before {
@@ -168,6 +170,26 @@
 								<li><a href='{{random}}'>
 									<span class="glyphicon glyphicon-random"></span> Random
 								</a></li>
+							% end
+
+							% if request.user:
+								<li class="dropdown">
+									<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+										<img style="display: inline-block; margin: -5px 5px -5px 0" src="{{ request.user.gravatar(size=30) }}" />{{request.user.name}} <span class="caret"></span>
+									</a>
+									<ul class="dropdown-menu" role="menu">
+										<li><a href="#">Upload photo</a></li>
+										<li><a href="/reviews/new">Write review</a></li>
+										<li class="divider"></li>
+										<li><a href="/logout?return_to={{ request.url }}">Logout</a></li>
+									</ul>
+								</li>
+							% else:
+								<li>
+									<a href="/login?return_to={{ urllib.quote_plus(request.url) }}">
+										Login
+									</a>
+								</li>
 							% end
 						</ul>
 					</div>
