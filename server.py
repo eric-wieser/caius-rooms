@@ -40,13 +40,11 @@ app.install(SQLAlchemyPlugin(
 	metadata=m.Base.metadata,
 	keyword='db'
 ))
-# and enable the logging so we can spot over-sqling
-l = logging.getLogger('sqlalchemy.engine')
-l.setLevel(logging.INFO)
-l.addHandler(logging.FileHandler('sql.log'))
 
 
+@app.install
 def get_authed_user(callback):
+	""" A plugin to put the loggedin-user db object at `request.user` """
 	def wrapper(*args, **kwargs):
 		db = kwargs.get('db')
 		if db and 'user' in request.session:
@@ -62,7 +60,35 @@ def get_authed_user(callback):
 	return wrapper
 
 
-app.install(get_authed_user)
+sqlalchemy_log = logging.getLogger('sqlalchemy.engine')
+sqlalchemy_log.setLevel(logging.INFO)
+
+@app.install
+def log_sql(callback):
+	""" A plugin to log all sql statements executed by a route to a file of a matching name` """
+	def wrapper(*args, **kwargs):
+		import os
+
+		fname = 'logs/{}.log'.format(request.path
+			.replace('/', '.')
+			.replace('<', '')
+			.replace('>', '')
+			.lstrip('.')
+		)
+		try:
+			os.remove(fname)
+		except:
+			pass
+
+		handler = logging.FileHandler(fname)
+		sqlalchemy_log.addHandler(handler)
+		try:
+			return callback(*args, **kwargs)
+		finally:
+			sqlalchemy_log.removeHandler(handler)
+
+	return wrapper
+
 
 # declare basic routes - index, static files, and error page
 @app.route('/static/<path:path>', name='static', skip=[get_authed_user])
