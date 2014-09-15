@@ -58,7 +58,7 @@ def no_authed_user():
 app.install(get_authed_user)
 
 # declare basic routes - index, static files, and error page
-@app.route('/static/<path:path>', name='static')
+@app.route('/static/<path:path>', name='static', skip=[get_authed_user])
 def static(path):
 	return static_file(path, root='static')
 
