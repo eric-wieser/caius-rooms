@@ -2,6 +2,7 @@
 import random
 import logging
 import contextlib
+from datetime import datetime
 
 # pip includes
 import sqlalchemy
@@ -10,6 +11,7 @@ import bottle
 from bottle import *
 from bottle.ext.sqlalchemy import SQLAlchemyPlugin
 from beaker.middleware import SessionMiddleware
+import raven
 
 # our includes
 import database.orm as m
@@ -76,8 +78,41 @@ app.default_error_handler = error_handler
 
 @app.route('/login')
 def do_login(db):
-	request.session['user'] = 'efw27'
-	redirect(request.query.return_to or '/')
+
+	if 'authenticating' not in request.session:
+		request.session['authenticating'] = True
+
+		r = raven.Request(url=request.url, desc="RoomPicks")
+		redirect(str(r))
+	else:
+		del request.session['authenticating']
+
+		r = raven.Response(request.query["WLS-Response"])
+
+		base_url = request.url[:request.url.rfind("WLS-Response")-1]
+
+		if r.url != base_url:
+			print r.url, base_url
+			print("Bad url")
+			abort(400)
+
+		issue_delta = (datetime.utcnow() - r.issue).total_seconds()
+		if not -15 < issue_delta < 75:
+			print("Bad issue", issue_delta)
+			abort(403)
+
+		if r.success:
+			# a no-op here, but important if you set iact or aauth
+			if not r.check_iact_aauth(None, None):
+				print("check_iact_aauth failed")
+				abort(403)
+
+			request.session["user"] = r.principal
+			print("Successfully logged in as {0}".format(r.principal))
+			return redirect(request.query.return_to)
+		else:
+			print("Raven authentication failed")
+			return redirect(request.query.return_to)
 
 @app.route('/logout')
 def do_logout(db):
