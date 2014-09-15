@@ -1,4 +1,42 @@
-% rebase layout room=room
+% rebase layout
+
+% def layout_breadcrumb():
+	% for part in room.parent.path:
+		% yield ("/places/{}".format(part.id), part.pretty_name(part.parent))
+	% end
+	% yield ('#', room.pretty_name(room.parent))
+% end
+
+% def layout_extra_nav()
+	<li style="display: none"><a href="#info"></a></li>
+	<li><a href="#photos">
+		<span class="glyphicon glyphicon-picture"></span> <span class="hidden-sm">Photos</span>
+	</a></li>
+	<li><a href="#reviews">
+		<span class="glyphicon glyphicon-comment"></span> <span class="hidden-sm">Reviews</span>
+	</a></li>
+	<li><a href='#' id="favorite" title="Record as favorite on this PC">
+		<span class="glyphicon glyphicon-star"></span> <span class="hidden-sm">Favorite</span>
+	</a></li>
+	<script>
+	var thisRoom = {{! json.dumps(room.id) }};
+	if(localStorage['favorited-' + thisRoom])
+		$('#favorite').parent().addClass('alert-success');
+
+	$('#favorite').click(function() {
+		if(localStorage['favorited-' + thisRoom]) {
+			delete localStorage['favorited-' + thisRoom];
+			$('#favorite').parent().removeClass('alert-success');
+		}
+		else {
+			localStorage['favorited-' + thisRoom] = true;
+			$('#favorite').parent().addClass('alert-success');
+		}
+	});
+	</script>
+% end
+
+% layout_random = '/rooms/random'
 
 <div class="container" style="margin-bottom: 6em" itemscope itemtype="http://schema.org/Product">
 	% last_listing = room.listings[0] if room.listings else None

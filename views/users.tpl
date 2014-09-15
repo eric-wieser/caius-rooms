@@ -1,4 +1,5 @@
-% rebase layout.tpl random="/people/random"
+% rebase layout.tpl
+% layout_random = "/users/random"
 
 <div class="container">
 	<div class="row">

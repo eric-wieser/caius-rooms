@@ -13,28 +13,10 @@
 % ]
 % matching_nav = next((n for n in nav if n[0] == main_route), None)
 
-% if defined('title'):
-	% if isinstance(title, str):
-		% parts = [('', title, None)]
-	% else:
-		% parts = [('', t, None) if isinstance(t, str) else t for t in title]
-	% end
+% if defined('layout_breadcrumb'):
+	% layout_breadcrumb = list(layout_breadcrumb())
 % else:
-	% parts = []
-
-	% if defined('room') and main_route == 'room':
-		% place = room.parent
-	% end
-
-	% if defined('place') and main_route == 'place':
-		% for part in place.path:
-			% parts.append(("/places/{}".format(part.id), part.pretty_name(part.parent), None))
-		% end
-	% end
-
-	% if defined('room') and main_route == 'room':
-		% parts.append(('#', room.pretty_name(room.parent), None))
-	% end
+	% layout_breadcrumb = []
 % end
 
 <!doctype html>
@@ -93,7 +75,7 @@
 			}
 
 		</style>
-		<title>{{' | '.join([name for url, name, html in parts][::-1] + ['RoomPicks']) }}</title>
+		<title>{{' | '.join([name for url, name in reversed(layout_breadcrumb)] + ['RoomPicks']) }}</title>
 	</head>
 	<body data-spy="scroll" data-target="#page-specific-nav" itemscope itemtype="http://schema.org/WebPage">
 		<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -109,17 +91,9 @@
 				</div>
 				<div class="collapse navbar-collapse" id="collapsible-nav">
 					<ul class="nav navbar-nav navbar-left">
-						% if len(url_parts) < 2 or not matching_nav:
-							% for url, name, icon in nav:
-								<li {{! 'class="active"' if main_route == url else '' }} >
-									<a href="/{{ url }}">
-										<span class="glyphicon {{ icon }}"></span> {{ name }}
-									</a>
-								</li>
-							% end
-						% else:
-							% url, name, icon = matching_nav
+						% if layout_breadcrumb:
 							<li class="dropdown">
+								% url, name, icon = matching_nav or (None, '', '')
 								<a href="#" title="{{ name }}" class="dropdown-toggle brand" data-toggle="dropdown">
 									<span class="glyphicon {{icon}}"></span><span class="caret"></span>
 								</a>
@@ -133,65 +107,38 @@
 									% end
 								</ul>
 							</li>
-						% end
-						% for url, name, html in parts[:-1]:
-							<li itemscope itemtype="http://data-vocabulary.org/Breadcrumb">
-								<a href="{{url}}" itemprop="url"><span itemprop="title">
-									{{!html or name}}
-								</span></a>
-							</li>
-						% end
-						% if parts:
-							% url, name, html = parts[-1]
+							% for url, name in layout_breadcrumb[:-1]:
+								<li itemscope itemtype="http://data-vocabulary.org/Breadcrumb">
+									<a href="{{url}}" itemprop="url"><span itemprop="title">
+										{{ name }}
+									</span></a>
+								</li>
+							% end
+							% url, name = layout_breadcrumb[-1]
 							<li itemscope itemtype="http://data-vocabulary.org/Breadcrumb" class="active">
 								<a href="{{url}}" itemprop="url"><span itemprop="title">
-									{{!html or name}}
+									{{ name }}
 								</span></a>
 							</li>
+						% else:
+							% for url, name, icon in nav:
+								<li {{! 'class="active"' if main_route == url else '' }} >
+									<a href="/{{ url }}">
+										<span class="glyphicon {{ icon }}"></span> {{ name }}
+									</a>
+								</li>
+							% end
 						% end
 					</ul>
 					<div id="page-specific-nav">
 						<ul class="nav navbar-nav navbar-right">
-							% if main_route == 'room':
-								<li style="display: none"><a href="#info"></a></li>
-								<li><a href="#photos">
-									<span class="glyphicon glyphicon-picture"></span> <span class="hidden-sm">Photos</span>
-								</a></li>
-								<li><a href="#reviews">
-									<span class="glyphicon glyphicon-comment"></span> <span class="hidden-sm">Reviews</span>
-								</a></li>
-								<li><a href='#' id="favorite" title="Record as favorite on this PC">
-									<span class="glyphicon glyphicon-star"></span> <span class="hidden-sm">Favorite</span>
-								</a></li>
-								<li><a href='/rooms/random'>
-									<span class="glyphicon glyphicon-random"></span> <span class="hidden-sm">Random</span>
-								</a></li>
-								<script>
-								var thisRoom = {{! json.dumps(room.id) }};
-								if(localStorage['favorited-' + thisRoom])
-									$('#favorite').parent().addClass('alert-success');
-
-								$('#favorite').click(function() {
-									if(localStorage['favorited-' + thisRoom]) {
-										delete localStorage['favorited-' + thisRoom];
-										$('#favorite').parent().removeClass('alert-success');
-									}
-									else {
-										localStorage['favorited-' + thisRoom] = true;
-										$('#favorite').parent().addClass('alert-success');
-									}
-								});
-								</script>
-							% elif main_route == 'place':
-								<li{{! ' class="active"' if get('is_photos') else '' }}><a href="{{ get_url('place-photos', place_id=place.id) }}">
-									<span class="glyphicon glyphicon-picture"></span> Photos
-								</a></li>
-								<li><a href='/places/random{{'/photos' if get('is_photos') else '' }}'>
-									<span class="glyphicon glyphicon-random"></span> Random
-								</a></li>
-							% elif defined('random'):
-								<li><a href='{{random}}'>
-									<span class="glyphicon glyphicon-random"></span> Random
+							% if defined('layout_extra_nav'):
+								% layout_extra_nav()
+							% end
+							% if defined('layout_random'):
+								<li><a href='{{ layout_random }}'>
+									<span class="glyphicon glyphicon-random"></span>
+									<span class="hidden-sm">Random</span>
 								</a></li>
 							% end
 

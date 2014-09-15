@@ -1,4 +1,5 @@
-% rebase layout.tpl random="/places/random"
+% rebase layout.tpl
+% layout_random = "/places/random"
 
 % def flatten_iter(p, level=0):
 	% for c in p.children:

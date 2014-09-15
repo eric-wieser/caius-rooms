@@ -1,4 +1,19 @@
-% rebase layout.tpl place=location
+% rebase layout.tpl
+
+% def layout_breadcrumb():
+	% for part in location.path:
+		% yield ("/places/{}".format(part.id), part.pretty_name(part.parent))
+	% end
+% end
+
+% def layout_extra_nav():
+	<li><a href="{{ get_url('place-photos', place_id=location.id) }}">
+		<span class="glyphicon glyphicon-picture"></span> Photos
+	</a></li>
+% end
+
+% layout_random = '/places/random'
+
 % import itertools
 
 <div class="container">

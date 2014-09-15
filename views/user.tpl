@@ -1,4 +1,8 @@
-% rebase layout.tpl random="/people/random"
+% rebase layout.tpl
+% layout_random = "/users/random"
+% def layout_breadcrumb():
+	% yield ('#', user.name)
+% end
 
 <div class="container">
 	% occs = sorted(user.occupancies, key=lambda o: o.listing.ballot_season.year)
