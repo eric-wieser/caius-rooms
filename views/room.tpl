@@ -7,7 +7,8 @@
 	% yield ('#', room.pretty_name(room.parent))
 % end
 
-% def layout_extra_nav()
+% def layout_extra_nav():
+	% import json
 	<li style="display: none"><a href="#info"></a></li>
 	<li><a href="#photos">
 		<span class="glyphicon glyphicon-picture"></span> <span class="hidden-sm">Photos</span>
