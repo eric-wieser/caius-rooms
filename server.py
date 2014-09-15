@@ -182,7 +182,16 @@ with base_route(app, '/rooms'):
 with base_route(app, '/places'):
 	@app.route('', name="place-list")
 	def show_places(db):
-		root = db.query(m.Cluster).filter(m.Cluster.parent == None).one()
+		from sqlalchemy.orm import joinedload_all
+
+		# load the entire heirarchy in one query
+		root = db.query(m.Cluster).options(
+			joinedload_all('children.rooms').load_only('adjusted_rating'),
+			joinedload_all('children.children.rooms').load_only('adjusted_rating'),
+			joinedload_all('children.children.children.rooms').load_only('adjusted_rating'),
+			joinedload_all('children.children.children.children.rooms').load_only('adjusted_rating')
+		).filter(m.Cluster.parent == None).one()
+
 		return template('locations', location=root)
 
 	@app.route('/<place_id>', name="place")
