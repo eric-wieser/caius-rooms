@@ -255,6 +255,11 @@ with base_route(app, '/users'):
 		except NoResultFound:
 			raise HTTPError(404, "No such user")
 
+	@app.route('/random')
+	def show_random_room(db):
+		users = db.query(m.Person)
+		redirect('/users/{}'.format(users[random.randrange(users.count())].crsid))
+
 
 with base_route(app, '/ballots'):
 	@app.route('')
