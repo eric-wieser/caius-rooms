@@ -1,3 +1,4 @@
+% show_room = get('show_room') or False
 <div itemprop="review" itemscope itemtype="http://schema.org/Review">
 	<div style="position: relative; top: -50px" id="review-{{review.id}}"></div>
 	<div class="row">
@@ -25,10 +26,16 @@
 					</small>
 				% end
 			</h2>
-			% if review.occupancy.resident:
-				<a itemprop="author" href="mailto:{{review.occupancy.resident.email}}">
-					{{review.occupancy.resident.name}}
+			% if show_room:
+				<a href="/rooms/{{ review.occupancy.listing.room.id }}">
+					{{ review.occupancy.listing.room.pretty_name() }}
 				</a>
+			% else:
+				% if review.occupancy.resident:
+					<a itemprop="author" href="/users/{{ review.occupancy.resident.crsid }}">
+						{{review.occupancy.resident.name}}
+					</a>
+				% end
 			% end
 		</div>
 		<div class="col-xs-1 visible-sm visible-xs"></div>

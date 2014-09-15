@@ -178,6 +178,8 @@
 										<img width="30" height="30" style="display: inline-block; vertical-align: top; margin: -5px 5px -5px 0" src="{{ request.user.gravatar(size=30) }}" />{{request.user.name}} <span class="caret"></span>
 									</a>
 									<ul class="dropdown-menu" role="menu">
+										<li><a href="/users/{{ request.user.crsid }}">Profile</a></li>
+										<li class="divider"></li>
 										<li><a href="#">Upload photo</a></li>
 										<li><a href="/reviews/new">Write review</a></li>
 										<li class="divider"></li>

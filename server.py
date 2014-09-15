@@ -174,6 +174,17 @@ with base_route(app, '/users'):
 		).order_by(m.Person.crsid)
 		return template('users', users=users)
 
+	@app.route('/<crsid>')
+	def show_user(crsid, db):
+		from sqlalchemy.orm import joinedload, subqueryload
+
+		user = db.query(m.Person).options(
+			joinedload(m.Person.occupancies).load_only(),
+			joinedload(m.Person.occupancies).subqueryload(m.Occupancy.reviews).load_only(m.Review.id),
+			joinedload(m.Person.occupancies).subqueryload(m.Occupancy.photos).load_only(m.Photo.id)
+		).filter(m.Person.crsid == crsid).one()
+		return template('user', user=user)
+
 
 with base_route(app, '/ballots'):
 	@app.route('')
