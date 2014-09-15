@@ -232,7 +232,7 @@ with base_route(app, '/locations'):
 with base_route(app, '/users'):
 	@app.route('')
 	def show_users(db):
-		from sqlalchemy.orm import joinedload, subqueryload
+		from sqlalchemy.orm import joinedload
 
 		users = db.query(m.Person).options(
 			joinedload(m.Person.occupancies).load_only(),
@@ -243,7 +243,7 @@ with base_route(app, '/users'):
 
 	@app.route('/<crsid>')
 	def show_user(crsid, db):
-		from sqlalchemy.orm import joinedload, subqueryload
+		from sqlalchemy.orm import joinedload
 
 		try:
 			user = db.query(m.Person).options(
@@ -274,7 +274,7 @@ with base_route(app, '/ballots'):
 
 	@app.route('/<ballot_id>')
 	def show_ballot(ballot_id, db):
-		from sqlalchemy.orm import joinedload, subqueryload
+		from sqlalchemy.orm import joinedload
 
 		ballot = db.query(m.BallotSeason).options(
 			joinedload(m.BallotSeason.events),
@@ -284,7 +284,7 @@ with base_route(app, '/ballots'):
 
 	@app.route('/<ballot_id>/edit')
 	def show_ballot(ballot_id, db):
-		from sqlalchemy.orm import joinedload, subqueryload
+		from sqlalchemy.orm import joinedload
 
 		ballot = db.query(m.BallotSeason).options(
 			joinedload(m.BallotSeason.events),
