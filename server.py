@@ -241,7 +241,7 @@ with base_route(app, '/ballots'):
 		).order_by(m.BallotSeason.year.desc())
 		return template('ballots', ballots=ballots)
 
-	@app.route('/<ballot_id>/edit')
+	@app.route('/<ballot_id>')
 	def show_ballot(ballot_id, db):
 		from sqlalchemy.orm import joinedload, subqueryload
 
@@ -250,6 +250,16 @@ with base_route(app, '/ballots'):
 			joinedload(m.BallotSeason.room_listings).subqueryload(m.RoomListing.audience_types),
 		).filter(m.BallotSeason.year == ballot_id).one()
 		return template('ballot', ballot_season=ballot, db=db)
+
+	@app.route('/<ballot_id>/edit')
+	def show_ballot(ballot_id, db):
+		from sqlalchemy.orm import joinedload, subqueryload
+
+		ballot = db.query(m.BallotSeason).options(
+			joinedload(m.BallotSeason.events),
+			joinedload(m.BallotSeason.room_listings).subqueryload(m.RoomListing.audience_types),
+		).filter(m.BallotSeason.year == ballot_id).one()
+		return template('ballot-edit', ballot_season=ballot, db=db)
 
 
 # and now, setup the session middleware
