@@ -47,15 +47,20 @@ l.addHandler(logging.FileHandler('sql.log'))
 
 
 def get_authed_user(callback):
-	def wrapper(db, *args, **kwargs):
-		if 'user' in request.session:
+	def wrapper(*args, **kwargs):
+		db = kwargs.get('db')
+		if db and 'user' in request.session:
 			request.user = db.query(m.Person).filter_by(crsid=request.session['user']).one()
-		return callback(*args, db=db, **kwargs)
+		else:
+			request.user = None
+
+		try:
+			return callback(*args, **kwargs)
+		finally:
+			request.user = None
+
 	return wrapper
 
-@app.hook('before_request')
-def no_authed_user():
-	request.user = None
 
 app.install(get_authed_user)
 
@@ -68,10 +73,11 @@ def static(path):
 def show_index(db):
 	return template('index', db=db)
 
+@app.error(404)
+@app.error(403)
+@get_authed_user
 def error_handler(res):
 	return template('error', e=res)
-
-app.default_error_handler = error_handler
 
 
 # declare all our application specific routes
