@@ -1,11 +1,6 @@
 % import database.orm as m
 
-% def extra_nav():
-	<li><a href='/places'><span class="glyphicon glyphicon-map-marker"></span> Places</a></li>
-	<li><a href='/rooms'><span class="glyphicon glyphicon-home"></span> Rooms</a></li>
-% end
-
-% rebase layout.tpl extra_nav=extra_nav
+% rebase layout.tpl
 <a class="hidden-xs" href="https://github.com/eric-wieser/caius-rooms">
 	<img style="position: absolute; top: 0px; right: 0; border: 0; z-index: 10000;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png" alt="Fork me on GitHub">
 </a>

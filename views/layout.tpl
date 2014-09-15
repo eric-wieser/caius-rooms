@@ -2,6 +2,17 @@
 % from bottle import request
 % import urllib
 
+% url_parts = request.path[1:].split('/')
+% main_route = url_parts[0]
+%
+% nav = [
+% 	('rooms',   'Rooms',   'glyphicon-home'),
+% 	('places',  'Places',  'glyphicon-map-marker'),
+% 	('users',   'Users',   'glyphicon-user'),
+% 	('ballots', 'Ballots', 'glyphicon-list-alt')
+% ]
+% matching_nav = next((n for n in nav if n[0] == main_route), None)
+
 % if defined('title'):
 	% if isinstance(title, str):
 		% parts = [('', title, None)]
@@ -11,17 +22,17 @@
 % else:
 	% parts = []
 
-	% if defined('room'):
+	% if defined('room') and main_route == 'room':
 		% place = room.parent
 	% end
 
-	% if defined('place'):
+	% if defined('place') and main_route == 'place':
 		% for part in place.path:
 			% parts.append(("/places/{}".format(part.id), part.pretty_name(part.parent), None))
 		% end
 	% end
 
-	% if defined('room'):
+	% if defined('room') and main_route == 'room':
 		% parts.append(('#', room.pretty_name(room.parent), None))
 	% end
 % end
@@ -94,20 +105,35 @@
 						<span class="icon-bar"></span>
 						<span class="icon-bar"></span>
 					</button>
-					% if False and defined('room'):
-						<a class="navbar-brand" href="/rooms" title="For when you don't yet have the Caius">
-							RoomPicks <span class="glyphicon glyphicon-home"></span>
-						</a>
-					% elif False and defined('place'):
-						<a class="navbar-brand" href="/places" title="For when you don't yet have the Caius">
-							RoomPicks <span class="glyphicon glyphicon-map-marker"></span>
-						</a>
-					% else:
-						<a class="navbar-brand" href="/places" title="For when you don't yet have the Caius">RoomPicks</a>
-					% end
+					<a class="navbar-brand" href="/" title="For when you don't yet have the Caius">RoomPicks</a>
 				</div>
 				<div class="collapse navbar-collapse" id="collapsible-nav">
 					<ul class="nav navbar-nav navbar-left">
+						% if len(url_parts) < 2 or not matching_nav:
+							% for url, name, icon in nav:
+								<li {{! 'class="active"' if main_route == url else '' }} >
+									<a href="/{{ url }}">
+										<span class="glyphicon {{ icon }}"></span> {{ name }}
+									</a>
+								</li>
+							% end
+						% else:
+							% url, name, icon = matching_nav
+							<li class="dropdown">
+								<a href="#" title="{{ name }}" class="dropdown-toggle brand" data-toggle="dropdown">
+									<span class="glyphicon {{icon}}"></span><span class="caret"></span>
+								</a>
+								<ul class="dropdown-menu" role="menu">
+									% for url, name, icon in nav:
+										<li {{! 'class="active"' if main_route == url else '' }} >
+											<a href="/{{ url }}">
+												<span class="glyphicon {{ icon }}"></span> {{ name }}
+											</a>
+										</li>
+									% end
+								</ul>
+							</li>
+						% end
 						% for url, name, html in parts[:-1]:
 							<li itemscope itemtype="http://data-vocabulary.org/Breadcrumb">
 								<a href="{{url}}" itemprop="url"><span itemprop="title">
@@ -123,13 +149,10 @@
 								</span></a>
 							</li>
 						% end
-						% if get('extra_nav'):
-							% extra_nav()
-						% end
 					</ul>
 					<div id="page-specific-nav">
 						<ul class="nav navbar-nav navbar-right">
-							% if defined('room'):
+							% if main_route == 'room':
 								<li style="display: none"><a href="#info"></a></li>
 								<li><a href="#photos">
 									<span class="glyphicon glyphicon-picture"></span> <span class="hidden-sm">Photos</span>
@@ -159,7 +182,7 @@
 									}
 								});
 								</script>
-							% elif defined('place'):
+							% elif main_route == 'place':
 								<li{{! ' class="active"' if get('is_photos') else '' }}><a href="{{ get_url('place-photos', place_id=place.id) }}">
 									<span class="glyphicon glyphicon-picture"></span> Photos
 								</a></li>

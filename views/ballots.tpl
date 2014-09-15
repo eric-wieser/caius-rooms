@@ -1,8 +1,4 @@
-% def extra_nav():
-	% pass
-% end
-
-% rebase layout.tpl extra_nav=extra_nav
+% rebase layout.tpl
 
 <div class="container">
 	<table class="table">

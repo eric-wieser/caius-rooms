@@ -1,10 +1,5 @@
 % import database.orm as m
-
-% def extra_nav():
-	% pass
-% end
-
-% rebase layout.tpl extra_nav=extra_nav
+% rebase layout.tpl
 
 <div class="container">
 	<h1>Ballot for {{ ballot_season.year }} - {{ ballot_season.year + 1 }}</h1>

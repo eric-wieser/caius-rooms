@@ -1,10 +1,4 @@
-% def extra_nav():
-	<li class="active"><a href='/users'><span class="glyphicon glyphicon-user"></span> Users</a></li>
-	<li><a href='/places'><span class="glyphicon glyphicon-map-marker"></span> Places</a></li>
-	<li><a href='/rooms'><span class="glyphicon glyphicon-home"></span> Rooms</a></li>
-% end
-
-% rebase layout.tpl extra_nav=extra_nav, random="/people/random"
+% rebase layout.tpl random="/people/random"
 
 <div class="container">
 	<div class="row">
