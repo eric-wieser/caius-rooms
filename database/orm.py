@@ -65,6 +65,9 @@ class Person(Base):
 	crsid   = Column(CRSID,  primary_key=True)
 	name    = Column(Unicode(255))
 
+	def __repr__(self):
+		return "<Person(crsid={!r}, name={!r})>".format(self.crsid, self.name)
+
 	@property
 	def email(self):
 		return '{}@cam.ac.uk'.format(self.crsid.lower())
@@ -289,8 +292,24 @@ class BallotEvent(Base):
 	__table_args__ = (UniqueConstraint(type_id, season_id, name='_season_type_uc'),)
 
 	def __repr__(self):
-		return "<BallotEvent(year={}, type={}, ...)>".format(self.season.year, self.type.name)
+		return "<BallotEvent(year={!r}, type={!r}, ...)>".format(self.season.year, self.type.name)
 
+
+class BallotSlot(Base):
+	__tablename__ = prefix + 'ballot_slots'
+
+	id        = Column(Integer, primary_key=True)
+	time      = Column(DateTime)
+	person_id = Column(CRSID, ForeignKey(Person.crsid), nullable=False)
+	event_id  = Column(Integer, ForeignKey(BallotEvent.id), nullable=False)
+
+	person = relationship(lambda: Person, backref="slots", lazy='joined')
+	event  = relationship(lambda: BallotEvent, backref="slots", lazy='joined')
+
+	def __repr__(self):
+		return "<BallotSlot(resident_id={!r}, ballot_event={!r}, time={!r})>".format(
+			self.person_id, self.event, self.time
+		)
 
 
 class RoomListing(Base):
@@ -333,6 +352,17 @@ class Occupancy(Base):
 	resident    = relationship(lambda: Person, backref="occupancies", lazy='joined')
 	reviews     = relationship(lambda: Review, backref="occupancy", order_by=lambda: Review.published_at.desc())
 	photos      = relationship(lambda: Photo,  backref="occupancy", order_by=lambda: Photo.published_at.desc())
+
+	@property
+	def ballot_slot(self):
+	    return (object_session(self)
+	    	.query(BallotSlot)
+	    	.join(BallotEvent)
+	    	.join(Occupancy, BallotSlot.person_id == Occupancy.resident_id)
+	    	.join(RoomListing)
+	    	.filter(RoomListing.ballot_season_id == BallotEvent.season_id)
+			.filter(Occupancy.id == self.id)
+		).one()
 
 	__table_args__ = (UniqueConstraint(resident_id, listing_id, name='_resident_listing_uc'),)
 
@@ -426,4 +456,12 @@ Room.resident_count = column_property(
 		join(Occupancy, RoomListing)
 	)
 	.where(Room.id == RoomListing.room_id)
+)
+
+bs = aliased(BallotSlot)
+BallotSlot.ranking = column_property(
+	select([func.count()])
+		.select_from(bs)
+		.where(bs.event_id == BallotSlot.event_id)
+		.where(bs.time <= BallotSlot.time)
 )

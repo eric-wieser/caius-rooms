@@ -7,6 +7,9 @@ print "migrate_users: Done"
 import migrate_ballots
 print "migrate_ballots: Done"
 
+import migrate_slots
+print "migrate_slots: Done"
+
 import migrate_rooms
 print "migrate_rooms: Done"
 
