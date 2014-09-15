@@ -10,12 +10,19 @@ cam_ldap = ldap.initialize('ldaps://ldap.lookup.cam.ac.uk')
 
 def get_name(crsid):
 	""" Retrieve the ldap display name, if possible """
-	results = cam_ldap.search_s(
-		base="ou=people,o=University of Cambridge,dc=cam,dc=ac,dc=uk",
-		scope=ldap.SCOPE_SUBTREE,
-		filterstr="uid={}".format(crsid),
-		attrlist=['displayName']
-	)
+	if get_name.no_ldap:
+		return
+
+	try:
+		results = cam_ldap.search_s(
+			base="ou=people,o=University of Cambridge,dc=cam,dc=ac,dc=uk",
+			scope=ldap.SCOPE_SUBTREE,
+			filterstr="uid={}".format(crsid),
+			attrlist=['displayName']
+		)
+	except ldap.NO_SUCH_OBJECT:
+		get_name.no_ldap = True
+		return
 
 	if not results:
 		get_name.unlisted.add(crsid)
@@ -31,7 +38,7 @@ def get_name(crsid):
 
 get_name.unlisted = set()
 get_name.no_name = set()
-
+get_name.no_ldap = False
 
 db.init('dev')
 
@@ -55,5 +62,14 @@ for user in old_session.query(olddb.orm.accom_guide_person):
 
 new_session.commit()
 
-print "No displayName in LDAP - {}: {}".format(len(get_name.no_name),  ', '.join(sorted(get_name.no_name)))
-print "Not listed in LDAP - {}: {}"    .format(len(get_name.unlisted), ', '.join(sorted(get_name.unlisted)))
+if get_name.no_ldap:
+	print "No LDAP"
+if get_name.no_name:
+	print "No displayName in LDAP - {}: {}".format(
+		len(get_name.no_name),  ', '.join(sorted(get_name.no_name))
+	)
+if get_name.unlisted:
+	print "Not listed in LDAP - {}: {}"    .format(
+		len(get_name.unlisted), ', '.join(sorted(get_name.unlisted))
+	)
+
