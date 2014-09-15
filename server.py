@@ -219,12 +219,15 @@ with base_route(app, '/users'):
 	def show_user(crsid, db):
 		from sqlalchemy.orm import joinedload, subqueryload
 
-		user = db.query(m.Person).options(
-			joinedload(m.Person.occupancies).load_only(),
-			joinedload(m.Person.occupancies).subqueryload(m.Occupancy.reviews).load_only(m.Review.id),
-			joinedload(m.Person.occupancies).subqueryload(m.Occupancy.photos).load_only(m.Photo.id)
-		).filter(m.Person.crsid == crsid).one()
-		return template('user', user=user)
+		try:
+			user = db.query(m.Person).options(
+				joinedload(m.Person.occupancies).load_only(),
+				joinedload(m.Person.occupancies).subqueryload(m.Occupancy.reviews).load_only(m.Review.id),
+				joinedload(m.Person.occupancies).subqueryload(m.Occupancy.photos).load_only(m.Photo.id)
+			).filter(m.Person.crsid == crsid).one()
+			return template('user', user=user)
+		except NoResultFound:
+			raise HTTPError(404, "No such user")
 
 
 with base_route(app, '/ballots'):
