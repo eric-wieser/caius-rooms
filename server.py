@@ -75,15 +75,13 @@ app.default_error_handler = error_handler
 # declare all our application specific routes
 
 @app.route('/login')
-def show_index(db):
+def do_login(db):
 	request.session['user'] = 'efw27'
-	print request.session['user']
 	redirect(request.query.return_to or '/')
 
 @app.route('/logout')
-def show_index(db):
+def do_logout(db):
 	del request.session['user']
-	request.session.save()
 	redirect(request.query.return_to)
 
 
