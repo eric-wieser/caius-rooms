@@ -27,6 +27,12 @@
 									{{ o.listing.room.pretty_name() }}
 								</a>
 							</td>
+							<td>
+								% sl = o.ballot_slot
+								<a href="/ballots/{{ o.listing.ballot_season.year }}#slot-{{ sl.id }}">
+									#{{ sl.ranking }}</a>
+								in the {{ sl.event.type.name.lower() }} ballot
+							</td>
 							<td class="text-muted">
 								{{ o.chosen_at }}
 							</td>
