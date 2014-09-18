@@ -1,0 +1,6 @@
+SQLAlchemy==0.9.7
+bottle==0.12.7
+bottle-sqlalchemy==0.4.1
+pysqlite==2.6.3
+beaker==1.6.4
+python-raven
