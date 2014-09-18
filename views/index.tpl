@@ -1,4 +1,5 @@
 % import database.orm as m
+% from sqlalchemy.sql import func
 
 % rebase layout.tpl
 <a class="hidden-xs" href="https://github.com/eric-wieser/caius-rooms">
@@ -24,7 +25,13 @@
 		<div class="col-md-6">
 			<h2>Recent reviews</h2>
 			<table class="table">
-				% for review in db.query(m.Review).order_by(m.Review.published_at.desc()).limit(10):
+				% reviews = (db
+					% .query(m.Review)
+					% .order_by(m.Review.published_at.desc())
+					% .group_by(m.Review.occupancy_id)
+					% .having(func.max(m.Review.published_at))
+				% )
+				% for review in reviews.limit(10):
 					% room = review.occupancy.listing.room
 					% author = review.occupancy.resident
 					<tr>
