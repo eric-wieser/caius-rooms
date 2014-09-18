@@ -41,7 +41,7 @@
 						</td>
 						<td>
 							% if author:
-								<a href="/people/{{author.crsid}}">{{ author.name }}</a>
+								<a href="/users/{{author.crsid}}">{{ author.name }}</a>
 							% else:
 								<span class="text-muted">unknown</span>
 							% end
@@ -72,7 +72,7 @@
 						</td>
 						<td>
 							% if author:
-								<a href="/people/{{author.crsid}}">{{ author.name }}</a>
+								<a href="/users/{{author.crsid}}">{{ author.name }}</a>
 							% else:
 								<span class="text-muted">unknown</span>
 							% end
