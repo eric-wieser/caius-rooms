@@ -157,7 +157,7 @@
 									</ul>
 								</li>
 							% else:
-								<li>
+								<li class="alert-info">
 									<a href="/login?return_to={{ urllib.quote_plus(request.url) }}">
 										Login
 									</a>
