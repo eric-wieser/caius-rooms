@@ -355,12 +355,12 @@ class Occupancy(Base):
 
 	@property
 	def ballot_slot(self):
-	    return (object_session(self)
-	    	.query(BallotSlot)
-	    	.join(BallotEvent)
-	    	.join(Occupancy, BallotSlot.person_id == Occupancy.resident_id)
-	    	.join(RoomListing)
-	    	.filter(RoomListing.ballot_season_id == BallotEvent.season_id)
+		return (object_session(self)
+			.query(BallotSlot)
+			.join(BallotEvent)
+			.join(Occupancy, BallotSlot.person_id == Occupancy.resident_id)
+			.join(RoomListing)
+			.filter(RoomListing.ballot_season_id == BallotEvent.season_id)
 			.filter(Occupancy.id == self.id)
 		).one()
 
