@@ -269,12 +269,15 @@ with base_route(app, '/reviews'):
 				except NoResultFound:
 					raise HTTPError(400)
 
-				sections += [
-					m.ReviewSection(
-						heading=heading,
-						content=value
-					)
-				]
+				if value.strip():
+					sections += [
+						m.ReviewSection(
+							heading=heading,
+							content=value
+						)
+					]
+				elif heading.is_summary:
+					raise HTTPError(400, "{!r} section cannot be left blank".format(heading.name))
 
 		try:
 			rating = int(request.forms.rating)
