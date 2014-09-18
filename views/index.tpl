@@ -1,4 +1,5 @@
 % import database.orm as m
+% from utils import format_ts_html
 % from sqlalchemy.sql import func
 
 % rebase layout.tpl
@@ -46,7 +47,7 @@
 							% end
 						</td>
 						<td>
-							{{ review.published_at }}
+							{{! format_ts_html(review.published_at) }}
 						</td>
 					</tr>
 				%end
@@ -77,7 +78,7 @@
 							% end
 						</td>
 						<td>
-							{{ occupancy.chosen_at }}
+							{{! format_ts_html(occupancy.chosen_at) }}
 						</td>
 					</tr>
 				%end

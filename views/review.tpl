@@ -1,3 +1,5 @@
+% from utils import format_ts_html
+
 % show_room = get('show_room') or False
 <div itemprop="review" itemscope itemtype="http://schema.org/Review">
 	<div style="position: relative; top: -50px" id="review-{{review.id}}"></div>
@@ -68,7 +70,9 @@
 					% end
 				</dl>
 				<div class="text-right">
-					<a href="#review-{{review.id}}"><small class="text-muted text-right">{{ review.published_at }}</small></a>
+					<a href="#review-{{review.id}}"><small class="text-muted text-right">
+						{{! format_ts_html(review.published_at) }}
+					</small></a>
 				</div>
 			</div>
 		% end

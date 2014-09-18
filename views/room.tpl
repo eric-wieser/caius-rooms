@@ -1,3 +1,5 @@
+% from utils import format_ts_html
+
 % rebase layout
 
 % def layout_breadcrumb():
@@ -186,7 +188,7 @@
 					<p>
 						<img src="{{photo.href}}" class="img-rounded img-responsive" />
 						{{ photo.caption }}
-						<span class="text-muted">{{ photo.published_at }}</span>
+						<span class="text-muted">{{! format_ts_html(photo.published_at) }}</span>
 					</p>
 					% any_photos = True
 				% end

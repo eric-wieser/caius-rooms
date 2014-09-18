@@ -1,4 +1,6 @@
 % from bottle import request
+% from utils import format_ts_html
+
 % rebase layout.tpl
 % layout_random = "/users/random"
 % def layout_breadcrumb():
@@ -33,7 +35,7 @@
 								in the {{ sl.event.type.name.lower() }} ballot
 							</td>
 							<td class="text-muted">
-								{{ o.chosen_at }}
+								{{! format_ts_html(o.chosen_at) }}
 							</td>
 							% if user == request.user:
 								<td>
