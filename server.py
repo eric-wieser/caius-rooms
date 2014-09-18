@@ -236,7 +236,9 @@ with base_route(app, '/reviews'):
 		if occupancy.resident != request.user:
 			raise HTTPError(403, "You must have been a resident of a room to review it")
 
-		return template('new-review', occupancy=occupancy)
+		review = db.query(m.Review).filter_by(occupancy_id=occ_id).order_by(m.Review.published_at.desc()).first()
+
+		return template('new-review', occupancy=occupancy, review=review)
 
 	@app.post('', name="new-review-post")
 	def save_new_review_form(db):

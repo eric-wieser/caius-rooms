@@ -2,6 +2,18 @@
 % from sqlalchemy.orm.session import object_session
 % import database.orm as m
 % from datetime import datetime
+
+% def last_content_for(heading):
+	% if review:
+		% for s in review.sections:
+			% if s.heading == heading:
+				% return s.content
+			% end
+		% end
+	% end
+	% return None
+% end
+
 <div class="container">
 	<form action="/reviews" method="POST">
 		<input type="hidden" name="occupancy_id" value="{{ occupancy.id }}" />
@@ -10,7 +22,7 @@
 				<div class="col-md-2">
 					<h2>{{occupancy.listing.ballot_season.year}}
 						<small itemprop="reviewRating" itemscope itemtype="http://schema.org/Rating" style="white-space: nowrap">
-							<input name="rating" itemprop="ratingValue" type="number" min="0" max="10" style="width: 4em; display: inline-block"  class="form-control"/><!--
+							<input name="rating" itemprop="ratingValue" type="number" min="0" max="10" style="width: 4em; display: inline-block"  class="form-control" value="{{ review and review.rating or '' }}"/><!--
 							-->/<span itemprop="bestRating">10</span>
 						</small>
 					</h2>
@@ -34,8 +46,9 @@
 								{{ heading.name }}
 							</h3>
 							<textarea class="form-control"
+							          required
 							          name="section-{{heading.id}}" rows="4" style="resize: vertical"
-							          placeholder="{{heading.prompt or ''}}"></textarea>
+							          placeholder="{{heading.prompt or ''}}">{{ last_content_for(heading) }}</textarea>
 						% end
 					% end
 				</div>
@@ -50,7 +63,7 @@
 									          class="form-control"
 									          rows="3"
 									          style="resize: vertical; margin-bottom: 5px"
-									          placeholder="{{heading.prompt or ''}}"></textarea></dd>
+									          placeholder="{{heading.prompt or ''}}">{{ last_content_for(heading) }}</textarea></dd>
 							% end
 						% end
 					</dl>
