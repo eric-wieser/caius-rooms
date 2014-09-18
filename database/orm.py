@@ -377,6 +377,32 @@ class Review(Base):
 
 	sections     = relationship(lambda: ReviewSection, backref='review', order_by=lambda: ReviewSection._order)
 
+	def contents_eq(self, other):
+		"""
+		Returns true if the textual contents of two reviews are the same. Does
+		not care about reviewer, date, or room
+		"""
+		if self.rating != other.rating:
+			print "Rating"
+			return False
+
+		if len(self.sections) != len(other.sections):
+			print "Len"
+			return False
+
+		self_sections = sorted(self.sections, key=lambda s: s.heading.position)
+		other_sections = sorted(other.sections, key=lambda s: s.heading.position)
+
+		for ss, so in zip(self_sections, other_sections):
+			if ss.heading != so.heading:
+				print "Head", ss.heading.name, so.heading.name
+				return False
+			if ss.content != so.content:
+				print "Content"
+				return False
+
+		return True
+
 
 class ReviewHeading(Base):
 	""" A heading within a review """

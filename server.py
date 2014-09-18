@@ -288,14 +288,23 @@ with base_route(app, '/reviews'):
 		if rating < 0 or rating > 10:
 			raise HTTPError(404, "Rating must be between 0 and 10")
 
+		last_review = db.query(m.Review).filter_by(occupancy_id=occ_id).order_by(m.Review.published_at.desc()).first()
+
 		review = m.Review(
 			sections=sections,
 			occupancy=occupancy,
 			published_at=datetime.now(),
 			rating=rating
 		)
-
 		db.add(review)
+
+		if review.contents_eq(last_review):
+			raise HTTPError(400, "Same as last review")
+
+			# TODO: fail gracefully
+			db.rollback()
+			flash_some_message()
+			redirect_anyway()
 
 		redirect('/rooms/{}#review-{}'.format(occupancy.listing.room_id, review.id))
 
