@@ -1,3 +1,4 @@
+% from bottle import request
 % rebase layout.tpl
 % layout_random = "/users/random"
 % def layout_breadcrumb():
@@ -34,6 +35,11 @@
 							<td class="text-muted">
 								{{ o.chosen_at }}
 							</td>
+							% if user == request.user:
+								<td>
+									<a href="/reviews/new/{{ o.id }}">Review</a>
+								</td>
+							% end
 						</tr>
 					% end
 				</table>
