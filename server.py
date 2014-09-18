@@ -1,5 +1,6 @@
 # system includes
 import random
+import re
 import logging
 import contextlib
 from datetime import datetime
@@ -222,10 +223,77 @@ with base_route(app, '/places'):
 
 
 with base_route(app, '/reviews'):
-	@app.route('/new', name="new-review")
-	def show_new_review_form(db):
-		occupancy = db.query(m.Occupancy).filter(m.Occupancy.resident_id == 'efw27').one()
+	@app.route('/new/<occ_id>', name="new-review")
+	def show_new_review_form(occ_id, db):
+		if request.user is None:
+			raise HTTPError(403, "You must be logged in to post a review")
+
+		try:
+			occupancy = db.query(m.Occupancy).filter(m.Occupancy.id == occ_id).one()
+		except NoResultFound:
+			raise HTTPError(404, "No such occupancy to review")
+
+		if occupancy.resident != request.user:
+			raise HTTPError(403, "You must have been a resident of a room to review it")
+
 		return template('new-review', occupancy=occupancy)
+
+	@app.post('', name="new-review-post")
+	def save_new_review_form(db):
+		if request.user is None:
+			raise HTTPError(403, "You must be logged in to post a review")
+
+		occ_id = request.forms.occupancy_id
+
+		if occ_id is None:
+			raise HTTPError(400)
+
+		try:
+			occupancy = db.query(m.Occupancy).filter(m.Occupancy.id == occ_id).one()
+		except NoResultFound:
+			raise HTTPError(404, "No such occupancy to review")
+
+		if occupancy.resident != request.user:
+			raise HTTPError(403, "You must have been a resident of a room to review it")
+
+		sections = []
+
+		for key, value in request.forms.iteritems():
+			print key, value
+			match = re.match(r'^section-(\d+)$', key)
+			if match:
+				print "MATCH"
+				heading_id = int(match.group(1))
+				try:
+					heading = db.query(m.ReviewHeading).filter_by(id=heading_id).one()
+				except NoResultFound:
+					raise HTTPError(400)
+
+				sections += [
+					m.ReviewSection(
+						heading=heading,
+						content=value
+					)
+				]
+
+		try:
+			rating = int(request.forms.rating)
+		except ValueError:
+			raise HTTPError(404, "Rating must be an integer")
+		if rating < 0 or rating > 10:
+			raise HTTPError(404, "Rating must be between 0 and 10")
+
+		review = m.Review(
+			sections=sections,
+			occupancy=occupancy,
+			published_at=datetime.now(),
+			rating=rating
+		)
+
+		db.add(review)
+
+		redirect('/rooms/{}#review-{}'.format(occupancy.listing.room_id, review.id))
+
 
 
 with base_route(app, '/locations'):

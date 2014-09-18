@@ -3,7 +3,8 @@
 % import database.orm as m
 % from datetime import datetime
 <div class="container">
-	<form action="/reviews/" method="POST">
+	<form action="/reviews" method="POST">
+		<input type="hidden" name="occupancy_id" value="{{ occupancy.id }}" />
 		<div itemprop="review" itemscope itemtype="http://schema.org/Review">
 			<div class="row">
 				<div class="col-md-2">
@@ -33,7 +34,7 @@
 								{{ heading.name }}
 							</h3>
 							<textarea class="form-control"
-							          name="fields[{{heading.id}}]" rows="4" style="resize: vertical"
+							          name="section-{{heading.id}}" rows="4" style="resize: vertical"
 							          placeholder="{{heading.prompt or ''}}"></textarea>
 						% end
 					% end
@@ -45,7 +46,7 @@
 							% if not heading.is_summary:
 								<dt>{{ heading.name }}</dt>
 								<dd>
-									<textarea name="fields[{{heading.id}}]"
+									<textarea name="section-{{heading.id}}"
 									          class="form-control"
 									          rows="3"
 									          style="resize: vertical; margin-bottom: 5px"
