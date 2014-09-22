@@ -175,7 +175,7 @@
 		<script src="/static/bootstrap-sortable.js"></script>
 		<script>
 		$(function() {
-			$('.glyphicon[title]').tooltip();
+			$('.glyphicon[title]').add('*[data-tooltip]').tooltip();
 		});
 		</script>
 
