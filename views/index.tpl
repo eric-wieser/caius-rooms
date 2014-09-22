@@ -1,8 +1,10 @@
 % import database.orm as m
 % from utils import format_ts_html
 % from sqlalchemy.sql import func
+% from bottle import request
 
-% rebase layout.tpl
+% rebase layout
+
 <a class="hidden-xs" href="https://github.com/eric-wieser/caius-rooms">
 	<img style="position: absolute; top: 50px; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png" alt="Fork me on GitHub">
 </a>
@@ -39,13 +41,15 @@
 						<td class="text-right">
 							<a href="/rooms/{{room.id}}#review-{{review.id}}">{{ room.pretty_name() }}</a>
 						</td>
-						<td>
-							% if author:
-								<a href="/users/{{author.crsid}}">{{ author.name }}</a>
-							% else:
-								<span class="text-muted">unknown</span>
-							% end
-						</td>
+						% if request.user:
+							<td>
+								% if author:
+									<a href="/users/{{author.crsid}}">{{ author.name }}</a>
+								% else:
+									<span class="text-muted">unknown</span>
+								% end
+							</td>
+						% end
 						<td>
 							{{! format_ts_html(review.published_at) }}
 						</td>
@@ -70,13 +74,15 @@
 						<td class="text-right">
 							<a href="/rooms/{{room.id}}">{{ room.pretty_name() }}</a>
 						</td>
-						<td>
-							% if author:
-								<a href="/users/{{author.crsid}}">{{ author.name }}</a>
-							% else:
-								<span class="text-muted">unknown</span>
-							% end
-						</td>
+						% if request.user:
+							<td>
+								% if author:
+									<a href="/users/{{author.crsid}}">{{ author.name }}</a>
+								% else:
+									<span class="text-muted">unknown</span>
+								% end
+							</td>
+						% end
 						<td>
 							{{! format_ts_html(occupancy.chosen_at) }}
 						</td>

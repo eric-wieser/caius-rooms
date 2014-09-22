@@ -1,4 +1,5 @@
-% from utils import format_ts_html
+% from utils import format_ts_html, restricted
+% from bottle import request
 
 % show_room = get('show_room') or False
 <div itemprop="review" itemscope itemtype="http://schema.org/Review">
@@ -34,9 +35,13 @@
 				</a>
 			% else:
 				% if review.occupancy.resident:
-					<a itemprop="author" href="/users/{{ review.occupancy.resident.crsid }}">
-						{{review.occupancy.resident.name}}
-					</a>
+					% if request.user:
+						<a itemprop="author" href="/users/{{ review.occupancy.resident.crsid }}">
+							{{review.occupancy.resident.name}}
+						</a>
+					% else:
+						{{! restricted() }}
+					% end
 				% end
 			% end
 		</div>

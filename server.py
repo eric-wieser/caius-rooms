@@ -60,6 +60,25 @@ def get_authed_user(callback):
 
 	return wrapper
 
+def is_admin(user):
+	return True  # TODO
+
+def needs_auth(reason_or_callback, reason='privacy'):
+	# handle the optional "reason" argument
+	if isinstance(reason_or_callback, basestring):
+		reason = reason_or_callback
+		return lambda callback: needs_auth(callback, reason)
+	else:
+		callback = reason_or_callback
+
+	def wrapper(*args, **kwargs):
+		if not request.user or (reason == 'admin' and not is_admin(request.user)):
+			response.status = 403
+			return template('needs-auth', reason=reason)
+
+		return callback(*args, **kwargs)
+
+	return wrapper
 
 sqlalchemy_log = logging.getLogger('sqlalchemy.engine')
 sqlalchemy_log.setLevel(logging.INFO)
@@ -241,10 +260,8 @@ with base_route(app, '/reviews'):
 		return template('new-review', occupancy=occupancy, review=review)
 
 	@app.post('', name="new-review-post")
+	@needs_auth('ownership')
 	def save_new_review_form(db):
-		if request.user is None:
-			raise HTTPError(403, "You must be logged in to post a review")
-
 		occ_id = request.forms.occupancy_id
 
 		if occ_id is None:
@@ -322,6 +339,7 @@ with base_route(app, '/locations'):
 
 with base_route(app, '/users'):
 	@app.route('')
+	@needs_auth
 	def show_users(db):
 		from sqlalchemy.orm import joinedload
 
@@ -333,6 +351,7 @@ with base_route(app, '/users'):
 		return template('users', users=users)
 
 	@app.route('/<crsid>')
+	@needs_auth
 	def show_user(crsid, db):
 		from sqlalchemy.orm import joinedload
 
@@ -347,6 +366,7 @@ with base_route(app, '/users'):
 			raise HTTPError(404, "No such user")
 
 	@app.route('/random')
+	@needs_auth
 	def show_random_room(db):
 		users = db.query(m.Person)
 		redirect('/users/{}'.format(users[random.randrange(users.count())].crsid))
@@ -354,6 +374,7 @@ with base_route(app, '/users'):
 
 with base_route(app, '/ballots'):
 	@app.route('')
+	@needs_auth
 	def show_ballots(db):
 		from sqlalchemy.orm import joinedload, subqueryload
 
@@ -364,6 +385,7 @@ with base_route(app, '/ballots'):
 		return template('ballots', ballots=ballots)
 
 	@app.route('/<ballot_id>')
+	@needs_auth
 	def show_ballot(ballot_id, db):
 		from sqlalchemy.orm import joinedload
 
@@ -374,6 +396,7 @@ with base_route(app, '/ballots'):
 		return template('ballot', ballot_season=ballot, db=db)
 
 	@app.route('/<ballot_id>/edit')
+	@needs_auth('admin')
 	def show_ballot(ballot_id, db):
 		from sqlalchemy.orm import joinedload
 
