@@ -1,4 +1,6 @@
 % import database.orm as m
+% from bottle import request
+% from utils import restricted
 
 <table class="table table-condensed table-hover sortable">
 	<thead>
@@ -23,8 +25,12 @@
 			<th>Area</th>
 			<th class="rule-right">Rating</th>
 			<th data-defaultsort='disabled' colspan="3" class="rule-right" style="text-align: center">Feedback</th>
-			<th data-defaultsort='disabled' colspan="3" class="rule-right" style="text-align: center">Features</th>
-			<th>Owner</th>
+			% if not request.user:
+				<th data-defaultsort='disabled' colspan="3" style="text-align: center">Features</th>
+			% else:
+				<th data-defaultsort='disabled' colspan="3" style="text-align: center" class="rule-right">Features</th>
+				<th>Owner</th>
+			% end
 		</tr>
 	</thead>
 	<tbody>
@@ -137,11 +143,18 @@
 						<span class="glyphicon glyphicon-music text-muted" title="Possible Piano"></span>
 					% end
 				</td>
-				<td>
-					% if last_listing.occupancies and last_listing.occupancies[0].resident:
-						<small>{{last_listing.occupancies[0].resident.name}}</small>
-					% end
-				</td>
+				% if request.user:
+					<td>
+						% if last_listing.occupancies and last_listing.occupancies[0].resident:
+							% resident = last_listing.occupancies[0].resident
+							<small>
+								<a href="/users/{{ resident.crsid }}">
+									{{resident.name}}
+								</a>
+							</small>
+						% end
+					</td>
+				% end
 			</tr>
 		% end
 	</tbody>
