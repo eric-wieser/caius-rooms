@@ -469,6 +469,13 @@ Room.review_count = column_property(
 	)
 	.where(Room.id == RoomListing.room_id)
 )
+Room.rating_count = column_property(
+	select([func.count(Review.rating)])
+	.select_from(
+		join(Review, Occupancy).join(RoomListing)
+	)
+	.where(Room.id == RoomListing.room_id)
+)
 Room.photo_count = column_property(
 	select([func.count(Photo.id)])
 	.select_from(

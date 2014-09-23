@@ -45,22 +45,16 @@
 	% last_listing = room.listings[0] if room.listings else None
 	<div id="info" class="row anchor">
 		<div class="col-md-6">
-			% reviews = False and [r for r in room.reviews if r.rating is not None]
 			<h1>
-				<span itemprop="name">{{room.pretty_name()}}</span>
-				% if False and room['owner']:
-					<span class="label label-danger" title="{{room['owner']}}">reserved</span>
-				%end
-				% if reviews:
-					% mean_score = sum(r.rating for r in reviews) * 1.0 / len(reviews)
+				<span itemprop="name">{{ room.pretty_name() }}</span>
+				% if room.adjusted_rating:
 					<small itemprop="aggregateRating" itemscope itemtype="http://schema.org/AggregateRating">
-						<span itemprop="ratingValue">{{ '{:.1f}'.format(mean_score) }}</span><!--
+						<span itemprop="ratingValue">{{ '{:.1f}'.format(room.adjusted_rating) }}</span><!--
 						-->/<span itemprop="bestRating">10</span>
-						<meta itemprop="ratingCount" content="{{len(reviews)}}" />
-						<meta itemprop="reviewCount" content="{{len(reviews)}}" />
+						<meta itemprop="ratingCount" content="{{ room.rating_count }}" />
+						<meta itemprop="reviewCount" content="{{ room.review_count }}" />
 					</small>
 				% end
-
 			</h1>
 			<table class="table">
 				<tr>
