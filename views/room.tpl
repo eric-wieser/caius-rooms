@@ -208,7 +208,7 @@
 				% if not occupancy.reviews and occupancy.resident:
 					<div itemprop="review" itemscope itemtype="http://schema.org/Review">
 						<h2>{{ listing.ballot_season.year }}</h2>
-						<a itemprop="author" href="mailto:{{occupancy.resident.crsid}}">{{occupancy.resident.name}}</a>
+						<a itemprop="author" href="/users/{{occupancy.resident.crsid}}">{{occupancy.resident.name}}</a>
 					</div>
 				% end
 			% end
