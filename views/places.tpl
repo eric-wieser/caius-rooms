@@ -23,7 +23,7 @@
 				<tr>
 					<td {{! 'colspan="3"' if not sub_loc.rooms else '' }} data-value="{{ i }}">
 						<a style="margin-left: {{ 2 * level }}em; "
-						   href="/locations/{{ sub_loc.id }}">{{ sub_loc.pretty_name(sub_loc.parent) }}</a>
+						   href="/places/{{ sub_loc.id }}">{{ sub_loc.pretty_name(sub_loc.parent) }}</a>
 					</td>
 					% if sub_loc.rooms:
 						% if False:

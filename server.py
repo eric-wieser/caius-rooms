@@ -213,7 +213,7 @@ with base_route(app, '/places'):
 			joinedload_all('children.children.children.children.rooms').load_only('adjusted_rating')
 		).filter(m.Cluster.parent == None).one()
 
-		return template('locations', location=root)
+		return template('places', location=root)
 
 	@app.route('/<place_id>', name="place")
 	def show_place(place_id, db):
