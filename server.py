@@ -39,7 +39,8 @@ SimpleTemplate.defaults["get_url"] = app.get_url
 app.install(SQLAlchemyPlugin(
 	engine=sqlalchemy.create_engine('sqlite:///database/test.db'),
 	metadata=m.Base.metadata,
-	keyword='db'
+	keyword='db',
+	use_kwargs=True
 ))
 
 
