@@ -42,7 +42,7 @@
 
 			% last_listing = room.listing_for.get(ballot)
 
-			<tr class="room" data-roomid="{{ room.id }}">
+			<tr class="room{{ ' warning' if not last_listing else ''}}" data-roomid="{{ room.id }}">
 				<td class="shrink{{ ' rule-right' if skip_place else '' }}" style="text-align: right">
 					% if room.is_suite:
 						<span class="glyphicon glyphicon-th-large text-muted" title="Suite"></span>
