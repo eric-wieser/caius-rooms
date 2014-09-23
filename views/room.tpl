@@ -54,14 +54,16 @@
 			<h1>
 				<span itemprop="name">{{ room.pretty_name() }}</span>
 
-				% if not last_occupancy:
+				% if not last_listing:
 					<span class="label label-warning" title="Not on offer for the {{ ballot.year }} ballot">unavailable</span>
-				% elif not last_occupancy.resident:
+				% elif not last_occupancy:
 					% pass
-				% elif last_occupancy.resident == request.user:
-					<span class="label label-success">yours</span>
+				% elif not last_occupancy.resident:
+					<span class="label label-danger" title="Owner not recorded...">reserved</span>
+				% elif last_occupancy.resident != request.user:
+					<span class="label label-danger" title="By {{ last_occupancy.resident.name }}">reserved</span>
 				% else:
-					<span class="label label-danger" title="{{ last_occupancy.resident.name }}">reserved</span>
+					<span class="label label-success">yours</span>
 				% end
 
 				% if room.adjusted_rating:
