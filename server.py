@@ -252,10 +252,8 @@ with base_route(app, '/places'):
 
 with base_route(app, '/reviews'):
 	@app.route('/new/<occ_id>', name="new-review")
+	@needs_auth('ownership')
 	def show_new_review_form(occ_id, db):
-		if request.user is None:
-			raise HTTPError(403, "You must be logged in to post a review")
-
 		try:
 			occupancy = db.query(m.Occupancy).filter(m.Occupancy.id == occ_id).one()
 		except NoResultFound:
