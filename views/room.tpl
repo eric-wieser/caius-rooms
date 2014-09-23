@@ -1,4 +1,5 @@
 % from utils import format_ts_html
+% from bottle import request
 
 % rebase layout
 
@@ -42,11 +43,27 @@
 % layout_random = '/rooms/random'
 
 <div class="container" style="margin-bottom: 6em" itemscope itemtype="http://schema.org/Product">
-	% last_listing = room.listings[0] if room.listings else None
+	% last_listing = room.listing_for.get(ballot)
+	% if last_listing and last_listing.occupancies:
+		% last_occupancy = last_listing.occupancies[-1]
+	% else:
+		% last_occupancy = None
+	% end
 	<div id="info" class="row anchor">
 		<div class="col-md-6">
 			<h1>
 				<span itemprop="name">{{ room.pretty_name() }}</span>
+
+				% if not last_occupancy:
+					<span class="label label-warning" title="Not on offer for the {{ ballot.year }} ballot">unavailable</span>
+				% elif not last_occupancy.resident:
+					% pass
+				% elif last_occupancy.resident == request.user:
+					<span class="label label-success">yours</span>
+				% else:
+					<span class="label label-danger" title="{{ last_occupancy.resident.name }}">reserved</span>
+				% end
+
 				% if room.adjusted_rating:
 					<small itemprop="aggregateRating" itemscope itemtype="http://schema.org/AggregateRating">
 						<span itemprop="ratingValue">{{ '{:.1f}'.format(room.adjusted_rating) }}</span><!--

@@ -40,9 +40,8 @@
 				% containing_place = containing_place.parent
 			% end
 
-			% if room.listings:
-				% last_listing = room.listings[0]
-			% end
+			% last_listing = room.listing_for.get(ballot)
+
 			<tr class="room" data-roomid="{{ room.id }}">
 				<td class="shrink{{ ' rule-right' if skip_place else '' }}" style="text-align: right">
 					% if room.is_suite:
@@ -145,7 +144,7 @@
 				</td>
 				% if request.user:
 					<td>
-						% if last_listing.occupancies and last_listing.occupancies[0].resident:
+						% if last_listing and last_listing.occupancies and last_listing.occupancies[0].resident:
 							% resident = last_listing.occupancies[0].resident
 							<small>
 								<a href="/users/{{ resident.crsid }}">

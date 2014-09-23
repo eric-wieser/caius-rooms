@@ -48,6 +48,7 @@ from sqlalchemy import (
 from sqlalchemy import func
 from sqlalchemy.orm import relationship, backref, column_property, aliased, join
 from sqlalchemy.orm.session import object_session
+from sqlalchemy.orm.collections import attribute_mapped_collection
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.sql.expression import select, extract, case
@@ -210,6 +211,11 @@ class Room(Base):
 	living_room_view = Column(RoomView)
 
 	parent   = relationship(lambda: Cluster, backref="rooms", lazy='joined')
+
+	listing_for = relationship(
+		lambda: RoomListing,
+		collection_class=attribute_mapped_collection('ballot_season')
+	)
 
 	@property
 	def geocoords(self):

@@ -111,6 +111,14 @@ def log_sql(callback):
 	return wrapper
 
 
+def get_ballot(db):
+	res = db.query(m.BallotSeason).order_by(m.BallotSeason.year.desc()).first()
+	if res:
+		return res
+	else:
+		raise HTTPError(500, "Could not get current ballot")
+
+
 # declare basic routes - index, static files, and error page
 @app.route('/static/<path:path>', name='static', skip=[get_authed_user])
 def static(path):
@@ -184,13 +192,13 @@ with base_route(app, '/rooms'):
 		if request.query.group:
 			filters.append(filter_group(request.query.group))
 
-		return template('rooms', rooms=db.query(m.Room).all(), filters=filters)
+		return template('rooms', rooms=db.query(m.Room).all(), ballot=get_ballot(db), filters=filters)
 
 	@app.route('/<room_id>')
 	def show_room(room_id, db):
 		try:
 			room = db.query(m.Room).filter(m.Room.id == room_id).one()
-			return template('room', room=room, version=request.query.v)
+			return template('room', room=room, ballot=get_ballot(db), version=request.query.v)
 		except NoResultFound:
 			raise HTTPError(404, "No matching room")
 
@@ -219,7 +227,7 @@ with base_route(app, '/places'):
 	def show_place(place_id, db):
 		try:
 			location = db.query(m.Cluster).filter(m.Cluster.id == place_id).one()
-			return template('place', location=location, filters=[])
+			return template('place', location=location, ballot=get_ballot(db), filters=[])
 		except NoResultFound:
 			raise HTTPError(404, "No matching location")
 
