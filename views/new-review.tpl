@@ -11,7 +11,7 @@
 			% end
 		% end
 	% end
-	% return None
+	% return ''
 % end
 
 <div class="container">
