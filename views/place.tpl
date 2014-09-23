@@ -21,8 +21,9 @@
 	% for filter in filters:
 		% filtered_rooms = [room for room in filtered_rooms if filter(room)]
 	% end
-
 	% filtered_rooms.sort(key=lambda r: (r.adjusted_rating, r.photo_count, -r.id), reverse=True)
+
+	<h1>{{ location.pretty_name() }}</h1>
 	<p class="lead">
 		{{len(filtered_rooms)}} rooms
 	</p>
@@ -37,6 +38,7 @@
 	<div id="map" style="height: 400px"></div>
 	% lat_lon = location.geocoords
 	% if lat_lon:
+		<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&amp;sensor=false"></script>
 		<script>
 			google.maps.visualRefresh = true;
 

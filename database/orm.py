@@ -159,11 +159,11 @@ class Cluster(Base):
 
 	@property
 	def geocoords(self):
-		parent = self.parent
-		while parent:
-			if parent.latitude and parent.longitude:
-				return parent.latitude, parent.longitude
-			parent = parent.parent
+		current = self
+		while current:
+			if current.latitude and current.longitude:
+				return current.latitude, current.longitude
+			current = current.parent
 
 	@property
 	def all_rooms_q(self):
@@ -219,11 +219,11 @@ class Room(Base):
 
 	@property
 	def geocoords(self):
-		parent = self.parent
-		while parent:
-			if parent.latitude and parent.longitude:
-				return parent.latitude, parent.longitude
-			parent = parent.parent
+		current = self.parent
+		while current:
+			if current.latitude and current.longitude:
+				return current.latitude, current.longitude
+			current = current.parent
 
 	def pretty_name(self, relative_to=None):
 		"""
