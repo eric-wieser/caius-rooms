@@ -440,6 +440,33 @@ class ReviewSection(Base):
 		return ''.join('<p>' + line.replace('\n', '<br />') + '</p>' for line in self.content.split('\n\n'))
 
 
+class ReviewRoomReference(Base):
+	"""
+	A reference to a room within the text of a review. One piece of text can
+	refer to multiple rooms. Location of the reference is stored to enable
+	linking
+	"""
+	__tablename__ = prefix + 'review_room_reference'
+
+	id = Column(Integer, primary_key=True)
+
+	review_id = Column(Integer, ForeignKey(ReviewSection.review_id))
+	review_heading_id = Column(Integer, ForeignKey(ReviewSection.heading_id))
+	room_id = Column(Integer, ForeignKey(Room.id))
+
+	start_idx = Column(Integer)
+	end_idx = Column(Integer)
+
+	review_section = relationship(
+		lambda: ReviewSection,
+		backref=backref('refers_to', order_by=start_idx),
+		foreign_keys=[review_id, review_heading_id],
+		primaryjoin=(review_id == ReviewSection.review_id) & (review_heading_id == ReviewSection.heading_id)
+	)
+	room = relationship(lambda: Room, backref='references')
+
+
+
 #Read: https://research.microsoft.com/pubs/64525/tr-2006-45.pdf
 class Photo(Base):
 	__tablename__ = prefix + 'photos'
