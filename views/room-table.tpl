@@ -2,6 +2,7 @@
 % from bottle import request
 % from utils import restricted
 
+<div class="table-responsive">
 <table class="table table-condensed table-hover sortable">
 	<thead>
 		% skip_place = True
@@ -175,3 +176,4 @@
 	});
 	</script>
 </table>
+</div>
