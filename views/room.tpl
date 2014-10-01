@@ -219,6 +219,7 @@
 					% include review.tpl review=review, version=version
 				% end
 				% if not occupancy.reviews and occupancy.resident:
+					<hr />
 					<div itemprop="review" itemscope itemtype="http://schema.org/Review">
 						<h2>{{ listing.ballot_season.year }}</h2>
 						<a itemprop="author" href="/users/{{occupancy.resident.crsid}}">{{occupancy.resident.name}}</a>
@@ -231,24 +232,24 @@
 	% referring_sections = set(ref.review_section for ref in room.references if ref.review_section.review.occupancy.listing.room != room)
 
 	% if referring_sections:
+		% referring_sections = sorted(referring_sections, key=lambda s: s.review.occupancy.listing.ballot_season.year, reverse=True)
+		<hr />
 		<div id="references" class="anchor">
-			<h3>References</h3>
+			<h2>References <small>mentions in other reviews</small></h2>
+
 
 			<div class="row">
 				% for section in referring_sections:
 					% refered_by = section.review.occupancy.listing.room
 					<div class="col-md-6">
-						<div class="panel panel-default">
-							<div class="panel-heading">
+							<h3>
 								<a href="/rooms/{{ refered_by.id }}#review-{{ section.review.id }}">
-									{{ refered_by.pretty_name() }}
-									&bull; {{ section.review.occupancy.listing.ballot_season.year }} -
-										   {{ section.review.occupancy.listing.ballot_season.year + 1}}
-									&bull; {{ section.heading.name }}
-								</a>
-							</div>
-							<div class="panel-body">{{! section.html_content(room) }}</div>
-						</div>
+									{{ refered_by.pretty_name() }}</a>
+								<small>{{ section.review.occupancy.listing.ballot_season.year }} -
+									   {{ section.review.occupancy.listing.ballot_season.year + 1}}
+								&bull; {{ section.heading.name }}</small>
+							</h3>
+							{{! section.html_content(room) }}
 					</div>
 				% end
 			</div>
