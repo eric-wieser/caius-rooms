@@ -146,6 +146,8 @@ def do_login(db):
 		r = raven.Request(url=request.url, desc="RoomPicks")
 		redirect(str(r))
 	else:
+		if "WLS-Response" not in request.query:
+			raise HTTPError(400, "Authentication failed. Please try again")
 		del request.session['authenticating']
 
 		r = raven.Response(request.query["WLS-Response"])
