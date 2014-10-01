@@ -105,7 +105,7 @@
 				<tr>
 					<th scope="row">Rent</th>
 					<td>
-						% if last_listing.rent:
+						% if last_listing and last_listing.rent:
 							£{{ "{:.2f}".format(last_listing.rent) }} / term
 						% end
 					</td>
