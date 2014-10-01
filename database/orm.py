@@ -464,20 +464,25 @@ class ReviewSection(Base):
 
 		for text, refs in self.tokens:
 			text = html_escape(text)
-			if not refs:
-				html += text
-			elif len(refs) > 1:
-				html += '<a href="/rooms?filter_id={id}">{text}</a>'.format(
-					id=','.join(str(ref.room_id) for ref in refs),
-					text=text
-				)
-			elif refs[0].room_id == current_room.id:
-				html += '<b>{text}</b>'.format(text=text)
-			else:
-				html += '<a href="/rooms/{id}">{text}</a>'.format(
+			# highlight matching reference in bold
+			if any(ref.room_id == current_room.id for ref in refs):
+				text = '<b>{text}</b>'.format(text=text)
+
+			# link non-self single refs
+			if len(refs) == 1 and refs[0].room_id != current_room.id:
+				text = '<a href="/rooms/{id}">{text}</a>'.format(
 					id=refs[0].room_id,
 					text=text
 				)
+
+			# link all multirefs
+			elif len(refs) > 1:
+				text = '<a href="/rooms?filter_id={id}">{text}</a>'.format(
+					id=','.join(str(ref.room_id) for ref in refs),
+					text=text
+				)
+
+			html += text
 
 		return ''.join('<p>' + line.replace('\n', '<br />') + '</p>' for line in html.split('\n\n'))
 
