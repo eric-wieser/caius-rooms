@@ -436,50 +436,50 @@ class ReviewSection(Base):
 	)
 
 	@property
-	def html_content(self):
+	def tokens(self):
+		""" Tokenize the text into refs and non-refs """
 		from itertools import groupby
-		from bottle import html_escape
-		room = self.review.occupancy.listing.room
-		raw_content = self.content
 
-		processed_content = ""
-		last = 0
+		last_idx = 0
 
 		for start_idx, refs in groupby(self.refers_to, lambda r: r.start_idx):
+			if start_idx < last_idx:
+				raise ValueError
+
 			refs = list(refs)
 			end_idx = max(r.end_idx for r in refs)
 
-			# add unprocessed raw text
-			processed_content += html_escape(raw_content[last:start_idx])
+			yield self.content[last_idx:start_idx], []
 
-			# pull out linkable text
-			linked_content = html_escape(raw_content[start_idx:end_idx])
+			yield self.content[start_idx:end_idx], refs
 
-			if len(refs) == 1:
-				ref = refs[0]
-				# link to self
-				if ref.room_id == room.id:
-					linked_content = '<em>{text}</em>'.format(text=linked_content)
+			last_idx = end_idx
 
-				#link to single
-				else:
-					linked_content = '<a href="/rooms/{id}">{text}</a>'.format(
-						id=ref.room_id,
-						text=linked_content
-					)
-			else:
-				linked_content = '<a href="/rooms?filter_id={id}">{text}</a>'.format(
+		yield self.content[last_idx:], []
+
+	def html_content(self, current_room=None):
+		from bottle import html_escape
+
+		html = ""
+
+		for text, refs in self.tokens:
+			text = html_escape(text)
+			if not refs:
+				html += text
+			elif len(refs) > 1:
+				html += '<a href="/rooms?filter_id={id}">{text}</a>'.format(
 					id=','.join(str(ref.room_id) for ref in refs),
-					text=linked_content
+					text=text
+				)
+			elif refs[0].room_id == current_room.id:
+				html += '<b>{text}</b>'.format(text=text)
+			else:
+				html += '<a href="/rooms/{id}">{text}</a>'.format(
+					id=refs[0].room_id,
+					text=text
 				)
 
-			processed_content += linked_content
-
-			last = end_idx
-
-		processed_content += raw_content[last:]
-
-		return ''.join('<p>' + line.replace('\n', '<br />') + '</p>' for line in processed_content.split('\n\n'))
+		return ''.join('<p>' + line.replace('\n', '<br />') + '</p>' for line in html.split('\n\n'))
 
 
 class ReviewRoomReference(Base):

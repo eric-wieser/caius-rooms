@@ -60,7 +60,7 @@
 							% end
 							{{ section.heading.name }}
 						</h3>
-						{{! section.html_content }}
+						{{! section.html_content(review.occupancy.listing.room) }}
 					% end
 				% end
 			</div>
@@ -70,7 +70,7 @@
 					% for section in review.sections:
 						% if not section.heading.is_summary:
 							<dt>{{ section.heading.name }}</dt>
-							<dd>{{! section.html_content }}</dd>
+							<dd>{{! section.html_content(review.occupancy.listing.room) }}</dd>
 						% end
 					% end
 				</dl>

@@ -247,7 +247,7 @@
 									&bull; {{ section.heading.name }}
 								</a>
 							</div>
-							<div class="panel-body">{{! section.html_content }}</div>
+							<div class="panel-body">{{! section.html_content(room) }}</div>
 						</div>
 					</div>
 				% end
