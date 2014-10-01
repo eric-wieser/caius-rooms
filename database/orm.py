@@ -437,7 +437,48 @@ class ReviewSection(Base):
 
 	@property
 	def html_content(self):
-		return ''.join('<p>' + line.replace('\n', '<br />') + '</p>' for line in self.content.split('\n\n'))
+		from itertools import groupby
+		room = self.review.occupancy.listing.room
+		raw_content = self.content
+
+		processed_content = ""
+		last = 0
+
+		for start_idx, refs in groupby(self.refers_to, lambda r: r.start_idx):
+			refs = list(refs)
+			end_idx = max(r.end_idx for r in refs)
+
+			# add unprocessed raw text
+			processed_content += raw_content[last:start_idx]
+
+			# pull out linkable text
+			linked_content = raw_content[start_idx:end_idx]
+
+			if len(refs) == 1:
+				ref = refs[0]
+				# link to self
+				if ref.room_id == room.id:
+					linked_content = '<em>{text}</em>'.format(text=linked_content)
+
+				#link to single
+				else:
+					linked_content = '<a href="/rooms/{id}">{text}</a>'.format(
+						id=ref.room_id,
+						text=linked_content
+					)
+			else:
+				linked_content = '<a href="/rooms?filter_id={id}">{text}</a>'.format(
+					id=','.join(str(ref.room_id) for ref in refs),
+					text=linked_content
+				)
+
+			processed_content += linked_content
+
+			last = end_idx
+
+		processed_content += raw_content[last:]
+
+		return ''.join('<p>' + line.replace('\n', '<br />') + '</p>' for line in processed_content.split('\n\n'))
 
 
 class ReviewRoomReference(Base):
