@@ -226,22 +226,32 @@
 				% end
 			% end
 		%end
-		% if False and room['references']:
-			<h3 id="references">References</h3>
-			<ul>
-				% for reference in room['references']:
-					<li>
-						<a href="/rooms/{{ reference['review']['room']['id'] }}">
-							{{ reference['review']['room']['name'] }}
-						</a>
-						<span class="text-muted">
-							- {{ reference['review']['date'] }}
-							- {{ reference['name'] }}
-						</span>
-						<p>{{! reference['value'] }}</p>
-					</li>
-				% end
-			</ul>
-		% end
 	</div>
+
+	% referring_sections = set(ref.review_section for ref in room.references if ref.review_section.review.occupancy.listing.room != room)
+
+	% if referring_sections:
+		<div id="references" class="anchor">
+			<h3>References</h3>
+
+			<div class="row">
+				% for section in referring_sections:
+					% refered_by = section.review.occupancy.listing.room
+					<div class="col-md-6">
+						<div class="panel panel-default">
+							<div class="panel-heading">
+								<a href="/rooms/{{ refered_by.id }}#review-{{ section.review.id }}">
+									{{ refered_by.pretty_name() }}
+									&bull; {{ section.review.occupancy.listing.ballot_season.year }} -
+										   {{ section.review.occupancy.listing.ballot_season.year + 1}}
+									&bull; {{ section.heading.name }}
+								</a>
+							</div>
+							<div class="panel-body">{{! section.html_content }}</div>
+						</div>
+					</div>
+				% end
+			</div>
+		</div>
+	% end
 </div>
