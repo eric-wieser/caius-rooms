@@ -5,16 +5,16 @@ room_range = re.compile(r'''
 	\b(?:
 		# match the prefix indicating the next number is a room number
 		(?:
-			(?:(?i)rooms\ +)
+			rooms\ +
 			|
-			(?P<staircase>[A-Z])
+			(?-i:(?P<staircase>[A-Z]))
 		)
 
-		(?:(?i)
+		(?:
 			# match a range of rooms, without all being listed
 			(?P<range_start>\d+)
 			\ *(?:-|to)\ *
-			\g<staircase>?
+			(?-i:\g<staircase>)?
 			(?P<range_end>\d+)
 			|
 			# match a list of rooms, where only the first is prefixed
@@ -26,10 +26,10 @@ room_range = re.compile(r'''
 		)
 	|
 		# match a single room without a staircase. Intentionally special cased
-		(?!gyp\ )(?:(?i)room)\ +(?P<number>\d++)
+		(?!gyp\ )room\ +(?P<number>\d++)
 	)\b
 	''',
-	re.V1 | re.X # V1 needed for scoped case insensitivity
+	re.V1 | re.X | re.I # V1 needed for scoped case sensitivity
 )
 i = 0
 

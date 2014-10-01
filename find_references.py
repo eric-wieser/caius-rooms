@@ -28,6 +28,10 @@ s.query(m.ReviewRoomReference).delete()
 DummyRoom = object()
 
 def find_room(room, path_str):
+	# deal with old naming of K block
+	if len(path) > 1 and path_str[-2] == u'K' and room.parent.path[-1].name.lower() == u'k block':
+		path_str[-2:-1] = []
+
 	# find the common base of the room and path
 	base = room.parent.path[-len(path_str)]
 
@@ -63,6 +67,7 @@ for room, sections in get_all_sections_by_room():
 
 			if ref_room is None:
 				print room, path, '=>', ref_room
+				print section.content[max(0, span[0]-10):span[1] + 10]
 				continue
 
 			start_idx, end_idx = span
