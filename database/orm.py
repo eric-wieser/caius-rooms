@@ -438,6 +438,7 @@ class ReviewSection(Base):
 	@property
 	def html_content(self):
 		from itertools import groupby
+		from bottle import html_escape
 		room = self.review.occupancy.listing.room
 		raw_content = self.content
 
@@ -449,10 +450,10 @@ class ReviewSection(Base):
 			end_idx = max(r.end_idx for r in refs)
 
 			# add unprocessed raw text
-			processed_content += raw_content[last:start_idx]
+			processed_content += html_escape(raw_content[last:start_idx])
 
 			# pull out linkable text
-			linked_content = raw_content[start_idx:end_idx]
+			linked_content = html_escape(raw_content[start_idx:end_idx])
 
 			if len(refs) == 1:
 				ref = refs[0]
