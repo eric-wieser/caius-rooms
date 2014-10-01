@@ -44,7 +44,13 @@
 							{{! restricted() }}
 						% end
 						<br />
-						<span class="text-muted">#{{ review.occupancy.ballot_slot.ranking }}</span>
+						<span class="text-muted">
+							% if review.occupancy.ballot_slot:
+								#{{ review.occupancy.ballot_slot.ranking }}
+							% else:
+								off-ballot
+							% end
+						</span>
 					</p>
 				% end
 			% end

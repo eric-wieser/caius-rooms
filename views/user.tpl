@@ -30,9 +30,13 @@
 							</td>
 							<td>
 								% sl = o.ballot_slot
-								<a href="/ballots/{{ o.listing.ballot_season.year }}#slot-{{ sl.id }}">
-									#{{ sl.ranking }}</a>
-								in the {{ sl.event.type.name.lower() }} ballot
+								% if sl:
+									<a href="/ballots/{{ o.listing.ballot_season.year }}#slot-{{ sl.id }}">
+										#{{ sl.ranking }}</a>
+									in the {{ sl.event.type.name.lower() }} ballot
+								% else:
+									not balloted for
+								% end
 							</td>
 							<td class="text-muted">
 								{{! format_ts_html(o.chosen_at) }}
