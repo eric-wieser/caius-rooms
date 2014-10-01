@@ -570,6 +570,20 @@ Room.resident_count = column_property(
 	)
 	.where(Room.id == RoomListing.room_id)
 )
+Room.reference_count = column_property(
+	select([func.count(ReviewRoomReference.id)])
+	.select_from(
+		join(ReviewRoomReference, ReviewSection,
+				(ReviewRoomReference.review_id == ReviewSection.review_id) &
+				(ReviewRoomReference.review_heading_id == ReviewSection.heading_id)
+			)
+			.join(Review)
+			.join(Occupancy)
+			.join(RoomListing)
+	)
+	.where(Room.id == ReviewRoomReference.room_id)
+	.where(Room.id != RoomListing.room_id)  # filter self-references
+)
 
 bs = aliased(BallotSlot)
 BallotSlot.ranking = column_property(

@@ -24,7 +24,7 @@
 			<th>Rent</th>
 			<th>Area</th>
 			<th class="rule-right">Rating</th>
-			<th data-defaultsort='disabled' colspan="3" class="rule-right" style="text-align: center">Feedback</th>
+			<th data-defaultsort='disabled' colspan="4" class="rule-right" style="text-align: center">Feedback</th>
 			% if not request.user:
 				<th data-defaultsort='disabled' colspan="3" style="text-align: center">Features</th>
 			% else:
@@ -102,13 +102,23 @@
 						% end
 					% end
 				</td>
-				<td class="shrink center rule-right">
+				<td class="shrink center">
 					% n = room.photo_count
 					% if n:
 						% m = '1 photo' if n == 1 else '{} photos'.format(n)
 						<a href="/rooms/{{room.id}}#photos" style="color: inherit; text-decoration: none">
 							<span class="hidden-xs" style="display: inline-block; width: 2ex; text-align: right">{{ n if n != 1 else '' }}</span>
 							<span class="glyphicon glyphicon-picture" title="{{m}}"></span>
+						</a>
+					% end
+				</td>
+				<td class="shrink center rule-right">
+					% n = room.reference_count
+					% if n:
+						% m = '1 reference' if n == 1 else '{} references'.format(n)
+						<a href="/rooms/{{room.id}}#references" style="color: inherit; text-decoration: none">
+							<span class="hidden-xs" style="display: inline-block; width: 2ex; text-align: right">{{ n if n != 1 else '' }}</span>
+							<span class="glyphicon glyphicon-link" title="{{m}}"></span>
 						</a>
 					% end
 				</td>
