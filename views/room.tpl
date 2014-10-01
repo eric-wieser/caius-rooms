@@ -1,4 +1,4 @@
-% from utils import format_ts_html
+% from utils import format_ts_html, restricted
 % from bottle import request
 
 % rebase layout
@@ -222,7 +222,11 @@
 					<hr />
 					<div itemprop="review" itemscope itemtype="http://schema.org/Review">
 						<h2>{{ listing.ballot_season.year }}</h2>
-						<a itemprop="author" href="/users/{{occupancy.resident.crsid}}">{{occupancy.resident.name}}</a>
+						% if request.user:
+							<a itemprop="author" href="/users/{{occupancy.resident.crsid}}">{{occupancy.resident.name}}</a>
+						% else:
+							{{! restricted() }}
+						% end
 					</div>
 				% end
 			% end
