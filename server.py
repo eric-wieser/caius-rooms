@@ -198,9 +198,10 @@ with base_route(app, '/rooms'):
 	def show_room(room_id, db):
 		try:
 			room = db.query(m.Room).filter(m.Room.id == room_id).one()
-			return template('room', room=room, ballot=get_ballot(db), version=request.query.v)
 		except NoResultFound:
 			raise HTTPError(404, "No matching room")
+
+		return template('room', room=room, ballot=get_ballot(db), version=request.query.v)
 
 	@app.route('/random')
 	def show_random_room(db):
@@ -227,17 +228,19 @@ with base_route(app, '/places'):
 	def show_place(place_id, db):
 		try:
 			location = db.query(m.Cluster).filter(m.Cluster.id == place_id).one()
-			return template('place', location=location, ballot=get_ballot(db), filters=[])
 		except NoResultFound:
 			raise HTTPError(404, "No matching location")
+
+		return template('place', location=location, ballot=get_ballot(db), filters=[])
 
 	@app.route('/<place_id>/photos', name="place-photos")
 	def show_place_photos(place_id, db):
 		try:
 			location = db.query(m.Cluster).filter(m.Cluster.id == place_id).one()
-			return template('place-photos', place=location, filters=[])
 		except NoResultFound:
 			raise HTTPError(404, "No matching location")
+
+		return template('place-photos', place=location, filters=[])
 
 	@app.route('/random')
 	def show_random_place(db):
@@ -368,9 +371,10 @@ with base_route(app, '/users'):
 				joinedload(m.Person.occupancies).subqueryload(m.Occupancy.reviews).load_only(m.Review.id),
 				joinedload(m.Person.occupancies).subqueryload(m.Occupancy.photos).load_only(m.Photo.id)
 			).filter(m.Person.crsid == crsid).one()
-			return template('user', user=user)
 		except NoResultFound:
 			raise HTTPError(404, "No such user")
+
+		return template('user', user=user)
 
 	@app.route('/random')
 	@needs_auth
