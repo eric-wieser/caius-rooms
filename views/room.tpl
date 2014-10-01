@@ -227,6 +227,8 @@
 						% else:
 							{{! restricted() }}
 						% end
+						<br />
+						<span class="text-muted">#{{ occupancy.ballot_slot.ranking }}</span>
 					</div>
 				% end
 			% end

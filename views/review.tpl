@@ -35,13 +35,17 @@
 				</a>
 			% else:
 				% if review.occupancy.resident:
-					% if request.user:
-						<a itemprop="author" href="/users/{{ review.occupancy.resident.crsid }}">
-							{{review.occupancy.resident.name}}
-						</a>
-					% else:
-						{{! restricted() }}
-					% end
+					<p>
+						% if request.user:
+							<a itemprop="author" href="/users/{{ review.occupancy.resident.crsid }}">
+								{{review.occupancy.resident.name}}
+							</a>
+						% else:
+							{{! restricted() }}
+						% end
+						<br />
+						<span class="text-muted">#{{ review.occupancy.ballot_slot.ranking }}</span>
+					</p>
 				% end
 			% end
 		</div>
