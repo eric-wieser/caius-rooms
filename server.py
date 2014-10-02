@@ -329,7 +329,7 @@ with base_route(app, '/reviews'):
 		)
 		db.add(review)
 
-		if review.contents_eq(last_review):
+		if last_review and review.contents_eq(last_review):
 			raise HTTPError(400, "Same as last review")
 
 			# TODO: fail gracefully
