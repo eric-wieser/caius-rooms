@@ -5,29 +5,13 @@ import regex as re
 
 import reference_helper
 
-# setup db stuff
-import database.db
 
-s = database.db.Session()
-
-def get_all_sections_by_room():
-	for room in s.query(m.Room):
-		def gen():
-			for listing in room.listings:
-				for occupancy in listing.occupancies:
-					for review in occupancy.reviews:
-						for section in review.sections:
-							yield section
-
-		yield room, gen()
-
-s.query(m.ReviewRoomReference).delete()
 
 DummyRoom = object()
 
 def find_room(room, path_str):
 	# deal with old naming of K block
-	if len(path) > 1 and path_str[-2] == u'K' and room.parent.path[-1].name.lower() == u'k block':
+	if len(path_str) > 1 and path_str[-2] == u'K' and room.parent.path[-1].name.lower() == u'k block':
 		path_str[-2:-1] = []
 
 	# find the common base of the room and path
@@ -54,28 +38,52 @@ def find_room(room, path_str):
 	else:
 		return None
 
+def scan(room, section):
+	for path, span in reference_helper.references_in(section.content):
+		ref_room = find_room(room, path)
+		if ref_room is DummyRoom:
+			continue
 
-for room, sections in get_all_sections_by_room():
-	for section in sections:
-		for path, span in reference_helper.references_in(section.content):
+		if ref_room is None:
+			print room, path, '=>', ref_room
+			print section.content[max(0, span[0]-10):span[1] + 10]
+			continue
 
-			ref_room = find_room(room, path)
-			if ref_room is DummyRoom:
-				continue
+		start_idx, end_idx = span
+		ref = m.ReviewRoomReference(
+			review_section=section,
+			start_idx=start_idx,
+			end_idx=end_idx,
+			room=ref_room
+		)
 
-			if ref_room is None:
-				print room, path, '=>', ref_room
-				print section.content[max(0, span[0]-10):span[1] + 10]
-				continue
+		yield ref
 
-			start_idx, end_idx = span
-			ref = m.ReviewRoomReference(
-				review_section=section,
-				start_idx=start_idx,
-				end_idx=end_idx,
-				room=ref_room
-			)
 
+def scan_review(review):
+	room = review.occupancy.listing.room
+	for section in review.sections:
+		for ref in scan(room, section):
+			yield ref
+
+
+if __name__ == '__main__':
+	# setup db stuff
+	import database.db
+
+	s = database.db.Session()
+
+	s.query(m.ReviewRoomReference).delete()
+
+	def get_all_reviews():
+		for room in s.query(m.Room):
+			for listing in room.listings:
+				for occupancy in listing.occupancies:
+					for review in occupancy.reviews:
+						yield review
+
+	for section in get_all_reviews():
+		for ref in scan_review(section):
 			s.add(ref)
 
-s.commit()
+	s.commit()

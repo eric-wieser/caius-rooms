@@ -312,6 +312,7 @@ with base_route(app, '/reviews'):
 				elif heading.is_summary:
 					raise HTTPError(400, "{!r} section cannot be left blank".format(heading.name))
 
+		# validate the rating
 		try:
 			rating = int(request.forms.rating)
 		except ValueError:
@@ -329,6 +330,7 @@ with base_route(app, '/reviews'):
 		)
 		db.add(review)
 
+		# check we haven't hit a double-post situation
 		if last_review and review.contents_eq(last_review):
 			raise HTTPError(400, "Same as last review")
 
@@ -336,6 +338,11 @@ with base_route(app, '/reviews'):
 			db.rollback()
 			flash_some_message()
 			redirect_anyway()
+
+		# look for references in the review
+		import find_references
+		for ref in find_references.scan_review(review):
+			db.add(ref)
 
 		redirect('/rooms/{}#review-{}'.format(occupancy.listing.room_id, review.id))
 
