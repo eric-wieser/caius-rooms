@@ -6,11 +6,9 @@ import regex as re
 import reference_helper
 
 # setup db stuff
-Session = sessionmaker()
-engine = create_engine('sqlite:///database/test.db')
-m.Base.metadata.create_all(engine)
-Session.configure(bind=engine)
-s = Session()
+import database.db
+
+s = database.db.Session()
 
 def get_all_sections_by_room():
 	for room in s.query(m.Room):
