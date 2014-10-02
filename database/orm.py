@@ -53,15 +53,12 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.sql.expression import select, extract, case
 
-# we share a DB with the gcsu, so use a unique prefix
-prefix = '_room_picks_'
-
 Base = declarative_base()
 
 CRSID = String(10)
 
 class Person(Base):
-	__tablename__ = prefix + 'people'
+	__tablename__ = 'people'
 
 	crsid     = Column(CRSID,  primary_key=True)
 	name      = Column(Unicode(255))
@@ -84,7 +81,7 @@ class Person(Base):
 
 class Cluster(Base):
 	""" (nestable) Groups of nearby physical rooms """
-	__tablename__ = prefix + 'clusters'
+	__tablename__ = 'clusters'
 
 	id         = Column(Integer,                         primary_key=True)
 	name       = Column(Unicode(255),                    nullable=False)
@@ -195,7 +192,7 @@ RoomView = Enum(
 
 class Room(Base):
 	""" A physical room, with time-invariant properties """
-	__tablename__ = prefix + 'rooms'
+	__tablename__ = 'rooms'
 
 	id        = Column(Integer,                         primary_key=True)
 	name      = Column(Unicode(255),                    nullable=False)
@@ -265,7 +262,7 @@ class Room(Base):
 
 class BallotType(Base):
 	""" A type of ballot """
-	__tablename__ = prefix + 'ballot_types'
+	__tablename__ = 'ballot_types'
 
 	id   = Column(Integer, primary_key=True)
 	name = Column(Unicode(255))
@@ -276,7 +273,7 @@ class BallotType(Base):
 
 class BallotSeason(Base):
 	""" A year in which a ballot occurs """
-	__tablename__ = prefix + 'ballot_seasons'
+	__tablename__ = 'ballot_seasons'
 
 	year          = Column(Integer, primary_key=True)
 
@@ -285,7 +282,7 @@ class BallotSeason(Base):
 
 
 class BallotEvent(Base):
-	__tablename__ = prefix + 'ballot_events'
+	__tablename__ = 'ballot_events'
 
 	id        = Column(Integer, primary_key=True)
 	type_id   = Column(Integer, ForeignKey(BallotType.id),     nullable=False)
@@ -303,7 +300,7 @@ class BallotEvent(Base):
 
 
 class BallotSlot(Base):
-	__tablename__ = prefix + 'ballot_slots'
+	__tablename__ = 'ballot_slots'
 
 	id        = Column(Integer, primary_key=True)
 	time      = Column(DateTime)
@@ -321,7 +318,7 @@ class BallotSlot(Base):
 
 class RoomListing(Base):
 	""" A listing of a room within a ballot, with time-variant properties """
-	__tablename__ = prefix + 'room_listings'
+	__tablename__ = 'room_listings'
 
 	id               = Column(Integer, primary_key=True)
 	ballot_season_id = Column(Integer, ForeignKey(BallotSeason.year), index=True)
@@ -340,7 +337,7 @@ class RoomListing(Base):
 
 	__table_args__ = (UniqueConstraint(ballot_season_id, room_id, name='_ballot_room_uc'),)
 
-room_listing_audiences_assoc = Table(prefix + 'room_listing_audiences',	Base.metadata,
+room_listing_audiences_assoc = Table('room_listing_audiences',	Base.metadata,
 	Column('id',              Integer, primary_key=True),
 	Column('room_listing_id', Integer, ForeignKey(RoomListing.id)),
 	Column('ballot_type_id',  Integer, ForeignKey(BallotType.id)),
@@ -348,7 +345,7 @@ room_listing_audiences_assoc = Table(prefix + 'room_listing_audiences',	Base.met
 )
 
 class Occupancy(Base):
-	__tablename__ = prefix + 'occupancies'
+	__tablename__ = 'occupancies'
 
 	id          = Column(Integer,                             primary_key=True)
 	resident_id = Column(CRSID,   ForeignKey(Person.crsid))
@@ -379,7 +376,7 @@ class Occupancy(Base):
 
 
 class Review(Base):
-	__tablename__ = prefix + 'reviews'
+	__tablename__ = 'reviews'
 
 	id           = Column(Integer,  primary_key=True)
 	published_at = Column(DateTime, nullable=False)
@@ -417,7 +414,7 @@ class Review(Base):
 
 class ReviewHeading(Base):
 	""" A heading within a review """
-	__tablename__ = prefix + 'review_headings'
+	__tablename__ = 'review_headings'
 
 	id         = Column(Integer,      primary_key=True)
 	name       = Column(Unicode(255), nullable=False)
@@ -428,7 +425,7 @@ class ReviewHeading(Base):
 
 class ReviewSection(Base):
 	""" A section of content within a review """
-	__tablename__ = prefix + 'review_sections'
+	__tablename__ = 'review_sections'
 
 	review_id  = Column(Integer, ForeignKey(Review.id),        primary_key=True, nullable=False)
 	heading_id = Column(Integer, ForeignKey(ReviewHeading.id), primary_key=True, nullable=False)
@@ -498,7 +495,7 @@ class ReviewRoomReference(Base):
 	refer to multiple rooms. Location of the reference is stored to enable
 	linking
 	"""
-	__tablename__ = prefix + 'review_room_reference'
+	__tablename__ = 'review_room_reference'
 
 	id = Column(Integer, primary_key=True)
 
@@ -521,7 +518,7 @@ class ReviewRoomReference(Base):
 
 #Read: https://research.microsoft.com/pubs/64525/tr-2006-45.pdf
 class Photo(Base):
-	__tablename__ = prefix + 'photos'
+	__tablename__ = 'photos'
 
 	id           = Column(Integer,    primary_key=True)
 	published_at = Column(DateTime,   nullable=False)
