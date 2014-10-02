@@ -16,6 +16,7 @@ import raven
 
 # our includes
 import database.orm as m
+import database.db
 
 
 @contextlib.contextmanager
@@ -37,7 +38,7 @@ SimpleTemplate.defaults["get_url"] = app.get_url
 
 # install the sqlalchemy plugin, which injects a `db` argument into every route
 app.install(SQLAlchemyPlugin(
-	engine=sqlalchemy.create_engine('sqlite:///database/test.db'),
+	engine=database.db.engine,
 	metadata=m.Base.metadata,
 	keyword='db',
 	use_kwargs=True

@@ -2,9 +2,13 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.automap import automap_base
 
+import os
+
+
 Session = sessionmaker()
 
-engine = create_engine('sqlite:///srcf.db')
+base_dir = os.path.dirname(__file__)
+engine = create_engine('sqlite:///{}'.format(os.path.join(base_dir, 'srcf.db')))
 
 Session.configure(bind=engine)
 

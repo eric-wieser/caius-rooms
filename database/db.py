@@ -1,15 +1,19 @@
+import os
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-Session = sessionmaker()
+try:
+	from db_conn import user, password
+	engine = create_engine(
+        'mysql+mysqldb://{user}:{password}@localhost/gcsu/roompicks?charset=utf8&use_unicode=1'.format(
+        	user=user, password=password
+        ),
+        pool_recycle=3600
+	)
+except ImportError:
+	print "Using development sqlite database"
+	base_dir = os.path.dirname(__file__)
+	engine = create_engine('sqlite:///{}'.format(os.path.join(base_dir, 'dev.db')))
 
-def init(mode):
-	global engine
-	if mode == 'real':
-		engine = create_engine(
-			pool_recycle=3600
-		)
-	elif mode == 'dev':
-		engine = create_engine('sqlite:///test.db')
-
-	Session.configure(bind=engine)
+Session = sessionmaker(engine)

@@ -40,36 +40,32 @@ get_name.unlisted = set()
 get_name.no_name = set()
 get_name.no_ldap = False
 
-db.init('dev')
+def migrate(old_session, new_session):
+	for user in old_session.query(olddb.orm.accom_guide_person):
+		if any(x in user.CRSID for x in (u'-', u'MUSIC', u'RESERVED')):
+			continue
 
-new_session = db.Session()
-old_session = olddb.Session()
+		crsid = user.CRSID.lower()
 
-for user in old_session.query(olddb.orm.accom_guide_person):
-	if any(x in user.CRSID for x in (u'-', u'MUSIC', u'RESERVED')):
-		continue
+		if crsid != user.CRSID:
+			continue
 
-	crsid = user.CRSID.lower()
+		p = orm.Person(
+			name=get_name(crsid) or user.Name,
+			crsid=crsid
+		)
+		new_session.add(p)
 
-	if crsid != user.CRSID:
-		continue
+	new_session.commit()
 
-	p = orm.Person(
-		name=get_name(crsid) or user.Name,
-		crsid=crsid
-	)
-	new_session.add(p)
-
-new_session.commit()
-
-if get_name.no_ldap:
-	print "No LDAP"
-if get_name.no_name:
-	print "No displayName in LDAP - {}: {}".format(
-		len(get_name.no_name),  ', '.join(sorted(get_name.no_name))
-	)
-if get_name.unlisted:
-	print "Not listed in LDAP - {}: {}"    .format(
-		len(get_name.unlisted), ', '.join(sorted(get_name.unlisted))
-	)
+	if get_name.no_ldap:
+		print "No LDAP"
+	if get_name.no_name:
+		print "No displayName in LDAP - {}: {}".format(
+			len(get_name.no_name),  ', '.join(sorted(get_name.no_name))
+		)
+	if get_name.unlisted:
+		print "Not listed in LDAP - {}: {}"    .format(
+			len(get_name.unlisted), ', '.join(sorted(get_name.unlisted))
+		)
 
