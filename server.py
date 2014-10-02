@@ -52,6 +52,7 @@ def get_authed_user(callback):
 		db = kwargs.get('db')
 		if db and 'user' in request.session:
 			request.user = db.query(m.Person).filter_by(crsid=request.session['user']).one()
+			request.user.last_seen = datetime.now()
 		else:
 			request.user = None
 
@@ -360,7 +361,7 @@ with base_route(app, '/users'):
 			joinedload(m.Person.occupancies).load_only(),
 			joinedload(m.Person.occupancies).subqueryload(m.Occupancy.reviews).load_only(m.Review.id),
 			joinedload(m.Person.occupancies).subqueryload(m.Occupancy.photos).load_only(m.Photo.id)
-		).order_by(m.Person.crsid)
+		).order_by(m.Person.last_seen.desc(), m.Person.crsid)
 		return template('users', users=users)
 
 	@app.route('/<crsid>')

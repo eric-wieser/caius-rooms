@@ -63,8 +63,9 @@ CRSID = String(10)
 class Person(Base):
 	__tablename__ = prefix + 'people'
 
-	crsid   = Column(CRSID,  primary_key=True)
-	name    = Column(Unicode(255))
+	crsid     = Column(CRSID,  primary_key=True)
+	name      = Column(Unicode(255))
+	last_seen = Column(DateTime)
 
 	def __repr__(self):
 		return "<Person(crsid={!r}, name={!r})>".format(self.crsid, self.name)
