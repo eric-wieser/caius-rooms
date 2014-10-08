@@ -126,6 +126,15 @@ def get_ballot(db):
 def static(path):
 	return static_file(path, root='static')
 
+@app.route('/photos/<photo_id>', name='static', skip=[get_authed_user])
+def static_photo(photo_id, db):
+	try:
+		photo = db.query(m.Photo).filter(m.Photo.id == photo_id).one()
+	except NoResultFound:
+		raise HTTPError(404, 'Image not found')
+
+	return static_file(photo.storage_path, root='.')
+
 @app.route('/')
 def show_index(db):
 	return template('index', db=db)

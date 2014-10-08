@@ -540,7 +540,7 @@ class Photo(Base):
 
 	@property
 	def href(self):
-		return 'http://gcsu.soc.srcf.net/roomCaius/photo.php?id={}.jpg'.format(self.id)
+		return '/photos/{}'.format(self.id)
 
 	@property
 	def _extension(self):
