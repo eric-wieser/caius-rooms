@@ -29,6 +29,10 @@ def migrate(old_session, new_session):
 				listing=listing
 			)
 
+		mime_type = old_photo.type
+		if mime_type == 'image/pjpeg':
+			mime_type = 'image/jpeg'
+
 		photo = orm.Photo(
 			id=old_photo.id,
 
@@ -37,7 +41,7 @@ def migrate(old_session, new_session):
 
 			width=old_photo.width,
 			height=old_photo.height,
-			mime_type=old_photo.type,
+			mime_type=mime_type,
 
 			occupancy=occupancy
 		)

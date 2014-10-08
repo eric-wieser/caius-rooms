@@ -553,11 +553,11 @@ class Photo(Base):
 			'image/png': '.png'
 		}
 
-		return common.get(self.mime_type) or mimetypes.guess_extension(self.mime_type)
+		return common.get(self.mime_type) or mimetypes.guess_extension(self.mime_type) or ''
 
 	@property
 	def storage_path(self):
-		filename = '{}.{}'.format(self.id, self._extension)
+		filename = '{}{}'.format(self.id, self._extension)
 
 		return os.path.join(uploaded_files_path, self.__tablename__, filename)
 
