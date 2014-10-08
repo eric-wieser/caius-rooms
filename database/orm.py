@@ -30,6 +30,7 @@ Relationships:
   Cluster >- Cluster
 """
 import datetime
+import os
 
 from sqlalchemy import Table, Column, ForeignKey, UniqueConstraint
 from sqlalchemy import (
@@ -514,7 +515,15 @@ class ReviewRoomReference(Base):
 	)
 	room = relationship(lambda: Room, backref='references')
 
+uploaded_files_path = os.path.abspath(
+	os.path.join(
+		os.path.dirname(__file__),
+		'..',
+		'uploaded_files'
+	)
+)
 
+print uploaded_files_path
 
 #Read: https://research.microsoft.com/pubs/64525/tr-2006-45.pdf
 class Photo(Base):
@@ -532,6 +541,25 @@ class Photo(Base):
 	@property
 	def href(self):
 		return 'http://gcsu.soc.srcf.net/roomCaius/photo.php?id={}.jpg'.format(self.id)
+
+	@property
+	def _extension(self):
+		import mimetypes
+
+		# http://bugs.python.org/issue1043134
+		common = {
+			'text/plain': '.txt',
+			'image/jpeg': '.jpg',
+			'image/png': '.png'
+		}
+
+		return common.get(self.mime_type) or mimetypes.guess_extension(self.mime_type)
+
+	@property
+	def storage_path(self):
+		filename = '{}.{}'.format(self.id, self._extension)
+
+		return os.path.join(uploaded_files_path, self.__tablename__, filename)
 
 
 # Now add a bunch of convenience columns to room objects

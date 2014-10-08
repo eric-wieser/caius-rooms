@@ -1,9 +1,11 @@
 import re
 import datetime
+import sys
 
 from sqlalchemy.orm import aliased
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 
+sys.path.append('..')
 import db
 import orm
 
@@ -176,3 +178,13 @@ def sanitize_view(v):
 	else:
 		return v
 
+
+def run(entry_point):
+	sys.path.append('..')
+	import db, olddb
+	new_session = db.Session()
+	entry_point(
+		new_session=new_session,
+		old_session=olddb.Session()
+	)
+	new_session.commit()

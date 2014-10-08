@@ -1,11 +1,16 @@
-import orm
-import olddb
+import os
+
 import datetime
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 
 import migrate_utils
 
 def migrate(old_session, new_session):
+	import orm
+	import olddb
+
+	new_session.query(orm.Photo).delete()
+
 	for old_photo in old_session.query(olddb.orm.accom_guide_photos).order_by(olddb.orm.accom_guide_photos.submitted.desc()):
 		ts = datetime.datetime.fromtimestamp(old_photo.submitted)
 
@@ -33,9 +38,26 @@ def migrate(old_session, new_session):
 			width=old_photo.width,
 			height=old_photo.height,
 			mime_type=old_photo.type,
-			#TODO: blob
 
 			occupancy=occupancy
 		)
 
+		if hasattr(old_photo, 'photo'):
+			base = os.path.dirname(photo.storage_path)
+
+			try:
+				os.makedirs(base)
+			except OSError:
+				if not os.path.isdir(base):
+					raise
+
+			with open(photo.storage_path, 'w') as f:
+				f.write(old_photo.photo)
+		else:
+			# exported db has no blobs
+			pass
+
 		new_session.add(photo)
+
+if __name__ == '__main__':
+	migrate_utils.run(migrate)
