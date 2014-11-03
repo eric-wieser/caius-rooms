@@ -265,7 +265,7 @@ with base_route(app, '/places'):
 with base_route(app, '/reviews'):
 	@app.route('/new', name="new-review-choice")
 	@needs_auth('ownership')
-	def prompt_review_choice(occ_id, db):
+	def prompt_review_choice(db):
 		occupancies = db.query(m.Occupancy).filter(m.Occupancy.resident == request.user).all()
 
 		return template('new-review-choice', occupancies=occupancies)
