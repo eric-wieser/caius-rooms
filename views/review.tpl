@@ -11,7 +11,7 @@
 					<a href="http://gcsu.soc.srcf.net/roomCaius/photo.php?id={{ photo.id }}.jpg"
 					   title="{{ photo.caption }}&#10;{{ photo.published_at }}"
 					   target="_blank">
-						<img src="http://gcsu.soc.srcf.net/roomCaius/photo.php?id={{ photo.id }}.jpg"
+						<img src="{{ photo.href }}"
 						     class="img-rounded img-responsive" />
 					</a>
 				</p>

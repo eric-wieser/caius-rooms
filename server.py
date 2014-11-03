@@ -360,7 +360,7 @@ with base_route(app, '/reviews'):
 
 
 with base_route(app, '/photos'):
-	@app.route('/photos/<photo_id:int>', name='static', skip=[get_authed_user])
+	@app.route('/<photo_id:int>', name='static', skip=[get_authed_user])
 	def static_photo(photo_id, db):
 		try:
 			photo = db.query(m.Photo).filter(m.Photo.id == photo_id).one()
