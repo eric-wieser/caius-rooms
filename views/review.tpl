@@ -8,7 +8,7 @@
 		% for photo in review.occupancy.photos:
 			<div class="col-sm-2 col-xs-3">
 				<p>
-					<a href="http://gcsu.soc.srcf.net/roomCaius/photo.php?id={{ photo.id }}.jpg"
+					<a href="{{ photo.href }}"
 					   title="{{ photo.caption }}&#10;{{ photo.published_at }}"
 					   target="_blank">
 						<img src="{{ photo.href }}"
