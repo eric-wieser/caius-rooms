@@ -50,8 +50,8 @@ def get_authed_user(callback):
 	""" A plugin to put the loggedin-user db object at `request.user` """
 	def wrapper(*args, **kwargs):
 		db = kwargs.get('db')
-		crsid = request.session['user']
 		if db and 'user' in request.session:
+			crsid = request.session['user']
 			try:
 				request.user = db.query(m.Person).filter_by(crsid=crsid).one()
 			except NoResultFound:
@@ -132,6 +132,7 @@ def static(path):
 
 @app.route('/')
 def show_index(db):
+	print request.headers
 	return template('index', db=db)
 
 @app.error(404)
@@ -262,6 +263,13 @@ with base_route(app, '/places'):
 
 
 with base_route(app, '/reviews'):
+	@app.route('/new', name="new-review-choice")
+	@needs_auth('ownership')
+	def prompt_review_choice(occ_id, db):
+		occupancies = db.query(m.Occupancy).filter(m.Occupancy.resident == request.user).all()
+
+		return template('new-review-choice', occupancies=occupancies)
+
 	@app.route('/new/<occ_id>', name="new-review")
 	@needs_auth('ownership')
 	def show_new_review_form(occ_id, db):
