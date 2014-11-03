@@ -7,7 +7,8 @@ import reference_helper
 
 
 
-DummyRoom = object()
+PartRoom = object()
+MultiRoom = object()
 
 def find_room(room, path_str):
 	# deal with old naming of K block
@@ -32,16 +33,23 @@ def find_room(room, path_str):
 		if child.name.replace('*', '') == item:
 			return child
 		elif item in child.name.split('/'):
-			return DummyRoom
+			return PartRoom
 		elif child.name in item.split('/'):
-			return DummyRoom
+			return MultiRoom
 	else:
 		return None
 
 def scan(room, section):
 	for path, span in reference_helper.references_in(section.content):
 		ref_room = find_room(room, path)
-		if ref_room is DummyRoom:
+		if ref_room is PartRoom:
+			print room, path, '=>', 'PartRoom'
+			print section.content[max(0, span[0]-10):span[1] + 10]
+			continue
+
+		if ref_room is MultiRoom:
+			print room, path, '=>', 'MultiRoom'
+			print section.content[max(0, span[0]-10):span[1] + 10]
 			continue
 
 		if ref_room is None:
