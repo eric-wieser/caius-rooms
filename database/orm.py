@@ -281,6 +281,9 @@ class BallotSeason(Base):
 	def __repr__(self):
 		return "BallotSeason(year={})".format(self.year)
 
+	def __str__(self):
+		return "{}-{}".format(self.year, self.year+1)
+
 
 class BallotEvent(Base):
 	__tablename__ = 'ballot_events'
