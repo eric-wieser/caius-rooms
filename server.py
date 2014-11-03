@@ -367,7 +367,7 @@ with base_route(app, '/photos'):
 		except NoResultFound:
 			raise HTTPError(404, 'Image not found')
 
-		return static_file(photo.storage_path, root='.')
+		return static_file(photo.storage_path, root='/')
 
 	@app.route('/new/<occ_id>', name="new-photos")
 	@needs_auth('ownership')
