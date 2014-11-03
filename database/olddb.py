@@ -6,7 +6,7 @@ from sqlalchemy.ext.automap import automap_base
 try:
 	from db_conn import user, password
 	engine = create_engine(
-		'mysql+mysqldb://{user}:{password}@localhost/gcsu?charset=latin-1&use_unicode=0'.format(
+		'mysql+mysqldb://{user}:{password}@localhost/gcsu?charset=latin1&use_unicode=0'.format(
 			user=user, password=password
 		),
 		pool_recycle=3600
