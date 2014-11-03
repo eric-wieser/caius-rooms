@@ -41,8 +41,8 @@
 % end
 
 % layout_random = '/rooms/random'
-
-<div class="container" style="margin-bottom: 6em" itemscope itemtype="http://schema.org/Product">
+<div style="margin-bottom: 6em" itemscope itemtype="http://schema.org/Product">
+<div class="container">
 	% last_listing = room.listing_for.get(ballot)
 	% if last_listing and last_listing.occupancies:
 		% last_occupancy = last_listing.occupancies[-1]
@@ -192,34 +192,49 @@
 			% # <!-- <img src="http://maps.googleapis.com/maps/api/staticmap?center=52.20675,0.1223485&amp;zoom=14&amp;size=400x300&amp;maptype=roadmap&amp;markers=color:blue%7C{{latlng}}&amp;sensor=false" /> -->
 		</div>
 	</div>
-
-	<div id="photos" class="anchor">
-		% any_photos = False
-		% for listing in room.listings:
-			% for occupancy in listing.occupancies:
-				% for photo in occupancy.photos:
-					<p>
-						<img src="{{photo.href}}" class="img-rounded img-responsive" />
-						{{ photo.caption }}
-						<span class="text-muted">{{! format_ts_html(photo.published_at) }}</span>
-					</p>
-					% any_photos = True
+</div>
+<div class="well" style="border-radius: 0; border-left: none; border-right: none">
+	<div class="container">
+		<div id="photos" class="anchor">
+			% any_photos = False
+			% for listing in room.listings:
+				% for occupancy in listing.occupancies:
+					% for photo in occupancy.photos:
+						<p style=" text-align: center">
+							<span style="display: inline-block; text-align: left">
+								<img src="{{photo.href}}" class="img-rounded img-responsive"
+								     width="{{ photo.width }}" />
+								{{ photo.caption }}
+								<span class="text-muted pull-right">{{! format_ts_html(photo.published_at) }}</span>
+							</span>
+						</p>
+						% any_photos = True
+					% end
 				% end
 			% end
-		% end
-		% if not any_photos:
-			<div class="alert alert-warning">No photos</div>
-		% end
+			% if not any_photos:
+				<div class="alert alert-warning">No photos</div>
+			% end
+		</div>
 	</div>
+</div>
+<div class="container">
 	<div id="reviews" class="anchor">
+		% first = True
 		% for listing in room.listings:
 			% for occupancy in listing.occupancies:
 				% for review in occupancy.reviews:
-					<hr />
+					% if not first:
+						<hr />
+					% end
+					% first = False
 					% include review.tpl review=review, version=version
 				% end
 				% if not occupancy.reviews and occupancy.resident:
-					<hr />
+					% if not first:
+						<hr />
+					% end
+					% first = False
 					<div itemprop="review" itemscope itemtype="http://schema.org/Review">
 						<h2>{{ listing.ballot_season.year }}</h2>
 						% if request.user:
@@ -267,4 +282,5 @@
 			</div>
 		</div>
 	% end
+</div>
 </div>
