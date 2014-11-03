@@ -126,15 +126,6 @@ def get_ballot(db):
 def static(path):
 	return static_file(path, root='static')
 
-@app.route('/photos/<photo_id>', name='static', skip=[get_authed_user])
-def static_photo(photo_id, db):
-	try:
-		photo = db.query(m.Photo).filter(m.Photo.id == photo_id).one()
-	except NoResultFound:
-		raise HTTPError(404, 'Image not found')
-
-	return static_file(photo.storage_path, root='.')
-
 @app.route('/')
 def show_index(db):
 	return template('index', db=db)
@@ -355,6 +346,36 @@ with base_route(app, '/reviews'):
 
 		redirect('/rooms/{}#review-{}'.format(occupancy.listing.room_id, review.id))
 
+
+with base_route(app, '/photos'):
+	@app.route('/photos/<photo_id:int>', name='static', skip=[get_authed_user])
+	def static_photo(photo_id, db):
+		try:
+			photo = db.query(m.Photo).filter(m.Photo.id == photo_id).one()
+		except NoResultFound:
+			raise HTTPError(404, 'Image not found')
+
+		return static_file(photo.storage_path, root='.')
+
+	@app.route('/new/<occ_id>', name="new-photos")
+	@needs_auth('ownership')
+	def show_new_photo_form(occ_id, db):
+		try:
+			occupancy = db.query(m.Occupancy).filter(m.Occupancy.id == occ_id).one()
+		except NoResultFound:
+			raise HTTPError(404, "No such occupancy to review")
+
+		if occupancy.resident != request.user:
+			raise HTTPError(403, "You must have been a resident of a room to review it")
+
+		return template('new-photo', occupancy=occupancy)
+
+	@app.post('', name="new-photo-post")
+	@needs_auth('ownership')
+	def save_new_photo_form(db):
+		uploads = request.files.getall('photo')
+		captions = request.forms.getall('caption')
+		return repr(zip(uploads, captions))
 
 
 with base_route(app, '/locations'):
