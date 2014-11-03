@@ -50,8 +50,12 @@ def get_authed_user(callback):
 	""" A plugin to put the loggedin-user db object at `request.user` """
 	def wrapper(*args, **kwargs):
 		db = kwargs.get('db')
+		crsid = request.session['user']
 		if db and 'user' in request.session:
-			request.user = db.query(m.Person).filter_by(crsid=request.session['user']).one()
+			try:
+				request.user = db.query(m.Person).filter_by(crsid=crsid).one()
+			except NoResultFound:
+				request.user = m.Person(crsid=crsid, name="{} (no records)".format(crsid))
 			request.user.last_seen = datetime.now()
 		else:
 			request.user = None
