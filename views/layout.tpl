@@ -41,8 +41,9 @@
 				position: absolute;
 				bottom: 0;
 				width: 100%;
-				height: 25px;
+				height: 30px;
 				padding-top: 5px;
+				padding-bottom: 5px;
 				background-color: #f5f5f5;
 				text-align: center;
 			}
@@ -58,7 +59,7 @@
 			body {
 				margin-top: 50px;
 				padding-top: 20px;
-				margin-bottom: 25px;
+				margin-bottom: 30px;
 			}
 
 			.cropped-photo {
@@ -181,7 +182,7 @@
 
 		<div id="footer">
 			<div class="container">
-				<p class="text-muted">Developed by Eric Wieser. Data from <a href="http://www.caiusjcr.org.uk/roomCaius/index.php">RoomCaius</a>. No guarantee of consistency is made</p>
+				<p class="text-muted">Developed by Eric Wieser (efw27). Under continued development.</p>
 			</div>
 		</div>
 	</body>
