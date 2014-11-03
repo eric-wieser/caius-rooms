@@ -195,18 +195,16 @@
 </div>
 <div class="well" style="border-radius: 0; border-left: none; border-right: none">
 	<div class="container">
-		<div id="photos" class="anchor">
+		<div id="photos" class="anchor" style="text-align: center">
 			% any_photos = False
 			% for listing in room.listings:
 				% for occupancy in listing.occupancies:
 					% for photo in occupancy.photos:
-						<p style=" text-align: center">
-							<span style="display: inline-block; text-align: left">
-								<img src="{{photo.href}}" class="img-rounded img-responsive"
-								     width="{{ photo.width }}" />
-								{{ photo.caption }}
-								<span class="text-muted pull-right">{{! format_ts_html(photo.published_at) }}</span>
-							</span>
+						<p style="display: inline-block; text-align: left; margin: 10px; overflow: hidden">
+							<img src="{{photo.href}}" class="img-rounded img-responsive"
+							     width="{{ photo.width }}" />
+							{{ photo.caption }}
+							<span class="text-muted pull-right">{{! format_ts_html(photo.published_at) }}</span>
 						</p>
 						% any_photos = True
 					% end
