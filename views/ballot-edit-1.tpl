@@ -9,7 +9,6 @@
 
 <style>
 .group {
-	margin-bottom: 20px;
 }
 .item, .group-item {
 	overflow: hidden;
@@ -17,17 +16,23 @@
 
 .group-item {
 	margin-top: 5px;
-	padding: 5px;
-	background-color: #f0f0f0;
+	padding: 4px;
+	background-color: rgb(245, 245, 245);
+	border: 1px solid rgb(221, 221, 221);
+	border-radius: 3px;
 }
 .group-item .audience-cbs{
 	margin: -5px;
 	padding: 5px 0px;
+	height: 30px;
 }
 .group-children {
 	margin-left: 10px;
 	padding-left: 10px;
-	border-left: 1px solid gray;
+	border-left: 1px solid rgb(221, 221, 221);
+	margin-bottom: 20px;
+	margin-top: -1px;
+	padding-top: 1px;
 }
 
 
@@ -46,21 +51,42 @@
 }
 .audience-cbs {
 	float: right;
-	border-left: 1px solid #c0c0c0;
+	border-left: 1px solid rgb(231, 231, 231);
+	height: 20px;
 }
 .audience-cbs .audience-cb {
 	width: 40px;
+	height: 100%;
 	text-align: center;
 	float: left;
 }
-</style>
 
+input[type=checkbox].show-hide {
+	display: none;
+}
+
+.show-hide:checked ~ .group-children {
+	display: none;
+}
+
+.show-hide-buttons {
+	display: inline;
+}
+
+.group-item label .show-hide-shown { display: inline; }
+.group-item label .show-hide-hidden { display: none; }
+.show-hide:checked ~ .group-item label .show-hide-shown { display: none; }
+.show-hide:checked ~ .group-item label .show-hide-hidden { display: inline; }
+
+
+</style>
+%
 % class fullset(set):
 	% def __and__(self, other):
 		% return other
 	% end
 % end
-
+%
 % audiences = {}
 % def process(cl):
 	% some_a = set()
@@ -68,22 +94,21 @@
 	% for room in cl.rooms:
 		% listing = room.listing_for.get(ballot_season)
 		% audiences[room] = set(listing.audience_types) if listing else set()
-
+		%
 		% all_a = all_a & set(audiences[room])
 		% some_a = some_a | set(audiences[room])
 	% end
-	% print all_a
 	% for subcl in cl.children:
 		% process(subcl)
 		% all_as, some_as = audiences[subcl]
 		% all_a = all_a & all_as
 		% some_a = some_a | some_as
 	% end
-
+	%
 	% audiences[cl] = all_a, some_a
 % end
 % process(root)
-
+%
 % def display(cl):
 	% for room in sorted(cl.rooms, key=lambda r: natural_sort_key(r.name)):
 		<div class="item">
@@ -103,7 +128,14 @@
 	% end
 	% for subcl in cl.children:
 		<div class="group">
+			% indeterminate = audiences[subcl][0] != audiences[subcl][1]
+			<input class="show-hide" type="checkbox" id="toggle-{{subcl.id}}"
+			       {{ '' if indeterminate else 'checked'}} />
 			<div class="group-item">
+				<label class="show-hide-buttons" for="toggle-{{subcl.id}}">
+					<span class="show-hide-shown glyphicon glyphicon-chevron-down"></span>
+					<span class="show-hide-hidden glyphicon glyphicon-chevron-right"></span>
+				</label>
 				<a href="/places/{{ cl.id }}" target="_blank"><b>{{ subcl.pretty_name(cl) }}</b></a>
 				<div class="audience-cbs">
 					% for event in ballot_season.events:
@@ -133,6 +165,18 @@
 	<h1>Ballot for {{ ballot_season }}</h1>
 	<div class="row">
 		<div class="col-md-6">
+			<div style="margin-right: {{ 40*len(ballot_season.events) }}px">
+				<p>Select which rooms should be available in which sub-ballots using the checkboxes on the right</p>
+			</div>
+			<div style="position: relative">
+				<div style="position:absolute; bottom: 100%; left: 100%; transform: rotate(270deg); transform-origin: bottom left;">
+					% for event in ballot_season.events:
+						<div style="height: 40px; padding: 10px 0px 10px 5px">
+							{{ event.type.name }}
+						</div>
+					% end
+				</div>
+			</div>
 			% display(root)
 		</div>
 	</div>
@@ -210,48 +254,5 @@ $(function() {
 
 		go_up(get_parent_item($item));
 	});
-})
-// $(function() {
-// 	  // Apparently click is better chan change? Cuz IE?
-// 	$('input[type="checkbox"]').change(function(e) {
-// 		var checked = $(this).prop("checked"),
-// 			container = $(this).parent(),
-// 			siblings = container.siblings();
-
-// 		if(!container.is('.item')) {
-// 			container.parent().find('input[type="checkbox"]').prop({
-// 				indeterminate: false,
-// 				checked: checked
-// 			});
-// 		}
-
-// 		function checkSiblings(el) {
-// 			var parent = el.parent().parent(),
-// 				all = true;
-
-// 			el.siblings().each(function() {
-// 				return all = ($(this).children('input[type="checkbox"]').prop("checked") === checked);
-// 			});
-
-// 			if (all && checked) {
-// 				parent.children('input[type="checkbox"]').prop({
-// 					indeterminate: false,
-// 					checked: checked
-// 				});
-// 				checkSiblings(parent);
-// 			} else if (all && !checked) {
-// 				parent.children('input[type="checkbox"]').prop("checked", checked);
-// 				parent.children('input[type="checkbox"]').prop("indeterminate", (parent.find('input[type="checkbox"]:checked').length > 0));
-// 				checkSiblings(parent);
-// 			} else {
-// 				el.parents("li").children('input[type="checkbox"]').prop({
-// 					indeterminate: true,
-// 					checked: false
-// 				});
-// 			}
-// 		}
-
-// 		checkSiblings(container);
-// 	});
-// });
+});
 </script>
