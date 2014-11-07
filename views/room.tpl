@@ -244,8 +244,6 @@
 						<span class="text-muted">
 							% if occupancy.ballot_slot:
 								#{{ occupancy.ballot_slot.ranking }}
-							% else:
-								off-ballot
 							% end
 						</span>
 					</div>
