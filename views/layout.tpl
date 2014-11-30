@@ -150,9 +150,12 @@
 									</a>
 									<ul class="dropdown-menu" role="menu">
 										<li><a href="/users/{{ request.user.crsid }}">Profile</a></li>
-										<li class="divider"></li>
-										<li><a href="#">Upload photo</a></li>
-										<li><a href="/reviews/new">Write review</a></li>
+										% if request.user.occupancies:
+											% occ = min(request.user.occupancies, key=lambda o: o.listing.ballot_season_id)
+											<li><a href="/rooms/{{ occ.listing.room.id }}">My room</a></li>
+										% else:
+											<li class="disabled"><a>My room</a></li>
+										% end
 										<li class="divider"></li>
 										<li><a href="/logout?return_to={{ request.url }}">Logout</a></li>
 									</ul>
