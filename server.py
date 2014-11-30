@@ -382,6 +382,19 @@ with base_route(app, '/photos'):
 	@app.post('', name="new-photo-post")
 	@needs_auth('ownership')
 	def save_new_photo_form(db):
+		occ_id = request.forms.occupancy_id
+
+		if occ_id is None:
+			raise HTTPError(400)
+
+		try:
+			occupancy = db.query(m.Occupancy).filter(m.Occupancy.id == occ_id).one()
+		except NoResultFound:
+			raise HTTPError(404, "No such occupancy to review")
+
+		if occupancy.resident != request.user:
+			raise HTTPError(403, "You must have been a resident of a room to review it")
+
 		uploads = request.files.getall('photo')
 		captions = request.forms.getall('caption')
 		return repr(zip(uploads, captions))
