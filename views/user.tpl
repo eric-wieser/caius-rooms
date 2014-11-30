@@ -1,7 +1,6 @@
 % from bottle import request
 % from utils import format_ts_html
-
-% rebase layout.tpl
+% rebase('layout')
 % layout_random = "/users/random"
 % def layout_breadcrumb():
 	% yield ('#', user.name)
@@ -58,7 +57,7 @@
 			% for occupancy in occs:
 				% for review in occupancy.reviews:
 					<hr />
-					% include review.tpl review=review, show_room=True
+					% include('review.tpl', review=review, show_room=True)
 				% end
 			% end
 		</div>

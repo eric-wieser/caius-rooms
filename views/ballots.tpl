@@ -1,4 +1,4 @@
-% rebase layout.tpl
+% rebase('layout')
 
 <div class="container">
 	<table class="table">

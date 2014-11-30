@@ -1,4 +1,4 @@
-% rebase layout.tpl
+% rebase('layout')
 
 % def layout_breadcrumb():
 	% for part in location.path:
@@ -33,7 +33,7 @@
 			<li class="list-group-item">{{filter.description}}</li>
 		% end
 	</ul>
-	% include room-table.tpl rooms=filtered_rooms, ballot=ballot, relative_to=location
+	% include('room-table', rooms=filtered_rooms, ballot=ballot, relative_to=location)
 
 	<div id="map" style="height: 400px"></div>
 	% lat_lon = location.geocoords

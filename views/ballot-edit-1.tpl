@@ -1,6 +1,6 @@
 % import database.orm as m
 
-% rebase layout.tpl
+% rebase('layout')
 
 % import re
 % def natural_sort_key(s, _nsre=re.compile('([0-9]+)')):

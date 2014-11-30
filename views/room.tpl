@@ -1,7 +1,7 @@
 % from utils import format_ts_html, restricted
 % from bottle import request
 
-% rebase layout
+% rebase('layout')
 
 % def layout_breadcrumb():
 	% for part in room.parent.path:
@@ -226,7 +226,7 @@
 						<hr />
 					% end
 					% first = False
-					% include review.tpl review=review, version=version
+					% include('review.tpl', review=review, version=version)
 				% end
 				% if not occupancy.reviews and occupancy.resident:
 					% if not first:

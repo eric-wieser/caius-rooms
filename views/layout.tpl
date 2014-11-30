@@ -170,7 +170,7 @@
 			</div>
 		</nav>
 
-		% include
+		{{!base}}
 
 		<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
 		<script src="/static/bootstrap-sortable.js"></script>

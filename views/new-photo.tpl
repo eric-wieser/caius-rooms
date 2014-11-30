@@ -1,4 +1,4 @@
-% rebase layout
+% rebase('layout')
 % from sqlalchemy.orm.session import object_session
 % import database.orm as m
 % from datetime import datetime

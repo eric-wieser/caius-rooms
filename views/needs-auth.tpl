@@ -1,4 +1,4 @@
-% rebase layout
+% rebase('layout')
 % from bottle import request
 % import urllib
 

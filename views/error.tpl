@@ -1,6 +1,6 @@
 % from bottle import DEBUG, HTTP_CODES, request, touni
 
-% rebase layout title="Error: {}".format(e.status)
+% rebase('layout', title="Error: {}".format(e.status))
 
 <div class="container">
 	<h1>Error: {{e.status}}</h1>

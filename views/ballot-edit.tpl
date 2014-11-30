@@ -1,6 +1,6 @@
 % import database.orm as m
 
-% rebase layout.tpl
+% rebase('layout')
 
 <div class="container">
 	<h1>Ballot for {{ ballot_season.year }} - {{ ballot_season.year + 1 }}</h1>

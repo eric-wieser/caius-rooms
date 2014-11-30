@@ -1,4 +1,4 @@
-% rebase layout.tpl
+% rebase('layout')
 
 % def layout_breadcrumb():
 	% for part in place.path:

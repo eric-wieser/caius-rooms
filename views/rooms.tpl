@@ -1,4 +1,4 @@
-% rebase layout.tpl
+% rebase('layout')
 % layout_random = '/rooms/random'
 
 <a class="hidden-xs" href="https://github.com/eric-wieser/caius-rooms">
@@ -23,5 +23,5 @@
 			<li class="list-group-item">{{filter.description}}</li>
 		% end
 	</ul>
-	% include room-table.tpl rooms=filtered_rooms, ballot=ballot, relative_to=None
+	% include('room-table', rooms=filtered_rooms, ballot=ballot, relative_to=None)
 </div>

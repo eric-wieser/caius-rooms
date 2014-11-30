@@ -1,4 +1,4 @@
-% rebase layout.tpl
+% rebase('layout')
 % layout_random = "/users/random"
 
 <div class="container">
