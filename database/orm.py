@@ -545,6 +545,8 @@ class Photo(Base):
 	def is_panorama(self):
 		return self.width > 2.5*self.height
 
+	raw_im = None
+
 	@property
 	def href(self):
 		return '/photos/{}'.format(self.id)
@@ -567,6 +569,47 @@ class Photo(Base):
 		filename = '{}{}'.format(self.id, self._extension)
 
 		return os.path.join(uploaded_files_path, self.__tablename__, filename)
+
+	@classmethod
+	def from_file(cls, f):
+		from PIL import Image
+		from datetime import datetime
+
+		im = Image.open(f)
+		mime_type = 'image/' + im.format.lower()
+		im = im.convert('RGBA')
+
+		# allow wide images for panoramas
+		bounds = (1280, 600)
+		im_exif = im.info.get('exif')
+		im.thumbnail(bounds)
+		if im_exif:
+			im.info['exif'] = im_exif
+
+		w, h = im.size
+		p = cls(
+			published_at=datetime.now(),
+			mime_type=mime_type,
+			width=w,
+			height=h
+		)
+
+		p.raw_im = im
+
+		return p
+
+	@classmethod
+	def _inserted(cls, mapper, connection, target):
+		assert target.raw_im
+		if target.mime_type == 'image/jpeg':
+			target.raw_im.save(target.storage_path, exif=target.raw_im.info['exif'])
+		else:
+			target.raw_im.save(target.storage_path)
+
+
+import sqlalchemy.event
+sqlalchemy.event.listen(Photo, 'after_insert', Photo._inserted)
+
 
 
 # Now add a bunch of convenience columns to room objects
