@@ -397,7 +397,15 @@ with base_route(app, '/photos'):
 
 		uploads = request.files.getall('photo')
 		captions = request.forms.getall('caption')
-		return repr(zip(uploads, captions))
+
+		for image_upload, caption in zip(uploads, captions):
+			photo = m.Photo.from_file(image_upload.file)
+			photo.caption = caption
+			photo.occupancy = occupancy
+
+			db.add(photo)
+
+		return redirect('/rooms/{}#photos'.format(occupancy.listing.room.id))
 
 
 with base_route(app, '/locations'):
