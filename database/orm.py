@@ -541,6 +541,10 @@ class Photo(Base):
 	# TODO: store image somewhere
 	occupancy_id = Column(Integer, ForeignKey(Occupancy.id), nullable=False, index=True)
 
+	@hybrid_property
+	def is_panorama(self):
+		return self.width > 2.5*self.height
+
 	@property
 	def href(self):
 		return '/photos/{}'.format(self.id)
