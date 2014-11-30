@@ -4,21 +4,23 @@
 % show_room = get('show_room') or False
 <div itemprop="review" itemscope itemtype="http://schema.org/Review">
 	<div style="position: relative; top: -50px" id="review-{{review.id}}"></div>
-	<div class="row">
-		% for photo in review.occupancy.photos:
-			<div class="col-sm-2 col-xs-3">
-				<p>
-					<a href="{{ photo.href }}"
-					   title="{{ photo.caption }}&#10;{{ photo.published_at }}"
-					   target="_blank">
-						<img src="{{ photo.href }}"
-						     class="img-rounded img-responsive" />
-					</a>
-				</p>
-			</div>
-			% any_photos = True
-		% end
-	</div>
+	% if 0:
+		<div class="row">
+			% for photo in review.occupancy.photos:
+				<div class="col-sm-2 col-xs-3">
+					<p>
+						<a href="{{ photo.href }}"
+						   title="{{ photo.caption }}&#10;{{ photo.published_at }}"
+						   target="_blank">
+							<img src="{{ photo.href }}"
+							     class="img-rounded img-responsive" />
+						</a>
+					</p>
+				</div>
+				% any_photos = True
+			% end
+		</div>
+	% end
 	<div class="row">
 		<div class="col-md-2">
 			<h2>{{ review.occupancy.listing.ballot_season.year }}
