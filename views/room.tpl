@@ -193,25 +193,27 @@
 		</div>
 	</div>
 </div>
+% photos = [photo for listing in room.listings for occupancy in listing.occupancies for photo in occupancy.photos]
 <div class="well" style="border-radius: 0; border-left: none; border-right: none">
 	<div class="container">
-		<div id="photos" class="anchor" style="text-align: center">
-			% any_photos = False
-			% for listing in room.listings:
-				% for occupancy in listing.occupancies:
-					% for photo in occupancy.photos:
-						<p style="display: inline-block; text-align: left; margin: 10px; overflow: hidden">
-							<img src="{{photo.href}}" class="img-rounded img-responsive"
-							     width="{{ photo.width }}" />
-							{{ photo.caption }}
-							<span class="text-muted pull-right">{{! format_ts_html(photo.published_at) }}</span>
-						</p>
-						% any_photos = True
-					% end
-				% end
+		% occ = next((occupancy for listing in room.listings for occupancy in listing.occupancies if occupancy.resident == request.user), None)
+		<div id="photos" class="anchor" style="text-align: center; margin: 0px -10px">
+			% if photos and request.user and occ:
+				<div><a class="btn btn-large btn-primary" href="/photos/new/{{occ.id}}">Upload photos</a></div>
 			% end
-			% if not any_photos:
-				<div class="alert alert-warning">No photos</div>
+			% for photo in photos:
+				<p style="display: inline-block; text-align: left; margin: 10px; overflow: hidden">
+					<img src="{{photo.href}}" class="img-rounded img-responsive"
+					     width="{{ photo.width }}" />
+					{{ photo.caption }}
+					<span class="text-muted pull-right">{{! format_ts_html(photo.published_at) }}</span>
+				</p>
+			% end
+			% if not photos:
+				<p class="lead text-muted">No photos</p>
+				% if request.user and occ:
+					<p class="text-muted">But it looks like <i>you</i> could take some photos. <a class="btn btn-primary" href="/photos/new/{{occ.id}}">Add some?</a></p>
+				% end
 			% end
 		</div>
 	</div>
