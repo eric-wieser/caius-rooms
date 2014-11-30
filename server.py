@@ -163,25 +163,22 @@ def do_login(db):
 
 		if r.url != base_url:
 			print r.url, base_url
-			print("Bad url")
-			abort(400)
+			abort(400, "Login failed: it seems another site tried to log you in")
 
 		issue_delta = (datetime.utcnow() - r.issue).total_seconds()
 		if not -15 < issue_delta < 75:
-			print("Bad issue", issue_delta)
-			abort(403)
+			abort(403, "Login failed: you took too long to log in - please try again")
 
 		if r.success:
 			# a no-op here, but important if you set iact or aauth
 			if not r.check_iact_aauth(None, None):
-				print("check_iact_aauth failed")
-				abort(403)
+				abort(403, "Something went wrong when logging in: check_iact_aauth failed")
 
 			request.session["user"] = r.principal
 			print("Successfully logged in as {0}".format(r.principal))
 			return redirect(request.query.return_to)
 		else:
-			print("Raven authentication failed")
+			abort(403, "Login failed: reason unknown")
 			return redirect(request.query.return_to)
 
 @app.route('/logout')
