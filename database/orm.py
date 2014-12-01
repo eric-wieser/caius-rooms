@@ -81,10 +81,21 @@ class Person(Base):
 
 	@property
 	def current_room(self):
-		if not self.occupancies:
+		# get the ballot year where current rooms were assigned
+		from datetime import datetime
+		now = datetime.now()
+		if now.month >= 10:
+			year = now.year
+		else:
+			year = now.year - 1
+
+		# find all rooms owned in the current year
+		occs = [occ for occ in self.occupancies if occ.listing.ballot_season.year == year]
+
+		if not occs:
 			return
-		occ = max(self.occupancies, key=lambda o: o.listing.ballot_season_id)
-		return occ.listing.room
+
+		return max(occs, key=lambda o: o.chosen_at).listing.room
 
 class Cluster(Base):
 	""" (nestable) Groups of nearby physical rooms """
