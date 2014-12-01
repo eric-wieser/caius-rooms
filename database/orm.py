@@ -64,6 +64,7 @@ class Person(Base):
 	crsid     = Column(CRSID,  primary_key=True)
 	name      = Column(Unicode(255))
 	last_seen = Column(DateTime)
+	is_admin  = Column(Boolean, default=False, nullable=False)
 
 	def __repr__(self):
 		return "<Person(crsid={!r}, name={!r})>".format(self.crsid, self.name)

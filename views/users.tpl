@@ -8,7 +8,12 @@
 				<div style="padding-left: 50px; position: relative; min-height: 40px">
 					<a href="/users/{{ user.crsid }}">
 						<img src="{{ user.gravatar(size=40) }}" width="40" height="40" style="position: absolute; left: 0; right: 0" />
-						<div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{ user.name }}</div>
+						<div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis">
+							{{ user.name }}
+							% if user.is_admin:
+								<span title="administrator">&diams;</span>
+							% end
+						</div>
 					</a>
 					<div style="width: 2em; display: inline-block" class="text-muted">
 						% n = sum(1 for o in user.occupancies if o.reviews)

@@ -14,7 +14,13 @@
 				<img src="{{ user.gravatar(size=400) }}" class="img-responsive" />
 			</div>
 			<div class="col-md-9">
-				<h1>{{ user.name }} <small>{{ user.crsid }}</small></h1>
+				<h1>
+					{{ user.name }}
+					% if user.is_admin:
+						<span title="administrator">&diams;</span>
+					% end
+					<small>{{ user.crsid }}</small>
+				</h1>
 
 				<table class="table">
 					% for o in occs:

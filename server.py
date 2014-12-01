@@ -67,8 +67,6 @@ def get_authed_user(callback):
 
 	return wrapper
 
-def is_admin(user):
-	return True  # TODO
 
 def needs_auth(reason_or_callback, reason='privacy'):
 	# handle the optional "reason" argument
@@ -79,7 +77,7 @@ def needs_auth(reason_or_callback, reason='privacy'):
 		callback = reason_or_callback
 
 	def wrapper(*args, **kwargs):
-		if not request.user or (reason == 'admin' and not is_admin(request.user)):
+		if not request.user or (reason == 'admin' and not request.user.is_admin):
 			response.status = 403
 			return template('needs-auth', reason=reason)
 
