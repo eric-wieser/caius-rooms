@@ -24,7 +24,7 @@
 						% end
 					</div>
 					<div style="width: 2em; display: inline-block" class="text-muted">
-						% n = sum(1 for o in user.occupancies if o.photos)
+						% n = sum(len(o.photos) for o in user.occupancies)
 						% if n:
 							% m = '1 photo' if n == 1 else '{} photos'.format(n)
 							<span class="glyphicon glyphicon-picture" title="{{m}} "></span>
