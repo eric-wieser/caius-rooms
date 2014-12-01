@@ -83,7 +83,7 @@ class Person(Base):
 	def current_room(self):
 		if not self.occupancies:
 			return
-		occ = min(self.occupancies, key=lambda o: o.listing.ballot_season_id)
+		occ = max(self.occupancies, key=lambda o: o.listing.ballot_season_id)
 		return occ.listing.room
 
 class Cluster(Base):
