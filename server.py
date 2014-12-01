@@ -216,7 +216,7 @@ with base_route(app, '/rooms'):
 		if room:
 			return redirect('/rooms/{}'.format(room.id))
 		else:
-			return redirect('/rooms/')
+			return template('no-room')
 
 	@app.route('/random')
 	def show_random_room(db):
