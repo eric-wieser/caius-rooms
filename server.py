@@ -209,6 +209,15 @@ with base_route(app, '/rooms'):
 
 		return template('room', room=room, ballot=get_ballot(db), version=request.query.v)
 
+	@app.route('/mine')
+	@needs_auth('personalized')
+	def show_current_room(db):
+		room = request.user.current_room
+		if room:
+			return redirect('/rooms/{}'.format(room.id))
+		else:
+			return redirect('/rooms/')
+
 	@app.route('/random')
 	def show_random_room(db):
 		rooms = db.query(m.Room)

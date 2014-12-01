@@ -79,6 +79,12 @@ class Person(Base):
 			'&s={}'.format(size) if size else ''
 		)
 
+	@property
+	def current_room(self):
+		if not self.occupancies:
+			return
+		occ = min(self.occupancies, key=lambda o: o.listing.ballot_season_id)
+		return occ.listing.room
 
 class Cluster(Base):
 	""" (nestable) Groups of nearby physical rooms """

@@ -150,9 +150,9 @@
 									</a>
 									<ul class="dropdown-menu" role="menu">
 										<li><a href="/users/{{ request.user.crsid }}">Profile</a></li>
-										% if request.user.occupancies:
-											% occ = min(request.user.occupancies, key=lambda o: o.listing.ballot_season_id)
-											<li><a href="/rooms/{{ occ.listing.room.id }}">My room</a></li>
+										% cr = request.user.current_room
+										% if cr:
+											<li><a href="/rooms/{{ cr.id }}">My room</a></li>
 										% else:
 											<li class="disabled"><a>My room</a></li>
 										% end

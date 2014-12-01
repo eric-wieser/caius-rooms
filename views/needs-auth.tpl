@@ -11,6 +11,9 @@
 			% elif reason == 'ownership':
 				<h1>Sorry, who's posting this?</h1>
 				<p>It looks like you've been logged out while trying to add some content.</p>
+			% elif reason == 'personalized':
+				<h1>Hello!</h1>
+				<p>You're going to have to tell me who you are before I can take you to the right place</p>
 			% elif reason == 'admin':
 				<h1>You're not supposed to do that</h1>
 				<p>The page you requested is for use by staff and GCSU members involved in the housing ballot. If you feel you should have access, ask efw27. Perhaps you're just no longer logged in?</p>
@@ -20,7 +23,7 @@
 			% end
 
 			% if not request.user:
-				<a class="btn btn-primary" href="/login?return_to={{ urllib.quote_plus(request.url) }}">Login with Raven</a>
+				<a class="btn btn-lg btn-primary" href="/login?return_to={{ urllib.quote_plus(request.url) }}">Login with Raven</a>
 			% end
 		% else:
 			% if reason == 'admin':

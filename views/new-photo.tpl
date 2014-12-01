@@ -11,54 +11,60 @@
 			from your stay at {{ occupancy.listing.room.pretty_name() }} in {{ occupancy.listing.ballot_season}}
 		</small>
 	</h1>
-	<p>Images will be resized to fit within 1280px &times; 600px. Try to upload images which are the right way up - you can't yet rotate them once they're uploaded! Landscape images are preferable</p>
+	<p>Images will be resized to fit within a 1280px &times; 600px rectangle. Try to upload images which are the right way up - you can't yet rotate them once they're uploaded! Landscape images are preferable.</p>
 	<p>If you really want to go the extra mile, upload some <a href="/photos/panoramas" target="_blank">panoramas</a> - one good tool for generating these is <a href="http://research.microsoft.com/en-us/um/redmond/groups/ivm/ICE/">Microsoft ICE</a>.</p>
-	<form action="/photos" method="POST" enctype="multipart/form-data">
-		<style>
-		.photo-upload .photo-src{
-			display: none;
-		}
+</div>
+<div class="well" style="border-radius: 0; border-left: none; border-right: none">
+	<div class="container">
+		<form action="/photos" method="POST" enctype="multipart/form-data">
+			<style>
+			.photo-upload .photo-src{
+				display: none;
+			}
 
-		.photo-upload.no-photo .photo-src{
-			display: block;
-		}
-		.photo-upload.no-photo .photo-preview{
-			display: none;
-		}
-		.photo-upload.no-photo .photo-caption{
-			display: none;
-		}
-		.photo-upload.no-photo .delete-photo{
-			display: none;
-		}
+			.photo-upload.no-photo .photo-src{
+				display: block;
+			}
+			.photo-upload.no-photo .photo-preview{
+				display: none;
+			}
+			.photo-upload.no-photo .photo-caption{
+				display: none;
+			}
+			.photo-upload.no-photo .delete-photo{
+				display: none;
+			}
 
-		</style>
-		<input type="hidden" name="occupancy_id" value="{{ occupancy.id }}" />
-		<div class="row photo-upload no-photo">
-			<div class="col-md-4">
-				<div class="form-group">
-					<img class="img-responsive img-rounded photo-preview" />
-					<input type="file" name="photo" class="photo-src" multiple accept="image/png,image/jpeg"/>
+			</style>
+			<input type="hidden" name="occupancy_id" value="{{ occupancy.id }}" />
+			<div class="row photo-upload no-photo">
+				<div class="col-md-4">
+					<div class="form-group">
+						<img class="img-responsive img-rounded photo-preview" />
+						<input type="file" name="photo" class="photo-src" multiple accept="image/png,image/jpeg"/>
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div class="form-group">
+						<input class="form-control photo-caption" type="text" name="caption" title="Describing the image makes it searcheable" placeholder="caption" />
+					</div>
+				</div>
+				<div class="col-md-2">
+					<div class="form-group">
+						<button class="btn btn-danger delete-photo">
+							<span class="glyphicon glyphicon-remove"></span>
+							Delete
+						</button>
+					</div>
 				</div>
 			</div>
-			<div class="col-md-6">
-				<div class="form-group">
-					<input class="form-control photo-caption" type="text" name="caption" title="Describing the image makes it searcheable" placeholder="caption" />
-				</div>
+			<div class="form-group">
+				<button type="submit" id="submit-button" class="btn btn-success">Submit</button>
 			</div>
-			<div class="col-md-2">
-				<div class="form-group">
-					<button class="btn btn-danger delete-photo">
-						<span class="glyphicon glyphicon-remove"></span>
-						Delete
-					</button>
-				</div>
-			</div>
-		</div>
-		<div class="form-group">
-			<button type="submit" id="submit-button" class="btn btn-success">Submit</button>
-		</div>
-	</form>
+		</form>
+	</div>
+</div>
+<div class="container">
 	<script>
 	// make a promise from a file reader
 	function readFile(file) {
@@ -118,7 +124,7 @@
 	})
 	</script>
 	<h2>
-		Existing photos
+		Previous photos added by you
 	</h2>
 	<div class="row">
 		% for photo in occupancy.photos:
