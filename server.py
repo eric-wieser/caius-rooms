@@ -522,6 +522,58 @@ with base_route(app, '/ballots'):
 
 		return template('ballot-edit-1', ballot_season=ballot, root=root)
 
+with base_route(app, '/tools'):
+	@app.route('/assign-room')
+	@app.post('/assign-room')
+	@needs_auth('admin')
+	def assign_room(db):
+		user = False
+		room = False
+		season = False
+
+		if request.query.user:
+			user = db.query(m.Person).get(request.query.user)
+
+		if request.query.room:
+			room = db.query(m.Room).get(request.query.room)
+
+		if request.query.year:
+			season = db.query(m.BallotSeason).get(request.query.year)
+
+		# incomplete form - get
+		if request.method == 'GET':
+			return template('tools-assign', user=user, room=room, season=season, seasons=db.query(m.BallotSeason).all())
+
+		# form must be complete for post
+		elif not all([season, room, user]):
+			raise HTTPError(400)
+
+		else:
+			from sqlalchemy.orm.session import make_transient
+			from datetime import datetime
+
+			listing = room.listing_for.get(season)
+			if not listing:
+				last_listing = max(room.listings, key=lambda l: l.ballot_season_id)
+
+				# detach it
+				db.expunge(last_listing)
+				make_transient(last_listing)
+				listing = last_listing
+
+				listing.ballot_season = season
+				listing.id = None
+
+			occs = listing.occupancies
+			assert not any(occ.resident == user for occ in occs)
+
+			new_occ = m.Occupancy(resident=user, listing=listing, chosen_at=datetime.now())
+			db.add(new_occ)
+
+			redirect('/rooms/{}'.format(room.id))
+
+
+
 
 # and now, setup the session middleware
 
