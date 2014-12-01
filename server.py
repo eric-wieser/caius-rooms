@@ -366,6 +366,13 @@ with base_route(app, '/photos'):
 
 		return static_file(photo.storage_path, root='/')
 
+	@app.route('/panoramas')
+	def show_panoramas(db):
+		photos = db.query(m.Photo).filter(m.Photo.is_panorama).order_by(m.Photo.published_at.desc()).limit(20)
+
+		return template('panoramas', photos=photos)
+
+
 	@app.route('/new/<occ_id>', name="new-photos")
 	@needs_auth('ownership')
 	def show_new_photo_form(occ_id, db):

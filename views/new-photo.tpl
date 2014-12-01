@@ -11,7 +11,8 @@
 			from your stay at {{ occupancy.listing.room.pretty_name() }} in {{ occupancy.listing.ballot_season}}
 		</small>
 	</h1>
-	<p>Images will be resized to fit within 1280px &times; 600px. Landscape images are preferable, and panoramas are even better.</p>
+	<p>Images will be resized to fit within 1280px &times; 600px. Try to upload images which are the right way up - you can't yet rotate them once they're uploaded! Landscape images are preferable</p>
+	<p>If you really want to go the extra mile, upload some <a href="/photos/panoramas" target="_blank">panoramas</a> - one good tool for generating these is <a href="http://research.microsoft.com/en-us/um/redmond/groups/ivm/ICE/">Microsoft ICE</a>.</p>
 	<form action="/photos" method="POST" enctype="multipart/form-data">
 		<style>
 		.photo-upload .photo-src{

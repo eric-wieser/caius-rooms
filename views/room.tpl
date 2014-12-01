@@ -199,7 +199,7 @@
 		% occ = next((occupancy for listing in room.listings for occupancy in listing.occupancies if occupancy.resident == request.user), None)
 		<div id="photos" class="anchor" style="text-align: center; margin: 0px -10px">
 			% if photos and request.user and occ:
-				<div><a class="btn btn-large btn-primary" href="/photos/new/{{occ.id}}">Upload photos</a></div>
+				<div><a class="btn btn-lg btn-success" href="/photos/new/{{occ.id}}">Upload photos</a></div>
 			% end
 			% for photo in photos:
 				<p style="display: inline-block; text-align: left; margin: 10px; overflow: hidden">
