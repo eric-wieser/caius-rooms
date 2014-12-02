@@ -94,13 +94,21 @@
 	function readURL(input) {
 		var p = $(input).parents('.photo-upload');
 		var dfds = $.map(input.files, function(f) {
+			// create the next empty fields
+			var p_next = p.clone();
+			p_next.find('.photo-src').val(null);
+			p_next.find('.photo-caption').val(null);
+			p_next.insertAfter(p);
+
+			// move on to the next empty one
+			var p_curr = p;
+			p = p_next;
+
+			// update the current one
 			readFile(f).then(function (data) {
-				var p2 = p.clone();
-				p2.find('.photo-src').val(null);
-				p2.insertAfter(p);
-				p.find('.photo-preview').attr('src', data);
-				p.find('.photo-caption').prop('required', true)
-				p.removeClass('no-photo');
+				p_curr.find('.photo-preview').attr('src', data);
+				p_curr.find('.photo-caption').prop('required', true)
+				p_curr.removeClass('no-photo');
 			});
 		});
 		dfds = dfds.map(alwaysOK);
