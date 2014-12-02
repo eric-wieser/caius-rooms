@@ -412,7 +412,7 @@ with base_route(app, '/photos'):
 		uploads = request.files.getall('photo')
 		captions = request.forms.getall('caption')
 
-		for image_upload, caption in zip(uploads, captions):
+		for image_upload, caption in reversed(zip(uploads, captions)):
 			photo = m.Photo.from_file(image_upload.file)
 			photo.caption = caption
 			photo.occupancy = occupancy
