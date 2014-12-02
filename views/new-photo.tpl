@@ -104,6 +104,11 @@
 			var p_curr = p;
 			p = p_next;
 
+			if(input.files.length > 1)
+				p_curr.find('.delete-photo').prop('disabled', true).parent().attr('title', "Sorry, this doesn't work at the moment");
+			else
+				p_curr.find('.delete-photo').prop('disabled', false).parent().attr('title', "");
+
 			// update the current one
 			readFile(f).then(function (data) {
 				p_curr.find('.photo-preview').attr('src', data);
@@ -127,7 +132,8 @@
 	});
 
 	$('form').on('click', '.delete-photo', function() {
-		$(this).parents('.photo-upload').remove();
+		if(!$(this).prop('disabled'))
+			$(this).parents('.photo-upload').remove();
 		return false;
 	})
 	</script>
