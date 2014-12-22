@@ -629,6 +629,14 @@ import sqlalchemy.event
 sqlalchemy.event.listen(Photo, 'after_insert', Photo._inserted)
 
 
+r = aliased(Review)
+Review.is_newest = column_property(
+	select([
+		Review.published_at == func.max(r.published_at)
+	])
+	.select_from(r)
+	.where(r.occupancy_id == Review.occupancy_id)
+)
 
 # Now add a bunch of convenience columns to room objects
 Room.adjusted_rating = column_property(
@@ -638,21 +646,21 @@ Room.adjusted_rating = column_property(
 	.select_from(
 		join(Review, Occupancy).join(RoomListing)
 	)
-	.where(Room.id == RoomListing.room_id)
+	.where((Room.id == RoomListing.room_id) & Review.is_newest)
 )
 Room.review_count = column_property(
 	select([func.count(Review.id)])
 	.select_from(
 		join(Review, Occupancy).join(RoomListing)
 	)
-	.where(Room.id == RoomListing.room_id)
+	.where((Room.id == RoomListing.room_id) & Review.is_newest)
 )
 Room.rating_count = column_property(
 	select([func.count(Review.rating)])
 	.select_from(
 		join(Review, Occupancy).join(RoomListing)
 	)
-	.where(Room.id == RoomListing.room_id)
+	.where((Room.id == RoomListing.room_id) & Review.is_newest)
 )
 Room.photo_count = column_property(
 	select([func.count(Photo.id)])
@@ -680,6 +688,7 @@ Room.reference_count = column_property(
 			.join(RoomListing)
 	)
 	.where(Room.id == ReviewRoomReference.room_id)
+	.where(Review.is_newest)
 	.where(Room.id != RoomListing.room_id)  # filter self-references
 )
 
@@ -689,4 +698,12 @@ BallotSlot.ranking = column_property(
 		.select_from(bs)
 		.where(bs.event_id == BallotSlot.event_id)
 		.where(bs.time <= BallotSlot.time)
+)
+
+
+Occupancy.review = relationship(
+	lambda: Review,
+	viewonly=True,
+	uselist=False,
+	primaryjoin=(Review.occupancy_id == Occupancy.id) & Review.is_newest
 )

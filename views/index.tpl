@@ -39,7 +39,7 @@
 					% author = review.occupancy.resident
 					<tr>
 						<td class="text-right">
-							<a href="/rooms/{{room.id}}#review-{{review.id}}">{{ room.pretty_name() }}</a>
+							<a href="/rooms/{{room.id}}#occupancy-{{review.occupancy.id}}">{{ room.pretty_name() }}</a>
 						</td>
 						% if request.user:
 							<td>

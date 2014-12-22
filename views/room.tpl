@@ -223,12 +223,12 @@
 		% first = True
 		% for listing in room.listings:
 			% for occupancy in listing.occupancies:
-				% for review in occupancy.reviews:
+				% if occupancy.reviews:
 					% if not first:
 						<hr />
 					% end
 					% first = False
-					% include('review.tpl', review=review, version=version)
+					% include('review', occupancy=occupancy, version=version)
 				% end
 				% if not occupancy.reviews and occupancy.resident:
 					% if not first:
@@ -254,7 +254,7 @@
 		%end
 	</div>
 
-	% referring_sections = set(ref.review_section for ref in room.references if ref.review_section.review.occupancy.listing.room != room)
+	% referring_sections = set(ref.review_section for ref in room.references if ref.review_section.review.occupancy.listing.room != room and ref.review_section.review.is_newest)
 
 	% if referring_sections:
 		% referring_sections = sorted(referring_sections, key=lambda s: s.review.occupancy.listing.ballot_season.year, reverse=True)
@@ -267,14 +267,14 @@
 				% for section in referring_sections:
 					% refered_by = section.review.occupancy.listing.room
 					<div class="col-md-6">
-							<h3>
-								<a href="/rooms/{{ refered_by.id }}#review-{{ section.review.id }}">
-									{{ refered_by.pretty_name() }}</a>
-								<small>{{ section.review.occupancy.listing.ballot_season.year }} -
-									   {{ section.review.occupancy.listing.ballot_season.year + 1}}
-								&bull; {{ section.heading.name }}</small>
-							</h3>
-							{{! section.html_content(room) }}
+						<h3>
+							% o = section.review.occupancy
+							<a href="/rooms/{{ refered_by.id }}#occupancy-{{ o.id }}">
+								{{ refered_by.pretty_name() }}</a>
+							<small>{{ o.listing.ballot_season }}
+							&bull; {{ section.heading.name }}</small>
+						</h3>
+						{{! section.html_content(room) }}
 					</div>
 				% end
 			</div>
