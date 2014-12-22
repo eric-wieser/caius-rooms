@@ -75,7 +75,7 @@
 			% for occupancy in occs:
 				% for review in occupancy.reviews:
 					<hr />
-					% include('review.tpl', review=review, show_room=True)
+					% include('parts/review', review=review, show_room=True)
 				% end
 			% end
 		</div>

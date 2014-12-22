@@ -33,7 +33,7 @@
 			<li class="list-group-item">{{filter.description}}</li>
 		% end
 	</ul>
-	% include('room-table', rooms=filtered_rooms, ballot=ballot, relative_to=location)
+	% include('parts/room-table', rooms=filtered_rooms, ballot=ballot, relative_to=location)
 
 	<div id="map" style="height: 400px"></div>
 	% lat_lon = location.geocoords

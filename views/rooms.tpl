@@ -23,5 +23,5 @@
 			<li class="list-group-item">{{filter.description}}</li>
 		% end
 	</ul>
-	% include('room-table', rooms=filtered_rooms, ballot=ballot, relative_to=None)
+	% include('parts/room-table', rooms=filtered_rooms, ballot=ballot, relative_to=None)
 </div>

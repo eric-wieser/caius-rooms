@@ -79,7 +79,7 @@ def needs_auth(reason_or_callback, reason='privacy'):
 	def wrapper(*args, **kwargs):
 		if not request.user or (reason == 'admin' and not request.user.is_admin):
 			response.status = 403
-			return template('needs-auth', reason=reason)
+			return template('messages/needs-auth', reason=reason)
 
 		return callback(*args, **kwargs)
 
@@ -137,7 +137,7 @@ def show_index(db):
 @app.error(403)
 @get_authed_user
 def error_handler(res):
-	return template('error', e=res)
+	return template('messages/error', e=res)
 
 
 # declare all our application specific routes
@@ -214,7 +214,7 @@ with base_route(app, '/rooms'):
 		if room:
 			return redirect('/rooms/{}'.format(room.id))
 		else:
-			return template('no-room')
+			return template('messages/no-room')
 
 	@app.route('/random')
 	def show_random_room(db):

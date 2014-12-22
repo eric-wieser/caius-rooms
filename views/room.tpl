@@ -228,7 +228,7 @@
 						<hr />
 					% end
 					% first = False
-					% include('review', occupancy=occupancy, version=version)
+					% include('parts/review', occupancy=occupancy, version=version)
 				% end
 				% if not occupancy.reviews and occupancy.resident:
 					% if not first:
