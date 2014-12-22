@@ -1,12 +1,13 @@
-% import database.orm as m
+<%
+import database.orm as m
 
-% rebase('layout')
+rebase('layout')
 
-% import re
-% def natural_sort_key(s, _nsre=re.compile('([0-9]+)')):
-%    return [int(text) if text.isdigit() else text.lower() for text in re.split(_nsre, s)]
-% end
-
+import re
+def natural_sort_key(s, _nsre=re.compile('([0-9]+)')):
+   return [int(text) if text.isdigit() else text.lower() for text in re.split(_nsre, s)]
+end
+%>
 <style>
 .group {
 }
@@ -80,35 +81,35 @@ input[type=checkbox].show-hide {
 
 
 </style>
-%
-% class fullset(set):
-	% def __and__(self, other):
-		% return other
-	% end
-% end
-%
-% audiences = {}
-% def process(cl):
-	% some_a = set()
-	% all_a = fullset()
-	% for room in cl.rooms:
-		% listing = room.listing_for.get(ballot_season)
-		% audiences[room] = set(listing.audience_types) if listing else set()
+<%
+class fullset(set):
+	def __and__(self, other):
+		return other
+	end
+end
+
+audiences = {}
+def process(cl):
+	some_a = set()
+	all_a = fullset()
+	for room in cl.rooms:
+		listing = room.listing_for.get(ballot_season)
+		audiences[room] = set(listing.audience_types) if listing else set()
 		%
-		% all_a = all_a & set(audiences[room])
-		% some_a = some_a | set(audiences[room])
-	% end
-	% for subcl in cl.children:
-		% process(subcl)
-		% all_as, some_as = audiences[subcl]
-		% all_a = all_a & all_as
-		% some_a = some_a | some_as
-	% end
-	%
-	% audiences[cl] = all_a, some_a
-% end
-% process(root)
-%
+		all_a = all_a & set(audiences[room])
+		some_a = some_a | set(audiences[room])
+	end
+	for subcl in cl.children:
+		process(subcl)
+		all_as, some_as = audiences[subcl]
+		all_a = all_a & all_as
+		some_a = some_a | some_as
+	end
+	audiences[cl] = all_a, some_a
+end
+process(root)
+%>
+
 % def display(cl):
 	% for room in sorted(cl.rooms, key=lambda r: natural_sort_key(r.name)):
 		<div class="item">
@@ -139,13 +140,15 @@ input[type=checkbox].show-hide {
 				<a href="/places/{{ cl.id }}" target="_blank"><b>{{ subcl.pretty_name(cl) }}</b></a>
 				<div class="audience-cbs">
 					% for event in ballot_season.events:
-						% if event.type in audiences[subcl][0]:
-							% state = 'checked'
-						% elif event.type in audiences[subcl][1]:
-							% state = 'indeterminate'
-						% else:
-							% state = ''
-						% end
+						<%
+						if event.type in audiences[subcl][0]:
+							state = 'checked'
+						elif event.type in audiences[subcl][1]:
+							state = 'indeterminate'
+						else:
+							state = ''
+						end
+						%>
 						<div class="audience-cb">
 							<input type="checkbox"
 							       title="{{ event.type.name }}"

@@ -1,24 +1,24 @@
-% import json
-% from bottle import request
-% import urllib
+<%
+import json
+from bottle import request
+import urllib
 
-% url_parts = request.path[1:].split('/')
-% main_route = url_parts[0]
-%
-% nav = [
-% 	('rooms',   'Rooms',   'glyphicon-home'),
-% 	('places',  'Places',  'glyphicon-map-marker'),
-% 	('users',   'Users',   'glyphicon-user'),
-% 	('ballots', 'Ballots', 'glyphicon-list-alt')
-% ]
-% matching_nav = next((n for n in nav if n[0] == main_route), None)
+url_parts = request.path[1:].split('/')
+main_route = url_parts[0]
+nav = [
+	('rooms',   'Rooms',   'glyphicon-home'),
+	('places',  'Places',  'glyphicon-map-marker'),
+	('users',   'Users',   'glyphicon-user'),
+	('ballots', 'Ballots', 'glyphicon-list-alt')
+]
+matching_nav = next((n for n in nav if n[0] == main_route), None)
 
-% if defined('layout_breadcrumb'):
-	% layout_breadcrumb = list(layout_breadcrumb())
-% else:
-	% layout_breadcrumb = []
-% end
-
+if defined('layout_breadcrumb'):
+	layout_breadcrumb = list(layout_breadcrumb())
+else:
+	layout_breadcrumb = []
+end
+%>
 <!doctype html>
 <html>
 	<head>

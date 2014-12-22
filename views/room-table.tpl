@@ -5,16 +5,18 @@
 <div class="table-responsive">
 <table class="table table-condensed table-hover sortable">
 	<thead>
-		% skip_place = True
-		% for room in rooms:
-			% containing_place = room.parent
-			% if containing_place.type == 'staircase' and containing_place != relative_to:
-				% containing_place = containing_place.parent
-			% end
-			% if containing_place != relative_to:
-				% skip_place = False
-			% end
-		% end
+		<%
+		skip_place = True
+		for room in rooms:
+			containing_place = room.parent
+			if containing_place.type == 'staircase' and containing_place != relative_to:
+				containing_place = containing_place.parent
+			end
+			if containing_place != relative_to:
+				skip_place = False
+			end
+		end
+		%>
 		<tr>
 			% if skip_place:
 				<th class="rule-right" style="text-align: right">Room</th>
@@ -62,10 +64,12 @@
 						£{{ last_listing.rent }}
 					% end
 				</td>
-				% b_w, b_h = room.bedroom_x, room.bedroom_y
-				% l_w, l_h = room.living_room_x, room.living_room_y
+				<%
+				b_w, b_h = room.bedroom_x, room.bedroom_y
+				l_w, l_h = room.living_room_x, room.living_room_y
 
-				% area = (b_w * b_h if b_w else 0) + (l_w * l_h if l_w else 0)
+				area = (b_w * b_h if b_w else 0) + (l_w * l_h if l_w else 0)
+				%>
 				<td data-value="{{area if b_w or l_w else -1}}">
 					% if b_w or l_w:
 						{{area}}<span class="hidden-xs">&nbsp;ft&sup2;</span>

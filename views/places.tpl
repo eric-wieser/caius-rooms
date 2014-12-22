@@ -1,14 +1,16 @@
-% rebase('layout')
-% layout_random = "/places/random"
+<%
+rebase('layout')
+layout_random = "/places/random"
 
-% def flatten_iter(p, level=0):
-	% for c in p.children:
-		% yield c, level
-		% for np, nlevel in flatten_iter(c, level + 1):
-			% yield np, nlevel
-		% end
-	% end
-% end
+def flatten_iter(p, level=0):
+	for c in p.children:
+		yield c, level
+		for np, nlevel in flatten_iter(c, level + 1):
+			yield np, nlevel
+		end
+	end
+end
+%>
 <div class="container">
 	<table class="table table-condensed table-hover sortable">
 		<thead>
