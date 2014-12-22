@@ -421,6 +421,25 @@ with base_route(app, '/photos'):
 
 		return redirect('/rooms/{}#photos'.format(occupancy.listing.room.id))
 
+with base_route(app, '/occupancies'):
+	@app.route('/revised')
+	def show_occupancies(db):
+		occupancies = db.query(m.Occupancy).join(m.Review).filter(~m.Review.is_newest)
+
+		return '<br>'.join(
+			'<a href="/occupancies/{0}">#{0} ({1})</a>'.format(o.id, len(o.reviews))
+			for o in occupancies
+		)
+
+	@app.route('/<occ_id:int>')
+	def show_occupancy(occ_id, db):
+		try:
+			occupancy = db.query(m.Occupancy).filter(m.Occupancy.id == occ_id).one()
+		except NoResultFound:
+			raise HTTPError(404, 'Occupancy not found')
+
+		return template('occupancy', occupancy=occupancy)
+
 
 with base_route(app, '/locations'):
 	@app.route('/<loc_id>', name="location-list")
