@@ -376,7 +376,7 @@ class Occupancy(Base):
 
 	listing     = relationship(lambda: RoomListing, backref=backref("occupancies", lazy='subquery'))
 	resident    = relationship(lambda: Person, backref="occupancies", lazy='joined')
-	reviews     = relationship(lambda: Review, backref="occupancy", order_by=lambda: Review.published_at.desc())
+	reviews     = relationship(lambda: Review, cascade='all, delete-orphan', backref="occupancy", order_by=lambda: Review.published_at.desc())
 	photos      = relationship(lambda: Photo,  backref="occupancy", order_by=lambda: Photo.published_at.desc())
 
 	@property
@@ -405,7 +405,8 @@ class Review(Base):
 	rating       = Column(SmallInteger)
 	occupancy_id = Column(Integer, ForeignKey(Occupancy.id), nullable=False, index=True)
 
-	sections     = relationship(lambda: ReviewSection, backref='review', order_by=lambda: ReviewSection._order)
+	sections     = relationship(lambda: ReviewSection, cascade='all, delete-orphan', backref='review', order_by=lambda: ReviewSection._order)
+
 
 	def contents_eq(self, other):
 		"""
