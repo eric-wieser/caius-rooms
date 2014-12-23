@@ -3,6 +3,8 @@
 % import database.orm as m
 % from datetime import datetime
 
+% from utils import format_ballot_html
+
 % def last_content_for(heading):
 	% if review:
 		% for s in review.sections:
@@ -19,20 +21,39 @@
 		<input type="hidden" name="occupancy_id" value="{{ occupancy.id }}" />
 		<div itemprop="review" itemscope itemtype="http://schema.org/Review">
 			<div class="row">
-				<div class="col-md-2">
-					<h2>{{occupancy.listing.ballot_season.year}}
-						<small itemprop="reviewRating" itemscope itemtype="http://schema.org/Rating" style="white-space: nowrap">
-							<input name="rating" itemprop="ratingValue" type="number" min="0" max="10" style="width: 4em; display: inline-block"  class="form-control" value="{{ review and review.rating or '' }}"/><!--
-							-->/<span itemprop="bestRating">10</span>
-						</small>
-					</h2>
-					<a itemprop="author" href="mailto:{{occupancy.resident.email}}">
-						{{occupancy.resident.name}}
+				<div class="col-xs-2">
+					<strong>{{! format_ballot_html(occupancy.listing.ballot_season) }}</strong>
+				</div>
+				<div class="col-xs-6">
+					<a itemprop="author" href="/users/{{ occupancy.resident.crsid }}">
+						{{ occupancy.resident.name }}
 					</a>
+				</div>
+				<div class="col-xs-4 text-right">
+					% sl = occupancy.ballot_slot
+					% if sl:
+						<a href="/ballots/{{ occupancy.listing.ballot_season.year }}#slot-{{ sl.id }}">
+							#{{ sl.ranking }}</a>
+						in the {{ sl.event.type.name.lower() }} ballot
+					% else:
+						not balloted for
+					% end
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-2">
+					<div style="font-size: 63px" itemprop="reviewRating" itemscope itemtype="http://schema.org/Rating">
+						<input name="rating" itemprop="ratingValue"
+						       type="number" min="0" max="10"
+						       style="display: inline-block; font-size: inherit; width: 80px; height: 90px; margin: 0; padding: 0; border: 0"
+						       placeholder="?"
+						       value="{{ review and review.rating or '' }}"/><!--
+						--><span style="font-size: 65%" class="text-muted">/<span itemprop="bestRating">10</span></span>
+					</div>
 				</div>
 				<div class="col-xs-1 visible-sm visible-xs"></div>
 				% headings = object_session(occupancy).query(m.ReviewHeading).order_by(m.ReviewHeading.position)
-				<div class="col-md-4 col-xs-11" style="padding-top: 7px">
+				<div class="col-md-4 col-xs-11" style="padding-top: 26px">
 					% for heading in headings:
 						% if heading.is_summary:
 							<h3>
@@ -53,7 +74,7 @@
 					% end
 				</div>
 				<div class="col-xs-1 visible-xs"></div>
-				<div class="col-md-6 col-sm-12 col-xs-11" style="margin-top: 33px">
+				<div class="col-md-6 col-sm-12 col-xs-11" style="margin-top: 52px">
 					<dl class="dl-horizontal">
 						% for heading in headings:
 							% if not heading.is_summary:
@@ -67,12 +88,9 @@
 							% end
 						% end
 					</dl>
-					<div class="text-right">
-						<a href="#"><small class="text-muted text-right">{{ datetime.now() }}</small></a>
-					</div>
 				</div>
 			</div>
 		</div>
-		<button type="submit" class="btn btn-success">Submit</button>
+		<button type="submit" class="btn btn-success btn-lg pull-right">Submit</button>
 	</form>
 </div>

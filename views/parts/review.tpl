@@ -7,11 +7,10 @@
 	<div style="position: relative; top: -50px" id="occupancy-{{occupancy.id}}"></div>
 
 	<div class="row">
-		<div class="col-xs-4">
-			<h2>{{! format_ballot_html(occupancy.listing.ballot_season) }}</h2>
+		<div class="col-xs-2">
+			<strong>{{! format_ballot_html(occupancy.listing.ballot_season) }}</strong>
 		</div>
-		<div class="col-xs-4 text-center">
-			<h2><small>
+		<div class="col-xs-6">
 			% if show_room:
 				<a href="/rooms/{{ occupancy.listing.room.id }}">
 					{{ occupancy.listing.room.pretty_name() }}
@@ -27,18 +26,18 @@
 					% end
 				% end
 			% end
-			</small></h2>
 		</div>
 		<div class="col-xs-4 text-right">
-			<h2><small>
-				% if occupancy.resident:
-					% if occupancy.ballot_slot:
-						#{{ occupancy.ballot_slot.ranking }} in the ballot
-					% else:
-						off-ballot
-					% end
+			% if occupancy.resident:
+				% sl = occupancy.ballot_slot
+				% if sl:
+					<a href="/ballots/{{ occupancy.listing.ballot_season.year }}#slot-{{ sl.id }}">
+						#{{ sl.ranking }}</a>
+					in the {{ sl.event.type.name.lower() }} ballot
+				% else:
+					not balloted for
 				% end
-			</small></h2>
+			% end
 		</div>
 	</div>
 
@@ -46,9 +45,9 @@
 		<div class="row">
 			<div class="col-md-2">
 				% if review.rating is not None:
-					<div style="font-size: 200%" itemprop="reviewRating" itemscope itemtype="http://schema.org/Rating">
-						<span itemprop="ratingValue" style="font-size: 200%">{{ repr(review.rating) }}</span><!--
-						--><span class="text-muted">/<span itemprop="bestRating">10</span></span>
+					<div style="font-size: 63px" itemprop="reviewRating" itemscope itemtype="http://schema.org/Rating">
+						<span itemprop="ratingValue">{{ repr(review.rating) }}</span><!--
+						--><span class="text-muted" style="font-size: 65%">/<span itemprop="bestRating">10</span></span>
 					</div>
 				% else:
 					<span class="text-muted">No rating</span>
@@ -56,7 +55,7 @@
 			</div>
 			<div class="col-xs-1 visible-sm visible-xs"></div>
 			% if review.sections:
-				<div class="col-md-4 col-xs-11" style="padding-top: 7px">
+				<div class="col-md-4 col-xs-11" style="padding-top: 26px">
 					% for section in review.sections:
 						% if section.heading.is_summary:
 							<h3>
@@ -74,7 +73,7 @@
 					% end
 				</div>
 				<div class="col-xs-1 visible-xs"></div>
-				<div class="col-md-6 col-sm-12 col-xs-11" style="margin-top: 33px">
+				<div class="col-md-6 col-sm-12 col-xs-11" style="margin-top: 52px">
 					<dl class="dl-horizontal">
 						% for section in review.sections:
 							% if not section.heading.is_summary:

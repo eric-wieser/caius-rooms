@@ -75,6 +75,15 @@ end
 				margin:-70px 0 0;
 			}
 
+			input[type='number'] {
+				-moz-appearance:textfield;
+			}
+
+			input::-webkit-outer-spin-button,
+			input::-webkit-inner-spin-button {
+				-webkit-appearance: none;
+			}
+
 		</style>
 		<title>{{' | '.join([name for url, name in reversed(layout_breadcrumb)] + ['RoomPicks']) }}</title>
 	</head>
