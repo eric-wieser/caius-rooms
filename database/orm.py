@@ -414,11 +414,9 @@ class Review(Base):
 		not care about reviewer, date, or room
 		"""
 		if self.rating != other.rating:
-			print "Rating"
 			return False
 
 		if len(self.sections) != len(other.sections):
-			print "Len"
 			return False
 
 		self_sections = sorted(self.sections, key=lambda s: s.heading.position)
@@ -426,10 +424,8 @@ class Review(Base):
 
 		for ss, so in zip(self_sections, other_sections):
 			if ss.heading != so.heading:
-				print "Head", ss.heading.name, so.heading.name
 				return False
 			if ss.content != so.content:
-				print "Content"
 				return False
 
 		return True
