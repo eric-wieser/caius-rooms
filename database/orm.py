@@ -32,7 +32,7 @@ Relationships:
 import datetime
 import os
 
-from sqlalchemy import Table, Column, ForeignKey, UniqueConstraint
+from sqlalchemy import Table, Column, ForeignKey, UniqueConstraint, ForeignKeyConstraint
 from sqlalchemy import (
 	Boolean,
 	Date,
@@ -518,18 +518,21 @@ class ReviewRoomReference(Base):
 
 	id = Column(Integer, primary_key=True)
 
-	review_id = Column(Integer, ForeignKey(ReviewSection.review_id), nullable=False)
-	review_heading_id = Column(Integer, ForeignKey(ReviewSection.heading_id), nullable=False)
+	review_id = Column(Integer, nullable=False)
+	review_heading_id = Column(Integer, nullable=False)
 	room_id = Column(Integer, ForeignKey(Room.id), nullable=False)
 
 	start_idx = Column(Integer)
 	end_idx = Column(Integer)
 
+	__table_args__ = (
+		ForeignKeyConstraint([review_id,               review_heading_id],
+                             [ReviewSection.review_id, ReviewSection.heading_id]),
+    )
+
 	review_section = relationship(
 		lambda: ReviewSection,
 		backref=backref('refers_to', order_by=start_idx, cascade='all, delete-orphan'),
-		foreign_keys=[review_id, review_heading_id],
-		primaryjoin=(review_id == ReviewSection.review_id) & (review_heading_id == ReviewSection.heading_id)
 	)
 	room = relationship(lambda: Room, backref='references')
 
@@ -676,10 +679,7 @@ Room.resident_count = column_property(
 Room.reference_count = column_property(
 	select([func.count(ReviewRoomReference.id)])
 	.select_from(
-		join(ReviewRoomReference, ReviewSection,
-				(ReviewRoomReference.review_id == ReviewSection.review_id) &
-				(ReviewRoomReference.review_heading_id == ReviewSection.heading_id)
-			)
+		join(ReviewRoomReference, ReviewSection)
 			.join(Review)
 			.join(Occupancy)
 			.join(RoomListing)
