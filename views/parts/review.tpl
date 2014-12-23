@@ -74,7 +74,13 @@
 					<small>
 						% if len(occupancy.reviews) > 1:
 							<a href="/occupancies/{{ occupancy.id }}">
-								<span class="text-muted">Edited {{ len(occupancy.reviews) }} times</span>
+								% revs = len(occupancy.reviews)
+								<span class="text-muted">
+									Edited
+									% if revs > 2:
+										{{ revs - 1}} times
+									% end
+								</span>
 							</a>
 							&bullet;
 						% end
