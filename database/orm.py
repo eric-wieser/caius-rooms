@@ -518,16 +518,16 @@ class ReviewRoomReference(Base):
 
 	id = Column(Integer, primary_key=True)
 
-	review_id = Column(Integer, ForeignKey(ReviewSection.review_id))
-	review_heading_id = Column(Integer, ForeignKey(ReviewSection.heading_id))
-	room_id = Column(Integer, ForeignKey(Room.id))
+	review_id = Column(Integer, ForeignKey(ReviewSection.review_id), nullable=False)
+	review_heading_id = Column(Integer, ForeignKey(ReviewSection.heading_id), nullable=False)
+	room_id = Column(Integer, ForeignKey(Room.id), nullable=False)
 
 	start_idx = Column(Integer)
 	end_idx = Column(Integer)
 
 	review_section = relationship(
 		lambda: ReviewSection,
-		backref=backref('refers_to', order_by=start_idx),
+		backref=backref('refers_to', order_by=start_idx, cascade='all, delete-orphan'),
 		foreign_keys=[review_id, review_heading_id],
 		primaryjoin=(review_id == ReviewSection.review_id) & (review_heading_id == ReviewSection.heading_id)
 	)
