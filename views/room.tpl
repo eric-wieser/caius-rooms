@@ -223,35 +223,15 @@
 		% first = True
 		% for listing in room.listings:
 			% for occupancy in listing.occupancies:
-				% if occupancy.reviews:
+				% if occupancy.review or occupancy.resident:
 					% if not first:
 						<hr />
 					% end
 					% first = False
 					% include('parts/review', occupancy=occupancy, version=version)
 				% end
-				% if not occupancy.reviews and occupancy.resident:
-					% if not first:
-						<hr />
-					% end
-					% first = False
-					<div itemprop="review" itemscope itemtype="http://schema.org/Review">
-						<h2>{{ listing.ballot_season.year }}</h2>
-						% if request.user:
-							<a itemprop="author" href="/users/{{occupancy.resident.crsid}}">{{occupancy.resident.name}}</a>
-						% else:
-							{{! restricted() }}
-						% end
-						<br />
-						<span class="text-muted">
-							% if occupancy.ballot_slot:
-								#{{ occupancy.ballot_slot.ranking }}
-							% end
-						</span>
-					</div>
-				% end
 			% end
-		%end
+		% end
 	</div>
 
 	% referring_sections = set(ref.review_section for ref in room.references if ref.review_section.review.occupancy.listing.room != room and ref.review_section.review.is_newest)

@@ -19,6 +19,9 @@ def format_ts_html(ts):
 		ts.isoformat(), format_ts(ts)
 	)
 
+def format_ballot_html(ballot_season):
+	return '{}<span class="hidden-xs"> &ndash; {}</span>'.format(ballot_season.year, ballot_season.year+1)
+
 def restricted(message=None):
 	if not message:
 		s = random.sample(string.ascii_lowercase, 20)
