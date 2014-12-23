@@ -73,10 +73,8 @@
 		<div class="col-md-12">
 			<h2>Reviews</h2>
 			% for occupancy in occs:
-				% for review in occupancy.reviews:
-					<hr />
-					% include('parts/review', review=review, show_room=True)
-				% end
+				<hr />
+				% include('parts/review', occupancy=occupancy, show_room=True)
 			% end
 		</div>
 	</div>
