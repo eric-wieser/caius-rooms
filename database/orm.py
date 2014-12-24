@@ -382,17 +382,28 @@ class Occupancy(Base):
 	@property
 	def ballot_slot(self):
 		from sqlalchemy.orm.exc import NoResultFound
-		try:
-			return (object_session(self)
-				.query(BallotSlot)
-				.join(BallotEvent)
-				.join(Occupancy, BallotSlot.person_id == Occupancy.resident_id)
-				.join(RoomListing)
-				.filter(RoomListing.ballot_season_id == BallotEvent.season_id)
-				.filter(Occupancy.id == self.id)
-			).one()
-		except NoResultFound:
-			return None
+
+		slot, occ = (object_session(self)
+			# pair slots with event
+			.query(BallotSlot, Occupancy)
+			.join(BallotEvent)
+
+			# pair slot with listings
+			.join(Occupancy, BallotSlot.person_id == Occupancy.resident_id)
+			.join(RoomListing)
+
+			# match event and listing years
+			.filter(RoomListing.ballot_season_id == BallotEvent.season_id)
+
+			# match current occupancy
+			.filter(RoomListing.id == self.listing_id)
+
+			.order_by(Occupancy.chosen_at)
+		).first()
+
+		if occ == self:
+			return slot
+
 
 	__table_args__ = (UniqueConstraint(resident_id, listing_id, name='_resident_listing_uc'),)
 
