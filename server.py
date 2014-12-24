@@ -196,7 +196,17 @@ with base_route(app, '/rooms'):
 		if request.query.group:
 			filters.append(filter_group(request.query.group))
 
-		return template('rooms', rooms=db.query(m.Room).all(), ballot=get_ballot(db), filters=filters)
+		rooms = db.query(m.Room)
+
+		if request.query.filter_id:
+			try:
+				ids = [int(i) for i in request.query.filter_id.split(',')]
+			except TypeError:
+				raise HTTPError(400, 'malformed room id')
+
+			rooms = rooms.filter(m.Room.id.in_(ids))
+
+		return template('rooms', rooms=rooms.all(), ballot=get_ballot(db), filters=filters)
 
 	@app.route('/<room_id>')
 	def show_room(room_id, db):
