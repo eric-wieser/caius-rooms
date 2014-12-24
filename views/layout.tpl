@@ -59,7 +59,7 @@ end
 			body {
 				margin-top: 50px;
 				padding-top: 20px;
-				margin-bottom: 30px;
+				margin-bottom: 50px;
 			}
 
 			.cropped-photo {
