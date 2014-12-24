@@ -289,6 +289,31 @@ with base_route(app, '/reviews'):
 
 		return template('new-review', occupancy=occupancy, review=review)
 
+
+	@app.post('/new/<occ_id>', name="new-review")
+	@needs_auth('ownership')
+	def show_new_review_form(occ_id, db):
+		try:
+			occupancy = db.query(m.Occupancy).filter(m.Occupancy.id == occ_id).one()
+		except NoResultFound:
+			raise HTTPError(404, "No such occupancy to review")
+
+		if occupancy.resident != request.user:
+			raise HTTPError(403, "You must have been a resident of a room to review it")
+
+		review = db.query(m.Review).filter_by(occupancy_id=occ_id).order_by(m.Review.published_at.desc()).first()
+		
+		# Rating was submitted initially - save that right now
+		rating = request.forms.get('rating')
+		if not review and rating:
+			review = m.Review(
+				occupancy=occupancy,
+				published_at=datetime.now(),
+				rating=rating
+			)
+
+		return template('new-review', occupancy=occupancy, review=review)
+
 	@app.post('', name="new-review-post")
 	@needs_auth('ownership')
 	def save_new_review_form(db):
