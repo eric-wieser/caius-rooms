@@ -91,6 +91,9 @@
 				</div>
 			</div>
 		</div>
-		<button type="submit" class="btn btn-success btn-lg pull-right">Submit</button>
+		<div class="text-right">
+			<a href="/rooms/{{ occupancy.listing.room.id }}#occupancy-{{ occupancy.id }}" class="btn btn-default btn-lg">Cancel</a>
+			<button type="submit" class="btn btn-success btn-lg">Submit</button>
+		</div>
 	</form>
 </div>
