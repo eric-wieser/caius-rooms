@@ -133,14 +133,15 @@ def make_diff(prev, curr):
 		<div>
 			<h2>Revision {{i}} <small>{{! format_ts_html(review.published_at) }}</small></h2>
 			<div class="row">
-				<div class="col-md-2">
-					<h2 itemprop="reviewRating" itemscope itemtype="http://schema.org/Rating">
-						<span itemprop="ratingValue">{{ review.rating }}</span><!--
-						-->/<span itemprop="bestRating">10</span>
-					</h2>
+				<div class="col-md-2 col-md-offset-0 col-xs-5 col-xs-offset-1">
+					<div style="font-size: 63px" itemprop="reviewRating" itemscope itemtype="http://schema.org/Rating">
+						<span itemprop="ratingValue">{{ repr(review.rating) }}</span><!--
+						--><span class="text-muted" style="font-size: 65%">/<span itemprop="bestRating">10</span></span>
+					</div>
 				</div>
-				<div class="col-xs-1 visible-sm visible-xs"></div>
-				<div class="col-md-4 col-xs-11" style="padding-top: 7px">
+				<div class="clearfix hidden-lg hidden-md"></div>
+				<div class="col-md-4 col-md-offset-0 col-xs-11 col-xs-offset-1">
+					<div style="height: 26px" class="hidden-sm hidden-xs"></div>
 					% for section in review.sections:
 						% if section.heading.is_summary:
 							<h3>
@@ -157,8 +158,8 @@ def make_diff(prev, curr):
 						% end
 					% end
 				</div>
-				<div class="col-xs-1 visible-xs"></div>
-				<div class="col-md-6 col-sm-12 col-xs-11" style="margin-top: 33px">
+				<div class="col-md-6 col-sm-12 col-sm-offset-0 col-xs-11 col-xs-offset-1">
+					<div style="height: 52px" class="hidden-sm hidden-xs"></div>
 					<dl class="dl-horizontal">
 						% for section in review.sections:
 							% if not section.heading.is_summary:
