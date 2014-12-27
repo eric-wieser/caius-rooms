@@ -383,7 +383,7 @@ class Occupancy(Base):
 	def ballot_slot(self):
 		from sqlalchemy.orm.exc import NoResultFound
 
-		slot, occ = (object_session(self)
+		pair = (object_session(self)
 			# pair slots with event
 			.query(BallotSlot, Occupancy)
 			.join(BallotEvent)
@@ -401,8 +401,10 @@ class Occupancy(Base):
 			.order_by(Occupancy.chosen_at)
 		).first()
 
-		if occ == self:
-			return slot
+		if pair:
+			slot, occ = pair
+			if occ == self:
+				return slot
 
 
 	__table_args__ = (UniqueConstraint(resident_id, listing_id, name='_resident_listing_uc'),)
