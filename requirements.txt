@@ -1,6 +1,8 @@
 SQLAlchemy==0.9.7
-bottle==0.12.7
 bottle-sqlalchemy==0.4.1
-pysqlite==2.6.3
 beaker==1.6.4
-python-raven
+regex==2014.12.15
+diff-match-patch==20110725.1
+Pillow==2.3.0
+-e git://github.com/eric-wieser/bottle.git#egg=bottle-eric
+-e git+https://github.com/danielrichman/python-raven@6fbcf4e9bf21dddd83749f7a9075f553f3e436d5#egg=python_raven-master
