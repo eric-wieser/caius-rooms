@@ -1,21 +1,22 @@
-% rebase('layout')
-% from sqlalchemy.orm.session import object_session
-% import database.orm as m
-% from datetime import datetime
+<%
+rebase('layout')
+from sqlalchemy.orm.session import object_session
+import database.orm as m
+from datetime import datetime
 
-% from utils import format_ballot_html
+from utils import format_ballot_html
 
-% def last_content_for(heading):
-	% if review:
-		% for s in review.sections:
-			% if s.heading == heading:
-				% return s.content
-			% end
-		% end
-	% end
-	% return ''
-% end
-
+def last_content_for(heading):
+	if review:
+		for s in review.sections:
+			if s.heading == heading:
+				return s.content
+			end
+		end
+	end
+	return ''
+end
+%>
 <div class="container">
 	<form action="/reviews" method="POST">
 		<input type="hidden" name="occupancy_id" value="{{ occupancy.id }}" />

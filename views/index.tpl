@@ -1,10 +1,11 @@
-% import database.orm as m
-% from utils import format_ts_html
-% from sqlalchemy.sql import func
-% from bottle import request
+<%
+import database.orm as m
+from utils import format_ts_html
+from sqlalchemy.sql import func
+from bottle import request
 
-% rebase('layout')
-
+rebase('layout')
+%>
 <a class="hidden-xs" href="https://github.com/eric-wieser/caius-rooms">
 	<img style="position: absolute; top: 50px; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png" alt="Fork me on GitHub">
 </a>

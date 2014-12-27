@@ -1,17 +1,17 @@
-% from bottle import request
-% from utils import format_ts_html, restricted
-% from diff_match_patch import diff_match_patch as DMP
-% rebase('layout')
-% def layout_breadcrumb():
-	% yield ('#', 'Content history for {}'.format(occupancy.listing.room.pretty_name()))
-% end
+<%
+from bottle import request
+from utils import format_ts_html, restricted
+from diff_match_patch import diff_match_patch as DMP
+rebase('layout')
+def layout_breadcrumb():
+	yield ('#', 'Content history for {}'.format(occupancy.listing.room.pretty_name()))
+end
 
-% revisions = sorted(occupancy.reviews, key=lambda r: r.published_at)
+revisions = sorted(occupancy.reviews, key=lambda r: r.published_at)
 
-% differ = DMP()
+differ = DMP()
 
-% def make_diff(prev, curr):
-	<%
+def make_diff(prev, curr):
 	# Get a list of all the sections, and their values before and after
 	prev_sections = {s.heading: s.content for s in prev.sections}
 	curr_sections = {s.heading: s.content for s in curr.sections}

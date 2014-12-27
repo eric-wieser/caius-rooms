@@ -1,35 +1,37 @@
-% rebase('layout')
+<%
+rebase('layout')
 
-% def layout_breadcrumb():
-	% for part in place.path:
-		% yield ("/places/{}".format(part.id), part.pretty_name(part.parent))
-	% end
-% end
+def layout_breadcrumb():
+	for part in place.path:
+		yield ("/places/{}".format(part.id), part.pretty_name(part.parent))
+	end
+end
 
-% def layout_extra_nav():
+def layout_extra_nav():
 	<li class="active"><a href="{{ get_url('place-photos', place_id=place.id) }}">
 		<span class="glyphicon glyphicon-picture"></span> Photos
 	</a></li>
-% end
+end
 
-% layout_random = '/places/random/photos'
+layout_random = '/places/random/photos'
 
-% import itertools
-% import re
+import itertools
+import re
 
 
-% def atoi(text):
-%     return int(text) if text.isdigit() else text
-% end
+def atoi(text):
+    return int(text) if text.isdigit() else text
+end
 
-% def natural_keys(text):
-%     '''
-%     alist.sort(key=natural_keys) sorts in human order
-%     http://nedbatchelder.com/blog/200712/human_sorting.html
-%     (See Toothy's implementation in the comments)
-%     '''
-%     return [ atoi(c) for c in re.split('(\d+)', text) ]
-% end
+def natural_keys(text):
+    '''
+    alist.sort(key=natural_keys) sorts in human order
+    http://nedbatchelder.com/blog/200712/human_sorting.html
+    (See Toothy's implementation in the comments)
+    '''
+    return [ atoi(c) for c in re.split('(\d+)', text) ]
+end
+%>
 
 <div class="container">
 	% filtered_rooms  = place.all_rooms_q.all()

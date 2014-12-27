@@ -1,17 +1,20 @@
-% from utils import format_ts_html, restricted
-% from bottle import request
+<%
+from utils import format_ts_html, restricted
+from bottle import request
+import json
 
-% rebase('layout')
+rebase('layout')
 
-% def layout_breadcrumb():
-	% for part in room.parent.path:
-		% yield ("/places/{}".format(part.id), part.pretty_name(part.parent))
-	% end
-	% yield ('#', room.pretty_name(room.parent))
-% end
+layout_random = '/rooms/random'
 
-% def layout_extra_nav():
-	% import json
+def layout_breadcrumb():
+	for part in room.parent.path:
+		yield ("/places/{}".format(part.id), part.pretty_name(part.parent))
+	end
+	yield ('#', room.pretty_name(room.parent))
+end
+
+def layout_extra_nav(): %>
 	<li style="display: none"><a href="#info"></a></li>
 	<li><a href="#photos">
 		<span class="glyphicon glyphicon-picture"></span> <span class="hidden-sm">Photos</span>
@@ -38,17 +41,19 @@
 		}
 	});
 	</script>
-% end
+<% end
+%>
 
-% layout_random = '/rooms/random'
 <div style="margin-bottom: 6em" itemscope itemtype="http://schema.org/Product">
 <div class="container">
-	% last_listing = room.listing_for.get(ballot)
-	% if last_listing and last_listing.occupancies:
-		% last_occupancy = last_listing.occupancies[-1]
-	% else:
-		% last_occupancy = None
-	% end
+	<%
+	last_listing = room.listing_for.get(ballot)
+	if last_listing and last_listing.occupancies:
+		last_occupancy = last_listing.occupancies[-1]
+	else:
+		last_occupancy = None
+	end
+	%>
 	<div id="info" class="row anchor">
 		<div class="col-md-6">
 			<h1>
@@ -193,10 +198,24 @@
 		</div>
 	</div>
 </div>
-% photos = [photo for listing in room.listings for occupancy in listing.occupancies for photo in occupancy.photos]
+<%
+photos = [
+	photo
+	for listing in room.listings
+	for occupancy in listing.occupancies
+	for photo in occupancy.photos
+]
+%>
 <div class="well" style="border-radius: 0; border-left: none; border-right: none">
 	<div class="container">
-		% occ = next((occupancy for listing in room.listings for occupancy in listing.occupancies if occupancy.resident == request.user), None)
+		<%
+		occ = next((
+			occupancy
+			for listing in room.listings
+			for occupancy in listing.occupancies
+			if occupancy.resident == request.user
+		), None)
+		%>
 		<div id="photos" class="anchor" style="text-align: center; margin: 0px -10px">
 			% if photos and request.user and occ:
 				<div><a class="btn btn-lg btn-success" href="/photos/new/{{occ.id}}">Upload photos</a></div>
@@ -220,28 +239,38 @@
 </div>
 <div class="container">
 	<div id="reviews" class="anchor">
-		% first = True
-		% for listing in room.listings:
-			% for occupancy in listing.occupancies:
-				% if occupancy.review or occupancy.resident:
-					% if not first:
+		<% first = True
+		for listing in room.listings:
+			for occupancy in listing.occupancies:
+				if occupancy.review or occupancy.resident:
+					if not first: %>
 						<hr />
-					% end
-					% first = False
-					% include('parts/review', occupancy=occupancy, version=version)
-				% end
-			% end
-		% end
+						<%
+					end
+					first = False
+					include('parts/review', occupancy=occupancy, version=version)
+				end
+			end
+		end
+		%>
 	</div>
 
-	% referring_sections = set(ref.review_section for ref in room.references if ref.review_section.review.occupancy.listing.room != room and ref.review_section.review.is_newest)
-
-	% if referring_sections:
-		% referring_sections = sorted(referring_sections, key=lambda s: s.review.occupancy.listing.ballot_season.year, reverse=True)
+	<%
+	referring_sections = set(
+		ref.review_section
+		for ref in room.references
+		if ref.review_section.review.occupancy.listing.room != room and
+		   ref.review_section.review.is_newest
+	)
+	if referring_sections:
+		referring_sections = sorted(
+			referring_sections,
+			key=lambda s: s.review.occupancy.listing.ballot_season.year,
+			reverse=True
+		) %>
 		<hr />
 		<div id="references" class="anchor">
 			<h2>References <small>mentions in other reviews</small></h2>
-
 
 			<div class="row">
 				% for section in referring_sections:

@@ -1,12 +1,13 @@
-% from bottle import request
-% from utils import format_ts_html
-% rebase('layout')
-% layout_random = "/users/random"
-% def layout_breadcrumb():
-	% yield ('#', user.name)
-% end
-% def layout_extra_nav():
-	% if request.user and request.user.is_admin:
+<%
+from bottle import request
+from utils import format_ts_html
+rebase('layout')
+layout_random = "/users/random"
+def layout_breadcrumb():
+	yield ('#', user.name)
+end
+def layout_extra_nav():
+	if request.user and request.user.is_admin: %>
 		<li class="dropdown">
 			<a href="#" class="dropdown-toggle" data-toggle="dropdown">
 				<span class="glyphicon glyphicon-flag text-danger"></span> Admin <span class="caret"></span>
@@ -15,8 +16,10 @@
 				<li><a href="/tools/assign-room?user={{ user.crsid }}">Assign room manually</a></li>
 			</ul>
 		</li>
-	% end
-% end
+		<% 
+	end
+end
+%>
 
 <div class="container">
 	% occs = sorted(user.occupancies, key=lambda o: o.listing.ballot_season.year)

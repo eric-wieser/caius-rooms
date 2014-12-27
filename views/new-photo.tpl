@@ -1,9 +1,10 @@
-% rebase('layout')
-% from sqlalchemy.orm.session import object_session
-% import database.orm as m
-% from datetime import datetime
-% from utils import format_ts_html
-
+<%
+rebase('layout')
+from sqlalchemy.orm.session import object_session
+import database.orm as m
+from datetime import datetime
+from utils import format_ts_html
+%>
 <div class="container">
 	<h1>
 		Add photos

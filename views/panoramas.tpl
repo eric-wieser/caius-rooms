@@ -1,27 +1,29 @@
-% rebase('layout')
-% from utils import format_ts_html
+<%
+rebase('layout')
+from utils import format_ts_html
 
-% def layout_breadcrumb():
-	% yield (None, 'Special pages')
-	% yield ("/photos/panoramas", 'Panoramas')
-% end
+def layout_breadcrumb():
+	yield (None, 'Special pages')
+	yield ("/photos/panoramas", 'Panoramas')
+end
 
-% import itertools
-% import re
+import itertools
+import re
 
 
-% def atoi(text):
-%     return int(text) if text.isdigit() else text
-% end
+def atoi(text):
+    return int(text) if text.isdigit() else text
+end
 
-% def natural_keys(text):
-%     '''
-%     alist.sort(key=natural_keys) sorts in human order
-%     http://nedbatchelder.com/blog/200712/human_sorting.html
-%     (See Toothy's implementation in the comments)
-%     '''
-%     return [ atoi(c) for c in re.split('(\d+)', text) ]
-% end
+def natural_keys(text):
+    '''
+    alist.sort(key=natural_keys) sorts in human order
+    http://nedbatchelder.com/blog/200712/human_sorting.html
+    (See Toothy's implementation in the comments)
+    '''
+    return [ atoi(c) for c in re.split('(\d+)', text) ]
+end
+%>
 
 <div class="container">
 	% for photo in photos:
