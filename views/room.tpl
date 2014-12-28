@@ -206,7 +206,7 @@ photos = [
 	for photo in occupancy.photos
 ]
 %>
-<div class="well" style="border-radius: 0; border-left: none; border-right: none">
+<div class="well-wide">
 	<div class="container">
 		<%
 		occ = next((
