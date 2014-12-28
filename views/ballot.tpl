@@ -1,8 +1,15 @@
 % import database.orm as m
+% from bottle import request
 % rebase('layout')
 
 <div class="container">
 	<h1>Ballot for {{ ballot_season.year }} - {{ ballot_season.year + 1 }}</h1>
+
+	% if request.user and request.user.is_admin:
+		<a href="/ballots/{{ ballot_season.year }}/edit" class="btn btn-primary btn-lg">
+			<span class="glyphicon glyphicon-pencil"></span> Edit
+		</a>
+	% end
 
 	<div class="row">
 		% for event in ballot_season.events:
