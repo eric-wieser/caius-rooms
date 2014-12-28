@@ -26,11 +26,9 @@ end
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<link rel="icon" type="image/png" href="http://cdn.dustball.com/house.png">
-		<link href="//netdna.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
+		<link href="/static/style.min.css" rel="stylesheet">
 
 		<script src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
-
-		<link href="/static/bootstrap-sortable.css" rel="stylesheet">
 		<style>
 			td.shrink { width: 1px; white-space: nowrap; }
 			td.center { text-align: center; }
