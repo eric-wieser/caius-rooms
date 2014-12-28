@@ -95,7 +95,7 @@ def process(cl):
 	for room in cl.rooms:
 		listing = room.listing_for.get(ballot_season)
 		audiences[room] = set(listing.audience_types) if listing else set()
-		%
+
 		all_a = all_a & set(audiences[room])
 		some_a = some_a | set(audiences[room])
 	end
