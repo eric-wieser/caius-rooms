@@ -97,7 +97,7 @@ def make_diff(prev, curr):
 		<p>
 			Authored by
 			% if request.user:
-				<a itemprop="author" href="/users/{{ occupancy.resident.crsid }}">
+				<a href="/users/{{ occupancy.resident.crsid }}">
 					{{occupancy.resident.name}}
 				</a>
 			% else:
@@ -132,25 +132,23 @@ def make_diff(prev, curr):
 
 		<div>
 			<h2>Revision {{i}} <small>{{! format_ts_html(review.published_at) }}</small></h2>
-			<div class="row">
-				<div class="col-md-2 col-md-offset-0 col-xs-5 col-xs-offset-1">
-					<div style="font-size: 63px" itemprop="reviewRating" itemscope itemtype="http://schema.org/Rating">
-						<span itemprop="ratingValue">{{ repr(review.rating) }}</span><!--
-						--><span class="text-muted" style="font-size: 65%">/<span itemprop="bestRating">10</span></span>
+			<div class="review-contents">
+				<div class="review-rating-panel">
+					<div>
+						{{ repr(review.rating) }}</span><!--
+						--><span class="rating-max">/10</span>
 					</div>
 				</div>
-				<div class="clearfix hidden-lg hidden-md"></div>
-				<div class="col-md-4 col-md-offset-0 col-xs-11 col-xs-offset-1">
-					<div style="height: 26px" class="hidden-sm hidden-xs"></div>
+				<div class="review-summary-panel">
 					% for section in review.sections:
 						% if section.heading.is_summary:
 							<h3>
 								% if "Best" in section.heading.name:
-									<span class="text-success glyphicon glyphicon-thumbs-up pull-left" style="margin-left: -30px"></span>
+									<span class="text-success glyphicon glyphicon-thumbs-up"></span>
 								% elif "Worst" in section.heading.name:
-									<span class="text-danger glyphicon glyphicon-thumbs-down pull-left" style="margin-left: -30px"></span>
+									<span class="text-danger glyphicon glyphicon-thumbs-down"></span>
 								% else:
-									<span class="glyphicon glyphicon-align-left pull-left" style="margin-left: -30px"></span>
+									<span class="glyphicon glyphicon-align-left"></span>
 								% end
 								{{ section.heading.name }}
 							</h3>
@@ -158,8 +156,7 @@ def make_diff(prev, curr):
 						% end
 					% end
 				</div>
-				<div class="col-md-6 col-sm-12 col-sm-offset-0 col-xs-11 col-xs-offset-1">
-					<div style="height: 52px" class="hidden-sm hidden-xs"></div>
+				<div class="review-detail-panel">
 					<dl class="dl-horizontal">
 						% for section in review.sections:
 							% if not section.heading.is_summary:

@@ -2,3 +2,112 @@
 @import (less) "bootstrap-sortable.css";
 
 @icon-font-path: 'fonts/';
+
+.review-header {
+	.row;
+
+	.review-header-season {
+		.make-xs-column(2);
+		font-weight: bold;
+	}
+
+	.review-header-thing {
+		.make-xs-column(4);
+		.make-md-column(6);
+	}
+
+	.review-header-rank {
+		.make-xs-column(6);
+		.make-md-column(4);
+		.text-right;
+	}
+}
+
+.review-contents {
+	.row;
+
+	.review-rating-panel {
+		.make-xs-column(5);
+		.make-xs-column-offset(1);
+		.make-md-column(2);
+		.make-md-column-offset(0);
+
+		> div {
+			font-size: @font-size-base * 4.5;
+
+			.rating-max {
+				.text-muted;
+				font-size: 65%;
+			}
+		}
+	}
+
+	.review-meta-panel {
+		.make-xs-column(12);
+		.text-right;
+		.small;
+
+		a {
+			.text-muted;
+		}
+	}
+
+	.review-summary-panel {
+		.make-xs-column(11);
+		.make-xs-column-offset(1);
+		.make-md-column(4);
+		.make-md-column-offset(0);
+		
+		@media (min-width: @screen-md-min) {
+			padding-top: 26px;  // for aligned baselines
+		}
+		@media (max-width: @screen-sm-max) {
+			clear: both;
+		}
+
+		.glyphicon {
+			margin-left: -30px;
+			.pull-left;
+		}
+	}
+
+	.review-detail-panel {
+		// indent needed for tiny screens for icons
+		.make-xs-column(11);
+		.make-xs-column-offset(1);
+
+		// full-width on small screens
+		.make-sm-column(12);
+		.make-sm-column-offset(0);
+
+		.make-md-column(6);
+
+		@media (min-width: @screen-md-min) {
+			padding-top: 52px;  // for aligned baselines
+		}
+	}
+
+	.review-add-panel {
+		.make-xs-column(6);
+		.make-md-column(10);
+
+		padding-top: 22px;  // for aligned baselines
+
+		@media (max-width: @screen-sm-max) {
+  			.text-right;
+  		}
+	}
+
+	.review-edit-md-lg {
+		.hidden-xs;
+		.hidden-sm;
+	}
+
+	.review-edit-xs-sm {
+		.make-xs-column(6);
+		.hidden-lg;
+		.hidden-md;
+		.text-right;
+		padding-top: 22px;
+	}
+}

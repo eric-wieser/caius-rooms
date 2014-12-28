@@ -7,30 +7,28 @@
 <div itemprop="review" itemscope itemtype="http://schema.org/Review">
 	<div style="position: relative; top: -50px" id="occupancy-{{occupancy.id}}"></div>
 
-	<div class="row">
-		<div class="col-md-2 col-xs-2">
-			<strong>{{! format_ballot_html(occupancy.listing.ballot_season) }}</strong>
+	<div class="review-header">
+		<div class="review-header-season">
+			{{! format_ballot_html(occupancy.listing.ballot_season) }}
 		</div>
-		<div class="col-md-6 col-xs-4">
+		<div class="review-header-thing">
 			% if show_room:
 				<a href="/rooms/{{ occupancy.listing.room.id }}">
 					{{ occupancy.listing.room.pretty_name() }}
 				</a>
-			% else:
-				% if occupancy.resident:
-					% if request.user:
-						<a itemprop="author" href="/users/{{ occupancy.resident.crsid }}">
-							{{occupancy.resident.name}}
-						</a>
-					% else:
-						{{! restricted() }}
-					% end
+			% elif occupancy.resident:
+				% if request.user:
+					<a itemprop="author" href="/users/{{ occupancy.resident.crsid }}">
+						{{occupancy.resident.name}}
+					</a>
 				% else:
-					<span class="text-muted">Resident not recorded</span>
+					{{! restricted() }}
 				% end
+			% else:
+				<span class="text-muted">Resident not recorded</span>
 			% end
 		</div>
-		<div class="col-md-4 col-xs-6 text-right">
+		<div class="review-header-rank">
 			% if occupancy.resident:
 				% sl = occupancy.ballot_slot
 				% if sl:
@@ -45,18 +43,18 @@
 	</div>
 
 	% if review:
-		<div class="row">
-			<div class="col-md-2 col-md-offset-0 col-xs-5 col-xs-offset-1">
+		<div class="review-contents">
+			<div class="review-rating-panel">
 				% if review.rating is not None:
-					<div style="font-size: 63px" itemprop="reviewRating" itemscope itemtype="http://schema.org/Rating">
+					<div itemprop="reviewRating" itemscope itemtype="http://schema.org/Rating">
 						<span itemprop="ratingValue">{{ repr(review.rating) }}</span><!--
-						--><span class="text-muted" style="font-size: 65%">/<span itemprop="bestRating">10</span></span>
+						--><span class="rating-max">/<span itemprop="bestRating">10</span></span>
 					</div>
 				% else:
 					<span class="text-muted">No rating</span>
 				% end
 				% # we pull this button up in small windows
-				<span class="hidden-xs hidden-sm">
+				<span class="review-edit-md-lg">
 					% if user_is_author and review.sections:
 						<a class="btn btn-success btn-lg" href="/reviews/new/{{ occupancy.id }}">
 							<span class="glyphicon glyphicon-pencil"></span> Edit
@@ -65,44 +63,31 @@
 				</span>
 			</div>
 			% if not review.sections:
-				<div class="col-xs-6 col-md-10">
-					% if user_is_author:
-						% # left align on large screens, right align on small
-						<div class="hidden-xs hidden-sm">
-							<div style="height: 22px"></div>
-							<a class="btn btn-success btn-lg" href="/reviews/new/{{ occupancy.id }}">
-								<span class="glyphicon glyphicon-pencil"></span> Add review
-							</a>
-						</div>
-						<div class="hidden-md hidden-lg text-right">
-							<div style="height: 22px"></div>
-							<a class="btn btn-success btn-lg" href="/reviews/new/{{ occupancy.id }}">
-								<span class="glyphicon glyphicon-pencil"></span> Add review
-							</a>
-						</div>
-					% end
-				</div>
+				% if user_is_author:
+					<div class="review-add-panel">
+						<a class="btn btn-success btn-lg" href="/reviews/new/{{ occupancy.id }}">
+							<span class="glyphicon glyphicon-pencil"></span> Add review
+						</a>
+					</div>
+				% end
 			% else:
-				<div class="col-xs-6 hidden-lg hidden-md text-right">
-					% if user_is_author:
-						<div style="height: 22px"></div>
+				% if user_is_author:
+					<div class="review-edit-xs-sm">
 						<a class="btn btn-success btn-lg" href="/reviews/new/{{ occupancy.id }}">
 							<span class="glyphicon glyphicon-pencil"></span> Edit
 						</a>
-					% end
-				</div>
-				<div class="clearfix hidden-lg hidden-md"></div>
-				<div class="col-md-4 col-md-offset-0 col-xs-11 col-xs-offset-1">
-					<div style="height: 26px" class="hidden-sm hidden-xs"></div>
+					</div>
+				% end
+				<div class="review-summary-panel">
 					% for section in review.sections:
 						% if section.heading.is_summary:
 							<h3>
 								% if "Best" in section.heading.name:
-									<span class="text-success glyphicon glyphicon-thumbs-up pull-left" style="margin-left: -30px"></span>
+									<span class="text-success glyphicon glyphicon-thumbs-up"></span>
 								% elif "Worst" in section.heading.name:
-									<span class="text-danger glyphicon glyphicon-thumbs-down pull-left" style="margin-left: -30px"></span>
+									<span class="text-danger glyphicon glyphicon-thumbs-down"></span>
 								% else:
-									<span class="glyphicon glyphicon-align-left pull-left" style="margin-left: -30px"></span>
+									<span class="glyphicon glyphicon-align-left"></span>
 								% end
 								{{ section.heading.name }}
 							</h3>
@@ -110,8 +95,7 @@
 						% end
 					% end
 				</div>
-				<div class="col-md-6 col-sm-12 col-sm-offset-0 col-xs-11 col-xs-offset-1">
-					<div style="height: 52px" class="hidden-sm hidden-xs"></div>
+				<div class="review-detail-panel">
 					<dl class="dl-horizontal">
 						% for section in review.sections:
 							% if not section.heading.is_summary:
@@ -122,24 +106,20 @@
 					</dl>
 				</div>
 			% end
-			<div class="col-xs-12 text-right">
-				<small>
-					% if len(occupancy.reviews) > 1:
-						<a href="/occupancies/{{ occupancy.id }}">
-							% revs = len(occupancy.reviews)
-							<span class="text-muted">
-								Edited
-								% if revs > 2:
-									{{ revs - 1}} times
-								% end
-							</span>
-						</a>
-						&bullet;
-					% end
-					<a href="#occupancy-{{occupancy.id}}">
-						<span class="text-muted">{{! format_ts_html(review.published_at) }}</span>
+			<div class="review-meta-panel">
+				% if len(occupancy.reviews) > 1:
+					<a href="/occupancies/{{ occupancy.id }}">
+						% revs = len(occupancy.reviews)
+						Edited
+						% if revs > 2:
+							{{ revs - 1}} times
+						% end
 					</a>
-				</small>
+					&bullet;
+				% end
+				<a href="#occupancy-{{occupancy.id}}">
+					{{! format_ts_html(review.published_at) }}
+				</a>
 			</div>
 		</div>
 	% elif user_is_author:
