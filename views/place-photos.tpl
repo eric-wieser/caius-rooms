@@ -7,10 +7,11 @@ def layout_breadcrumb():
 	end
 end
 
-def layout_extra_nav():
+def layout_extra_nav(): %>
 	<li class="active"><a href="{{ get_url('place-photos', place_id=place.id) }}">
 		<span class="glyphicon glyphicon-picture"></span> Photos
 	</a></li>
+	<%
 end
 
 layout_random = '/places/random/photos'
