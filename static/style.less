@@ -3,6 +3,63 @@
 
 @icon-font-path: 'fonts/';
 
+/// Main stuff
+
+td.shrink { width: 1px; white-space: nowrap; }
+td.center { text-align: center; }
+td.rule-right,
+th.rule-right { border-right: 1px solid #ddd; }
+
+#footer {
+	position: absolute;
+	bottom: 0;
+	width: 100%;
+	height: 30px;
+	padding-top: 5px;
+	padding-bottom: 5px;
+	background-color: #f5f5f5;
+	text-align: center;
+}
+#footer p {
+	margin: 0;
+}
+
+
+html {
+	position: relative;
+	min-height: 100%;
+}
+body {
+	margin-top: 50px;
+	padding-top: 20px;
+	margin-bottom: 50px;
+}
+
+.cropped-photo {
+	background-size: cover;
+	background-repeat: no-repeat;
+	background-position: 50% 50%;
+}
+
+.anchor:before {
+	content:"";
+	display:block;
+	height:70px;
+	margin:-70px 0 0;
+}
+
+input[type='number'] {
+	-moz-appearance:textfield;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+	-webkit-appearance: none;
+}
+
+
+/// review styles
+
 .review-header {
 	.row;
 
