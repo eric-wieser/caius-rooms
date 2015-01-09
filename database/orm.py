@@ -355,7 +355,10 @@ class RoomListing(Base):
 
 	room           = relationship(lambda: Room, backref=backref("listings", lazy='subquery', order_by=ballot_season_id.desc()))
 	ballot_season  = relationship(lambda: BallotSeason, backref="room_listings")
-	audience_types = relationship(lambda: BallotType, secondary=lambda: room_listing_audiences_assoc, backref="all_time_listings")
+	audience_types = relationship(lambda: BallotType,
+		secondary=lambda: room_listing_audiences_assoc,
+		backref="all_time_listings",
+		collection_class=set)
 
 	__table_args__ = (UniqueConstraint(ballot_season_id, room_id, name='_ballot_room_uc'),)
 
