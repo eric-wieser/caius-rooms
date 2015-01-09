@@ -23,8 +23,14 @@ rent_keys = {
 	2014: 'Rent 2014'
 }
 
+print data[0]
 
 s = Session()
+
+bt_ugrad = (s
+	.query(m.BallotType)
+	.filter(m.BallotType.name == 'Undergraduate')
+).one()
 
 def get_room_by_name(name):
 	""" Convert whatever name the spreadsheet uses into a room object """
@@ -121,9 +127,19 @@ def get_rooms():
 
 		seen.add(room)
 
-		yield room, rents
+		yield room, rents, line
 
-for room, rents in get_rooms():
+
+b2014 = set(
+	l.room for l in
+	s
+	.query(m.RoomListing)
+	.join(m.BallotSeason).filter(m.BallotSeason.year == 2014)
+	.join(m.RoomListing.audience_types).filter(m.BallotType.name == 'Undergraduate')
+)
+
+for room, rents, ext in get_rooms():
+	b2014.remove(room)
 	for year, rent in rents.items():
 		ballot_season = s.query(m.BallotSeason).filter(m.BallotSeason.year == year).one()
 
@@ -135,11 +151,17 @@ for room, rents in get_rooms():
 					print room, rent, listing.rent
 			listing.rent = rent
 		else:
-			s.add(m.RoomListing(
+			listing = m.RoomListing(
 				room=room,
 				ballot_season=ballot_season,
 				rent=rent
-			))
+			)
+			s.add(listing)
+
+		if ext['Occ'] == 'U':
+			listing.audience_types.add(bt_ugrad)
 		total += 1
-		
+
+print b2014
+
 s.commit()
