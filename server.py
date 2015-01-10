@@ -130,7 +130,6 @@ def static(path):
 
 @app.route('/')
 def show_index(db):
-	print request.headers
 	return template('index', db=db)
 
 @app.error(404)
