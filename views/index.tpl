@@ -99,4 +99,30 @@ rebase('layout')
 			</table>
 		</div>
 	</div>
+	<div class="row">
+		<div class="col-xs-12">
+			<h2>Recent photos</h2>
+		</div>
+		<%
+		photos = (db
+			.query(m.Photo)
+			.order_by(m.Photo.published_at.desc())
+		)
+		%>
+		% i = 0
+		% for photo in photos:
+			% room = photo.occupancy.listing.room
+			% if i == 11 and photo.is_panorama:
+				% continue
+			% end
+			<div class="{{ 'col-md-4 col-sm-6 col-xs-12' if photo.is_panorama else 'col-md-2 col-sm-3 col-xs-6' }} ">
+				<a href="/rooms/{{room.id}}" title="{{ photo.caption }}&NewLine;{{ photo.published_at }}" class="thumbnail cropped-photo" style="display: block; height: 150px; background-image: url({{ photo.href }}); margin: 15px 0px; position: relative; overflow: hidden" target="_blank"><span class="label label-default" style="display: block; position: absolute; top: 0; left: 0;">{{room.pretty_name()}}</span></a>
+			</div>
+			% i += 2 if photo.is_panorama else 1
+			% if i >= 12:
+				% break
+			% end
+		% end
+
+	</div>
 </div>
