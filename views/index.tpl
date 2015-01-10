@@ -62,13 +62,20 @@ rebase('layout')
 			% ballot_event = db.query(m.BallotEvent).order_by(m.BallotEvent.closes_at.desc()).first()
 			<h2>Recent bookings <small> for {{ballot_event.season.year}}-{{ballot_event.season.year+1}}</small></h2>
 			<table class="table">
-				% ballot_occupancies = (db
-					% .query(m.Occupancy)
-					% .join(m.RoomListing)
-					% .join(m.BallotSeason)
-					% .filter(m.BallotSeason.year == ballot_event.season.year)
-				% )
-				% for occupancy in ballot_occupancies.order_by(m.Occupancy.chosen_at.desc()).limit(10):
+				<%
+				ballot_occupancies = (db
+					.query(m.Occupancy)
+					.join(m.RoomListing)
+					.join(m.BallotSeason)
+					.filter(m.BallotSeason.year == ballot_event.season.year)
+					.order_by(m.Occupancy.chosen_at.desc())
+				)
+
+				ballot_occupancies = (b for b in ballot_occupancies if b.ballot_slot)
+
+				import itertools
+				%>
+				% for occupancy in itertools.islice(ballot_occupancies, 10):
 					% room = occupancy.listing.room
 					% author = occupancy.resident
 					<tr>
