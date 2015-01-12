@@ -45,9 +45,24 @@
 					</tr>
 				</thead>
 				<tbody>
-					% for room in db.query(m.Room):
+					<%
+					from sqlalchemy.orm import aliased 
+					listings = aliased(m.RoomListing, db
+						.query(m.RoomListing)
+						.join(m.BallotSeason)
+						.filter(m.BallotSeason.year == ballot_season.year)
+						.subquery()
+					)
+
+					rooms_and_listings = (db
+						.query(m.Room, listings)
+						.outerjoin(listings)
+					)
+
+
+					%>
+					% for room, listing in rooms_and_listings:
 						<tr>
-							% listing = next((l for l in room.listings if l.ballot_season == ballot_season), None)
 							<td>
 								<a href="/rooms/{{ room.id }}">{{ room.pretty_name() }}</a>
 							</td>

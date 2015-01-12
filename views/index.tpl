@@ -29,12 +29,11 @@ rebase('layout')
 		<div class="col-md-6">
 			<h2>Recent reviews</h2>
 			<table class="table">
-				% reviews = (db
-					% .query(m.Review)
-					% .order_by(m.Review.published_at.desc())
-					% .group_by(m.Review.occupancy_id)
-					% .having(func.max(m.Review.published_at))
-				% )
+				<% reviews = (db
+					.query(m.Review)
+					.order_by(m.Review.published_at.desc())
+					.filter(m.Review.is_newest)
+				) %>
 				% for review in reviews.limit(10):
 					% room = review.occupancy.listing.room
 					% author = review.occupancy.resident
