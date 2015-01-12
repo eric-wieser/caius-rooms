@@ -97,7 +97,7 @@
 								</td>
 								<td>
 									<a href="#" class="text-danger" onclick="(this).parent().parent().fadeOut(function() { $(this).remove(); }); return false">
-										<span class="glyphicon glyphicon-close"></span> Hide
+										<span class="glyphicon glyphicon-remove"></span>
 									</a>
 								</td>
 							</tr>
