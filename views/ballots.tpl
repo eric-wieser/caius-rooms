@@ -9,7 +9,6 @@
 				<th>Opens</th>
 				<th>Closes</th>
 				<th>Rooms allocated</th>
-				<th></th>
 			</tr>
 		</thead>
 		<tbody>
