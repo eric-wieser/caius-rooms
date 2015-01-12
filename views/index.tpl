@@ -44,7 +44,10 @@ rebase('layout')
 						% if request.user:
 							<td>
 								% if author:
-									<a href="/users/{{author.crsid}}">{{ author.name }}</a>
+									<a href="/users/{{author.crsid}}" style="display: block; padding-left: 25px;">
+										<img src="{{ author.gravatar(size=20) }}" width="20" height="20" style="margin-left: -25px; float: left" />
+										{{ author.name }}
+									</a>
 								% else:
 									<span class="text-muted">unknown</span>
 								% end
@@ -84,7 +87,10 @@ rebase('layout')
 						% if request.user:
 							<td>
 								% if author:
-									<a href="/users/{{author.crsid}}">{{ author.name }}</a>
+									<a href="/users/{{author.crsid}}" style="display: block; padding-left: 25px;">
+										<img src="{{ author.gravatar(size=20) }}" width="20" height="20" style="margin-left: -25px; float: left" />
+										{{ author.name }}
+									</a>
 								% else:
 									<span class="text-muted">unknown</span>
 								% end
