@@ -7,13 +7,28 @@ from bottle import request
 rebase('layout')
 %>
 <a class="hidden-xs" href="https://github.com/eric-wieser/caius-rooms">
-	<img style="position: absolute; top: 50px; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png" alt="Fork me on GitHub">
+	<img style="position: absolute; top: 50px; left: 0; border: 0; z-index: 10;" src="https://s3.amazonaws.com/github/ribbons/forkme_left_orange_ff7600.png" alt="Fork me on GitHub">
 </a>
-<div class="container">
-	<div class="jumbotron">
-		<h1>RoomPicks</h1>
-		<p>For when you don't yet have the Caius</p>
+<div class="splash">
+	<div class="container">
+		<div class="row">
+			<div class="splash-left">
+				<h1>RoomPicks</h1>
+				<p class="tagline">For when you don't yet have the Caius</p>
+			</div>
+			<div class="splash-right">
+				<hr class="hidden-md hidden-lg" />
+				<p class="lead">
+					A room encyclopaedia for the housing ballot at Gonville &amp; Caius College.
+				</p>
+				<p>
+					Combining information from the college with student-submitted photos and reviews, to help students make an informed choice in their housing ballots. During the ballot period, you'll use this site to select your room, hopefully. More information will be sent out closer to the time.
+				</p>
+			</div>
+		</div>
 	</div>
+</div>
+<div class="container">
 	<!-- <div class="row">
 		<div class="col-md-4">
 			<h2>Browse</h2>

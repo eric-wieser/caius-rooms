@@ -4806,17 +4806,20 @@ a.badge:focus {
 .nav-pills > li > a > .badge {
   margin-left: 3px;
 }
-.jumbotron {
+.jumbotron,
+.splash {
   padding: 30px 15px;
   margin-bottom: 30px;
   color: inherit;
   background-color: #eeeeee;
 }
 .jumbotron h1,
-.jumbotron .h1 {
+.jumbotron .h1,
+.splash h1 {
   color: inherit;
 }
-.jumbotron p {
+.jumbotron p,
+.splash .tagline {
   margin-bottom: 15px;
   font-size: 21px;
   font-weight: 200;
@@ -4832,7 +4835,8 @@ a.badge:focus {
   max-width: 100%;
 }
 @media screen and (min-width: 768px) {
-  .jumbotron {
+  .jumbotron,
+  .splash {
     padding: 48px 0;
   }
   .container .jumbotron,
@@ -4841,7 +4845,8 @@ a.badge:focus {
     padding-right: 60px;
   }
   .jumbotron h1,
-  .jumbotron .h1 {
+  .jumbotron .h1,
+  .splash h1 {
     font-size: 63px;
   }
 }
@@ -6851,5 +6856,42 @@ input::-webkit-inner-spin-button {
 @media (min-width: 992px) and (max-width: 1199px) {
   .review-contents .review-edit-xs-sm {
     display: none !important;
+  }
+}
+.splash {
+  background: #555555;
+  color: white;
+  margin-top: -20px;
+}
+.splash .jumbotron {
+  background: transparent;
+}
+.splash .splash-left {
+  position: relative;
+  min-height: 1px;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+@media (min-width: 992px) {
+  .splash .splash-left {
+    float: left;
+    width: 50%;
+  }
+}
+.splash .splash-right {
+  position: relative;
+  min-height: 1px;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+@media (min-width: 992px) {
+  .splash .splash-right {
+    float: left;
+    width: 50%;
+  }
+}
+@media (min-width: 992px) {
+  .splash .splash-right {
+    padding-top: 30px;
   }
 }

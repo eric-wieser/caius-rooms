@@ -162,8 +162,8 @@ input::-webkit-inner-spin-button {
 		padding-top: 22px;  // for aligned baselines
 
 		@media (max-width: @screen-sm-max) {
-  			.text-right;
-  		}
+			.text-right;
+		}
 	}
 
 	.review-edit-md-lg {
@@ -177,5 +177,28 @@ input::-webkit-inner-spin-button {
 		.hidden-md;
 		.text-right;
 		padding-top: 22px;
+	}
+}
+
+.splash:extend(.jumbotron) {
+	background: @gray;
+	color: white;
+	margin-top: -20px;
+
+	h1:extend(.jumbotron h1) {}
+	.tagline:extend(.jumbotron p){}
+
+	.jumbotron {
+		background: transparent;
+	}
+
+	.splash-left {
+		.make-md-column(6);
+	}
+	.splash-right {
+		.make-md-column(6);
+		@media (min-width: @screen-md-min) {
+			padding-top: @jumbotron-padding;
+		}
 	}
 }
