@@ -81,35 +81,65 @@ def layout_extra_nav(): %>
 				% end
 			</h1>
 			<table class="table">
-				<tr>
-					<th scope="row">Bedroom area</th>
-					<td>
-						% if room.bedroom_x:
-							{{room.bedroom_x}} &times; {{room.bedroom_y}} ft&sup2;
-						% end
-					</td>
-				</tr>
-				<tr>
-					<th scope="row">Bedroom view</th>
-					<td>{{ room.bedroom_view or "" }}</td>
-				</tr>
-				% if room.is_suite or room.living_room_view or room.living_room_x:
-					<tr>
-						<th scope="row">Living room area</th>
-						<td>
-							% if room.living_room_x:
-								{{room.living_room_x}} &times; {{room.living_room_y}} ft&sup2;
-							% end
-						</td>
-					</tr>
-					<tr>
-						<th scope="row">Living room view</th>
-						<td>{{ room.living_room_view or "" }}</td>
-					</tr>
+				% two_columns = room.is_suite or room.living_room_view or room.living_room_x
+				% if two_columns:
+					<thead>
+						<tr>
+							<th></th>
+							<th>Bedroom</th>
+							<th>Living room</th>
+						</tr>
+					</thead>
 				% end
 				<tr>
-					<th scope="row">Rent</th>
+					<th scope="row">Size</th>
 					<td>
+						% if room.bedroom_x:
+							<div class="room-outline"
+							     style="width: {{ room.bedroom_y * 10 + 1}}px;
+							            height: {{ room.bedroom_x * 10 + 1}}px;
+							            padding-top: {{ room.bedroom_x * 5 - 21}}px;">
+								{{room.bedroom_x * room.bedroom_y}} ft&sup2;<br />
+								<span class="text-muted">
+									({{room.bedroom_x}} &times; {{room.bedroom_y}})
+								</span>
+							</div>
+						% else:
+							<div class="room-outline unknown">
+								size unknown
+							</div>
+						% end
+					</td>
+					% if two_columns:
+						<td>
+							% if room.living_room_x:
+								<div class="room-outline"
+								     style="width: {{ room.living_room_y * 10 + 1}}px;
+								            height: {{ room.living_room_x * 10 + 1}}px;
+								            padding-top: {{ room.living_room_x * 5 - 21}}px;">
+									{{room.living_room_x * room.living_room_y}} ft&sup2;<br />
+									<span class="text-muted">
+										({{room.living_room_x}} &times; {{room.living_room_y}})
+									</span>
+								</div>
+							% else:
+								<div class="room-outline unknown">
+									size unknown
+								</div>
+							% end
+						</td>
+					% end
+				</tr>
+				<tr>
+					<th scope="row">View</th>
+					<td>{{ room.bedroom_view or "" }}</td>
+					% if two_columns:
+						<td>{{ room.living_room_view or "" }}</td>
+					% end
+				</tr>
+				<tr>
+					<th scope="row">Rent</th>
+					<td colspan="2">
 						% if last_listing and last_listing.rent:
 							£{{ "{:.2f}".format(last_listing.rent) }} / term
 						% end

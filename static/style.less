@@ -202,3 +202,32 @@ input::-webkit-inner-spin-button {
 		}
 	}
 }
+
+.room-outline {
+	background-color: white;
+	background-position: bottom left;
+	background-image:
+		linear-gradient(0deg,
+			transparent 90%,
+			@gray-lighter 90%,
+			@gray-lighter 100%,
+			transparent
+		),
+		linear-gradient(90deg,
+			transparent 90%,
+			@gray-lighter 90%,
+			@gray-lighter 100%,
+			transparent
+		);
+	background-size: 10px 10px;
+	border: 1px solid @gray-light;
+	display: inline-block;
+	text-align: center;
+
+	&.unknown {
+		width: 101px;
+		height: 101px;
+		line-height: 99px;
+		border-style: dotted;
+	}
+}

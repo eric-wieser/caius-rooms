@@ -6895,3 +6895,18 @@ input::-webkit-inner-spin-button {
     padding-top: 30px;
   }
 }
+.room-outline {
+  background-color: white;
+  background-position: bottom left;
+  background-image: linear-gradient(0deg, transparent 90%, #eeeeee 90%, #eeeeee 100%, transparent), linear-gradient(90deg, transparent 90%, #eeeeee 90%, #eeeeee 100%, transparent);
+  background-size: 10px 10px;
+  border: 1px solid #777777;
+  display: inline-block;
+  text-align: center;
+}
+.room-outline.unknown {
+  width: 101px;
+  height: 101px;
+  line-height: 99px;
+  border-style: dotted;
+}
