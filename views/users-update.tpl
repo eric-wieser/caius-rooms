@@ -1,5 +1,4 @@
 % rebase('layout')
-% layout_random = "/users/random"
 
 <div class="container">
 	<h1>Updating user names</h1>
@@ -65,34 +64,42 @@
 		</div>
 
 		<div class="col-md-6">
-			<h2>Changed names <small>{{ len(users) }}</small></h2>
-			<p>Other name changes</p>
-			<table class="table">
-				% for user in sorted(users, key=lambda u: u.crsid):
-					<tr>
-						<td>
-							<div style="padding-left: 25px; position: relative; min-height: 20px">
-								<a href="/users/{{ user.crsid }}">
-									<img src="{{ user.gravatar(size=20) }}" width="20" height="20" style="position: absolute; left: 0; right: 0" />
-									<div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis">
-										% if user.name:
-											{{ user.name }}
-										% else:
-											<span class="text-muted">{{user.crsid}}</span>
-										% end
-										% if user.is_admin:
-											<span title="administrator">&diams;</span>
-										% end
+			<form method="post">
+				<h2>Changed names <small>{{ len(users) or 'None'}}</small></h2>
+				<p>Other name changes</p>
+				% if users:
+					<p>
+						<button type="submit" class="btn btn-primary text-right">Accept changes</button>
+					</p>
+					<table class="table">
+						% for user in sorted(users, key=lambda u: u.crsid):
+							<tr>
+								<td>
+									<div style="padding-left: 25px; position: relative; min-height: 20px">
+										<a href="/users/{{ user.crsid }}">
+											<img src="{{ user.gravatar(size=20) }}" width="20" height="20" style="position: absolute; left: 0; right: 0" />
+											<div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis">
+												% if user.name:
+													{{ user.name }}
+												% else:
+													<span class="text-muted">{{user.crsid}}</span>
+												% end
+												% if user.is_admin:
+													<span title="administrator">&diams;</span>
+												% end
+											</div>
+										</a>
 									</div>
-								</a>
-							</div>
-						</td>
-						<td>
-							{{ names[user] }}
-						</td>
-					</tr>
+								</td>
+								<td>
+									<input type="hidden" name="{{ user.crsid }}-name" value="{{ names[user] }}">
+									{{ names[user] }}
+								</td>
+							</tr>
+						% end
+					</table>
 				% end
-			</table>
+			</form>
 		</div>
 	</div>
 </div>

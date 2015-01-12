@@ -556,6 +556,19 @@ with base_route(app, '/users'):
 			users_reverted=users_reverted,
 			names=names)
 
+	@app.post('/update')
+	@needs_auth('admin')
+	def do_update(db):
+		for k, v in request.forms.items():
+			if k.endswith('-name'):
+				user = db.query(m.Person).filter(m.Person.crsid == k[:-5]).one()
+				user.name = v.decode('utf8')
+				db.add(user)
+
+		db.commit()
+
+		return update_names(db)
+
 	@app.route('/<crsid>')
 	@needs_auth
 	def show_user(crsid, db):
