@@ -505,9 +505,13 @@ with base_route(app, '/users'):
 		import utils
 
 		names = {}
+		initial_names = {}
 		to_query = {}
 		for some_users in utils.grouper(db.query(m.Person), 250):
+			# consume the iterator
 			some_users = list(some_users)
+
+			# read the lookup json data
 			r = requests.get(
 				'https://www.lookup.cam.ac.uk/api/v1/person/list',
 				params=dict(
@@ -517,24 +521,40 @@ with base_route(app, '/users'):
 				auth=('anonymous', '')
 			)
 			r.raise_for_status()
-
 			data = r.json()[u'result'][u'people']
+
+			# make a lookup by crsid
 			data_lookup = {
-				d[u'identifier'][u'value']: d[u'visibleName']
+				d[u'identifier'][u'value']: d
 				for d in data
 			}
 			for u in some_users:
-				if u.crsid in data_lookup:
-					name = data_lookup[u.crsid]
-					if name != u.name:
-						names[u] = name
+				d = data_lookup.get(u.crsid)
+				if d:
+					if d[u'visibleName'] != u.name:
+						# name has changed
+						names[u] = d[u'visibleName']
+						initial_names[u] = d.get(u'registeredName')
 				else:
+					# crsid doesn't exist!
 					names[u] = None
 
-		return template('users-update', data=[
-			(u, names[u])
-			for u in sorted(names, key=lambda u: u.crsid)
-		])
+		users = set(names.keys())
+
+		# crsids didn't match
+		users_unknown = {u for u in users if names[u] is None}
+		users -= users_unknown
+		users_unknown
+
+		# names has gone back to initials
+		users_reverted = {u for u in users if names[u] == initial_names[u]}
+		users -= users_reverted
+
+		return template('users-update',
+			users_unknown=users_unknown,
+			users=users,
+			users_reverted=users_reverted,
+			names=names)
 
 	@app.route('/<crsid>')
 	@needs_auth
