@@ -1,9 +1,5 @@
 % rebase('layout')
 % layout_random = '/rooms/random'
-
-<a class="hidden-xs" href="https://github.com/eric-wieser/caius-rooms">
-	<img style="position: absolute; top: 0px; right: 0; border: 0; z-index: 10000;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png" alt="Fork me on GitHub">
-</a>
 <div class="container">
 	% filtered_rooms = rooms
 	% for filter in filters:
