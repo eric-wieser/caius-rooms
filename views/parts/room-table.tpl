@@ -46,8 +46,9 @@
 			% end
 
 			% last_listing = room.listing_for.get(ballot)
+			% is_in_ballot = bool(last_listing and (last_listing.audience_types or last_listing.occupancies))
 
-			<tr class="room{{ ' warning' if not last_listing else ''}}" data-roomid="{{ room.id }}">
+			<tr class="room{{ ' warning' if not is_in_ballot else ''}}" data-roomid="{{ room.id }}">
 				<td class="shrink{{ ' rule-right' if skip_place else '' }}" style="text-align: right">
 					% if room.is_suite:
 						<span class="glyphicon glyphicon-th-large text-muted" title="Suite"></span>
@@ -159,18 +160,23 @@
 						<span class="glyphicon glyphicon-music text-muted" title="Possible Piano"></span>
 					% end
 				</td>
-				<td style="vertical-align: middle">
-					% if request.user:
-						% if last_listing and last_listing.occupancies and last_listing.occupancies[0].resident:
-							% resident = last_listing.occupancies[0].resident
-							<small>
-								<a href="/users/{{ resident.crsid }}" style="display: inline-block; padding-left: 20px;">
-									<img src="{{ resident.gravatar(size=15) }}" width="15" height="15" style="margin-left: -20px; float: left" />
-									{{resident.name}}
-								</a>
-							</small>
-						% end
+				% if request.user and last_listing and last_listing.occupancies:
+					% resident = last_listing.occupancies[0].resident
+					% if resident:
+						<td style="vertical-align: middle" class="small" data-value="{{ resident.crsid }}">
+							<a href="/users/{{ resident.crsid }}" style="display: inline-block; padding-left: 20px;">
+								<img src="{{ resident.gravatar(size=15) }}" width="15" height="15" style="margin-left: -20px; float: left" />
+								{{resident.name}}
+							</a>
+						</td>
+					% else:
+						<td style="vertical-align: middle" class="small" data-value="!">
+							<span class="text-muted">not recorded</span>
+						</td>
 					% end
+				% else:
+					<td></td>
+				% end
 				</td>
 			</tr>
 		% end
