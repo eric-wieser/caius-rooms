@@ -159,12 +159,13 @@
 						<span class="glyphicon glyphicon-music text-muted" title="Possible Piano"></span>
 					% end
 				</td>
-				<td>
+				<td style="vertical-align: middle">
 					% if request.user:
 						% if last_listing and last_listing.occupancies and last_listing.occupancies[0].resident:
 							% resident = last_listing.occupancies[0].resident
 							<small>
-								<a href="/users/{{ resident.crsid }}">
+								<a href="/users/{{ resident.crsid }}" style="display: inline-block; padding-left: 20px;">
+									<img src="{{ resident.gravatar(size=15) }}" width="15" height="15" style="margin-left: -20px; float: left" />
 									{{resident.name}}
 								</a>
 							</small>
