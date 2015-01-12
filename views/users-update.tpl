@@ -1,8 +1,8 @@
 % rebase('layout')
 
 <div class="container">
-	<h1>Updating user names</h1>
-	<p>Data is from <a href="http://lookup.cam.ac.uk">lookup.cam.ac.uk</a>. Changes are shown below</p>
+	<h1>Checking user names</h1>
+	<p>Data is from <a href="http://lookup.cam.ac.uk">lookup.cam.ac.uk</a>. Changes are shown below. Use the delete buttons to remove unwanted changes, and the blue buttons to apply columns of changes</p>
 	<div class="row">
 		<div class="col-md-12">
 			<h2>Missing users <small>{{ len(users_unknown) }}</small></h2>
