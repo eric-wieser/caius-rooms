@@ -1,6 +1,23 @@
 % rebase('layout')
 % layout_random = "/users/random"
 
+<%
+from bottle import request
+def layout_extra_nav():
+	if request.user and request.user.is_admin: %>
+		<li class="dropdown">
+			<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+				<span class="glyphicon glyphicon-flag text-danger"></span> Admin <span class="caret"></span>
+			</a>
+			<ul class="dropdown-menu" role="menu">
+				<li><a href="/users/update">Update names from lookup</a></li>
+			</ul>
+		</li>
+		<%
+	end
+end
+%>
+
 <div class="container">
 	<div class="row">
 		% for user in users:
