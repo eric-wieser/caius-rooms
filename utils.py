@@ -1,6 +1,7 @@
 from datetime import datetime, date
 import random
 import string
+import itertools
 
 def format_ts(ts):
 	""" Used to format any timestamp in a readable way """
@@ -44,3 +45,11 @@ def restricted(message=None):
 			message,
 		'</span>'
 	])
+
+def grouper(iterable, n):
+    it = iter(iterable)
+    while True:
+       chunk = tuple(itertools.islice(it, n))
+       if not chunk:
+           return
+       yield chunk

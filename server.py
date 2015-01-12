@@ -498,6 +498,44 @@ with base_route(app, '/users'):
 		).order_by(m.Person.last_seen.desc(), m.Person.crsid)
 		return template('users', users=users)
 
+	@app.route('/update')
+	@needs_auth('admin')
+	def update_names(db):
+		import requests
+		import utils
+
+		names = {}
+		to_query = {}
+		for some_users in utils.grouper(db.query(m.Person), 250):
+			some_users = list(some_users)
+			r = requests.get(
+				'https://www.lookup.cam.ac.uk/api/v1/person/list',
+				params=dict(
+					format='json',
+					crsids=','.join(u.crsid for u in some_users)
+				),
+				auth=('anonymous', '')
+			)
+			r.raise_for_status()
+
+			data = r.json()[u'result'][u'people']
+			data_lookup = {
+				d[u'identifier'][u'value']: d[u'visibleName']
+				for d in data
+			}
+			for u in some_users:
+				if u.crsid in data_lookup:
+					name = data_lookup[u.crsid]
+					if name != u.name:
+						names[u] = name
+				else:
+					names[u] = None
+
+		return template('users-update', data=[
+			(u, names[u])
+			for u in sorted(names, key=lambda u: u.crsid)
+		])
+
 	@app.route('/<crsid>')
 	@needs_auth
 	def show_user(crsid, db):
