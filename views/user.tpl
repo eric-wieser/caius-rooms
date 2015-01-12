@@ -27,6 +27,12 @@ end
 		<div class="row">
 			<div class="col-md-3">
 				<img src="{{ user.gravatar(size=400) }}" class="img-responsive" />
+				% if user == request.user:
+					<div class="text-muted text-center small">
+						Want to change your avatar?
+						You'll need to <a href="https://en.gravatar.com/">create a gravatar</a> for <code>{{ user.crsid }}@cam.ac.uk</code>
+					</div>
+				% end
 			</div>
 			<div class="col-md-9">
 				<h1>
