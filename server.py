@@ -555,6 +555,42 @@ with base_route(app, '/ballots'):
 		).filter(m.BallotSeason.year == ballot_id).one()
 		return template('ballot-edit', ballot_season=ballot, db=db)
 
+	@app.route('/<ballot_id>/add-event')
+	@needs_auth('admin')
+	def show_ballot(ballot_id, db):
+		from sqlalchemy.orm import joinedload
+
+		ballot = db.query(m.BallotSeason).options(
+			joinedload(m.BallotSeason.events)
+		).filter(m.BallotSeason.year == ballot_id).one()
+
+		event_types = (db
+			.query(m.BallotType, m.BallotType.events.any(m.BallotEvent.season == ballot))
+			.outerjoin(m.BallotType.events)
+		)
+
+		return template('ballot-add-event', ballot_season=ballot, event_types=event_types)
+
+	@app.post('/<ballot_id>/add-event')
+	@needs_auth('admin')
+	def show_ballot(ballot_id, db):
+		from sqlalchemy.orm import joinedload
+		from datetime import datetime
+
+		print int(request.forms.type)
+
+		ballot = db.query(m.BallotSeason).filter(m.BallotSeason.year == ballot_id).one()
+		event_type = db.query(m.BallotType).filter(m.BallotType.id == int(request.forms.type)).one()
+
+		e = m.BallotEvent(
+			season=ballot,
+			type=event_type,
+			opens_at=datetime.strptime(request.forms.opens_at, "%Y-%m-%d"),
+			closes_at=datetime.strptime(request.forms.closes_at, "%Y-%m-%d")
+		)
+
+		session.add(e)
+
 	@app.route('/<ballot_id>/edit2')
 	@needs_auth('admin')
 	def show_ballot(ballot_id, db):
