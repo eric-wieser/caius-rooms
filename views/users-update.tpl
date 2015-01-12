@@ -95,6 +95,11 @@
 									<input type="hidden" name="{{ user.crsid }}-name" value="{{ names[user] }}">
 									{{ names[user] }}
 								</td>
+								<td>
+									<a href="#" class="text-danger" onclick="(this).parent().parent().fadeOut(function() { $(this).remove(); }); return false">
+										<span class="glyphicon glyphicon-close"></span> Hide
+									</a>
+								</td>
 							</tr>
 						% end
 					</table>
