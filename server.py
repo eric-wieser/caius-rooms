@@ -116,11 +116,23 @@ def log_sql(callback):
 
 
 def get_ballot(db):
-	res = db.query(m.BallotSeason).order_by(m.BallotSeason.year.desc()).first()
-	if res:
-		return res
+	if request.query.ballot:
+		try:
+			byear = int(request.query.ballot)
+		except ValueError:
+			raise HTTPError(400, "Invalid ballot year {!r}".format(request.query.ballot))
+
+		try:
+			return db.query(m.BallotSeason).filter(m.BallotSeason.year == byear).one()
+		except NoResultFound:
+			raise HTTPError(404, "Could not find a ballot for the year {}".format(byear))
+
 	else:
-		raise HTTPError(500, "Could not get current ballot")
+		res = db.query(m.BallotSeason).order_by(m.BallotSeason.year.desc()).first()
+		if res:
+			return res
+		else:
+			raise HTTPError(500, "Could not get current ballot")
 
 
 # declare basic routes - index, static files, and error page
