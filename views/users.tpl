@@ -32,15 +32,14 @@ end
 							% end
 						</div>
 					</a>
-					<div style="width: 2em; display: inline-block" class="text-muted">
+					<div style="width: 50%; max-width: 3em; display: inline-block" class="text-muted">
 						% n = sum(1 for o in user.occupancies if o.reviews)
 						% if n:
 							% m = '1 review' if n == 1 else '{} reviews'.format(n)
 							<span class="glyphicon glyphicon-comment" title="{{m}} "></span>
 							{{ n if n != 1 else '' }}
 						% end
-					</div>
-					<div style="width: 2em; display: inline-block" class="text-muted">
+					</div><div style="width: 50%; max-width: 3em; display: inline-block" class="text-muted">
 						% n = sum(len(o.photos) for o in user.occupancies)
 						% if n:
 							% m = '1 photo' if n == 1 else '{} photos'.format(n)
