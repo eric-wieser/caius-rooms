@@ -29,17 +29,12 @@ rebase('layout')
 	</div>
 </div>
 <div class="container">
-	<!-- <div class="row">
-		<div class="col-md-4">
-			<h2>Browse</h2>
+	% if request.urlparts.netloc != 'roompicks.caiusjcr.co.uk':
+		<div class="alert alert-info" role="alert">
+			<strong>Hey!</strong>
+			We're moving over to <a href="http://roompicks.caiusjcr.co.uk">the Caius JCR website</a>, so you might want to update your bookmarks to point there before this disappears!
 		</div>
-		<div class="col-md-4">
-			<h2>Sort</h2>
-		</div>
-		<div class="col-md-4">
-			<h2>Choose</h2>
-		</div>
-	</div> -->
+	% end
 	<div class="row">
 		<div class="col-md-6">
 			<h2>Recent reviews</h2>
