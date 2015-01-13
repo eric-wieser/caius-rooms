@@ -2,6 +2,7 @@
 import json
 from bottle import request
 import urllib
+import urlparse
 
 url_parts = request.path[1:].split('/')
 main_route = url_parts[0]
@@ -25,9 +26,9 @@ end
 		<meta charset="utf-8">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<link rel="icon" type="image/png" href="http://cdn.dustball.com/house.png">
-		<link href="/static/style.min.css" rel="stylesheet">
-
+		<link rel="icon"       href="http://cdn.dustball.com/house.png" type="image/png" >
+		<link rel="stylesheet" href="/static/style.min.css">
+		<link rel="canonical"  href="{{ request.urlparts._replace(netloc='roompicks.caiusjcr.co.uk').geturl() }}" />
 		<script src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
 		<title>{{' | '.join([name for url, name in reversed(layout_breadcrumb)] + ['RoomPicks']) }}</title>
 	</head>
