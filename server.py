@@ -694,6 +694,50 @@ with base_route(app, '/ballots'):
 
 		return template('ballot-edit-1', ballot_season=ballot, root=root)
 
+	@app.route('/<ballot_id:int>/<ballot_type_name>/edit')
+	@needs_auth('admin')
+	def show_ballot(ballot_id, ballot_type_name, db):
+		if ballot_type_name.lower() != ballot_type_name:
+			raise redirect(request.url.replace(ballot_type_name, ballot_type_name.lower()))
+
+		from sqlalchemy import func
+		from sqlalchemy.orm import joinedload, joinedload_all
+
+		ballot_type = db.query(m.BallotType).filter(func.lower(m.BallotType.name) == ballot_type_name.lower()).one()
+
+		ballot_eventsq = (db
+			.query(m.BallotEvent)
+			.join(m.BallotSeason)
+			.filter(m.BallotEvent.type == ballot_type)
+			.filter(m.BallotSeason.year <= ballot_id)
+			.order_by(m.BallotSeason.year.desc())
+			.limit(2)
+		)
+		ballot_events = ballot_eventsq.all()
+
+		if ballot_events[0].season.year != ballot_id:
+			raise HTTPError(404, "No {} ballot for the {} season {} {}".format(ballot_type.name, ballot_id, ballot_eventsq, ballot_events))
+		else:
+			ballot = ballot_events[0]
+
+		if len(ballot_events) == 2:
+			last_ballot = ballot_events[1]
+		else:
+			last_ballot = None
+
+		root = db.query(m.Cluster).options(
+			joinedload_all('children.rooms.listing_for'),
+			joinedload_all('children.children.rooms.listing_for'),
+			joinedload_all('children.children.children.rooms.listing_for'),
+			joinedload_all('children.children.children.children.rooms.listing_for'),
+		).filter(m.Cluster.parent == None).one()
+
+		return template('ballot-edit-2',
+			ballot_event=ballot,
+			last_ballot_event=last_ballot,
+			root=root)
+
+
 with base_route(app, '/tools'):
 	@app.route('/assign-room')
 	@app.post('/assign-room')
