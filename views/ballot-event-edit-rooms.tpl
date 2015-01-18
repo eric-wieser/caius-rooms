@@ -6,6 +6,11 @@ import json
 
 rebase('layout')
 
+def layout_breadcrumb():
+	yield ('#', '{} - {} season'.format(ballot_event.season.year, ballot_event.season.year + 1))
+	yield ('#', ballot_event.type.name)
+end
+
 import re
 def natural_sort_key(s, _nsre=re.compile('([0-9]+)')):
    return [int(text) if text.isdigit() else text.lower() for text in re.split(_nsre, s)]

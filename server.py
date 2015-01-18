@@ -732,7 +732,7 @@ with base_route(app, '/ballots'):
 			joinedload_all('children.children.children.children.rooms.listing_for'),
 		).filter(m.Cluster.parent == None).one()
 
-		return template('ballot-edit-2',
+		return template('ballot-edit-edit-rooms',
 			ballot_event=ballot,
 			last_ballot_event=last_ballot,
 			root=root)
