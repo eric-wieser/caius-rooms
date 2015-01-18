@@ -44,10 +44,10 @@ $(function() {
 				return $(this).data('room') == room;
 			})
 			.each(function() {
-				if(checked == $(this).is('.changelog-add'))
-					$(this).show();
+				if(checked)
+					$(this).addClass('included');
 				else
-					$(this).hide();
+					$(this).removeClass('included');
 			});
 
 	};
@@ -149,79 +149,9 @@ $(function() {
 	});
 
 	update_numbers();
+
 });
 </script>
-<style>
-.group {
-}
-.item, .group-item {
-	overflow: hidden;
-}
-
-.group-item {
-	margin-top: 5px;
-	padding: 4px;
-	background-color: rgb(245, 245, 245);
-	border: 1px solid rgb(221, 221, 221);
-	border-radius: 3px;
-}
-.group-item .audience-cbs{
-	margin: -5px;
-	padding: 5px 0px;
-	height: 30px;
-}
-.group-children {
-	margin-left: 10px;
-	padding-left: 10px;
-	border-left: 1px solid rgb(221, 221, 221);
-	margin-bottom: 20px;
-	margin-top: -1px;
-	padding-top: 1px;
-}
-
-
-.group-children > * {
-	position: relative;
-}
-
-.group-children > :last-child::before {
-	content: "";
-	position: absolute;
-	top: 15px;
-	left: -11px;
-	bottom: 0;
-	width: 10px;
-	border-left: 1px solid white;
-}
-.audience-cbs {
-	float: right;
-	border-left: 1px solid rgb(231, 231, 231);
-	height: 20px;
-}
-.audience-cbs .audience-cb {
-	width: 40px;
-	height: 100%;
-	text-align: center;
-	float: left;
-}
-
-input[type=checkbox].show-hide {
-	display: none;
-}
-
-.show-hide:checked ~ .group-children {
-	display: none;
-}
-
-.show-hide-buttons {
-	display: inline;
-}
-
-.group-item label .show-hide-shown { display: inline; }
-.group-item label .show-hide-hidden { display: none; }
-.show-hide:checked ~ .group-item label .show-hide-shown { display: none; }
-.show-hide:checked ~ .group-item label .show-hide-hidden { display: inline; }
-</style>
 <%
 
 # build up a dictionary of Cluster => (audiences that can see every room,
@@ -319,25 +249,22 @@ def all_rooms_in(cl=root):
 end
 %>
 
-% def display_changes(inclusions, newer=None):
+% def display_changes(inclusions, newer):
 	<ul class="list-group">
 		% for r in all_rooms_in(root):
 			% if not inclusions[r]:
-				<li class="changelog changelog-add list-group-item list-group-item-success"
-					style="display: {{'block' if newer and newer[r] else 'none'}}"
+				<li class="changelog changelog-add {{'included' if newer[r] else ''}}"
 					data-room="{{ r.id }}">
 					{{ r.pretty_name() }}
-					<a class="pull-right changelog-undo" href="#">
+					<a class="changelog-undo" href="#">
 						<span class="glyphicon glyphicon-share-alt" title="undo adding this room"></span>
 					</a>
 				</li>
-				</li>
 			% else:
-				<li class="changelog changelog-remove list-group-item list-group-item-danger"
-				    style="display: {{'block' if newer and not newer[r] else 'none'}}"
+				<li class="changelog changelog-remove {{'included' if newer[r] else ''}}"
 				    data-room="{{ r.id }}">
 					{{ r.pretty_name() }}
-					<a class="pull-right changelog-undo" href="#">
+					<a class="changelog-undo" href="#">
 						<span class="glyphicon glyphicon-share-alt" title="undo removing this room"></span>
 					</a>
 				</li>
@@ -366,16 +293,16 @@ end
 					<span class="text-danger" id="count-removed-save"></span>
 				</small>
 			</h2>
-			% display_changes(is_included)
+			% display_changes(is_included, is_included)
 		</div>
 		<div class="col-md-4" id="changelog-old">
-			<h2>Since last year's ballot
+			<h2>Since previous year's
 				<small>
 					<span class="text-success" id="count-added-old"></span>,
 					<span class="text-danger" id="count-removed-old"></span>
 				</small>
 			</h2>
-			% display_changes(was_included, newer=is_included)
+			% display_changes(was_included, is_included)
 		</div>
 	</div>
 </div>
