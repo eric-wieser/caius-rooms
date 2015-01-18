@@ -745,6 +745,11 @@ with base_route(app, '/tools'):
 			redirect('/rooms/{}'.format(room.id))
 
 
+@app.route('/sitemap.xml')
+def sitemap(db):
+	response.content_type = 'application/xml'
+	return template('sitemap', db=db)
+
 
 
 # and now, setup the session middleware
