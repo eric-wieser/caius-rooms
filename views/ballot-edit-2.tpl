@@ -1,5 +1,8 @@
 <%
+from collections import namedtuple
+
 import database.orm as m
+import json
 
 rebase('layout')
 
@@ -8,6 +11,146 @@ def natural_sort_key(s, _nsre=re.compile('([0-9]+)')):
    return [int(text) if text.isdigit() else text.lower() for text in re.split(_nsre, s)]
 end
 %>
+<script>
+
+$(function() {
+	// deal with indeterminate
+	$('input[indeterminate]').prop('indeterminate', true);
+
+
+	var get_cb_for_item = function($item) {
+		return $item.find('.audience-cb input').eq(0);
+	}
+
+	var get_child_items = function($item) {
+		if($item.is('.group-item')) {
+			return $item.siblings('.group-children').children().map(function() {
+				if($(this).is('.group'))
+					return $(this).children('.group-item')[0]
+				else
+					return this;
+			})
+		}
+		return $();
+	}
+
+	var get_parent_item = function($item) {
+		return $item.closest('.group-children').parent().children('.group-item');
+	}
+
+	var update_changelogs = function(room, checked) {
+		$('.changelog')
+			.filter(function() {
+				return $(this).data('room') == room;
+			})
+			.each(function() {
+				if(checked == $(this).is('.changelog-add'))
+					$(this).show();
+				else
+					$(this).hide();
+			});
+
+	};
+
+	var update_numbers = function() {
+		$('#count-room-total').text(
+			$('.item').filter(function() {
+				return get_cb_for_item($(this)).prop('checked');
+			}).size()
+		);
+
+		$('#count-added-save').text(
+			'+' + $('#changelog-save').find('li.changelog-add:visible').size()
+		);
+		$('#count-removed-save').text(
+			'\u2212' + $('#changelog-save').find('li.changelog-remove:visible').size()
+		);
+
+		$('#count-added-old').text(
+			'+' + $('#changelog-old').find('li.changelog-add:visible').size()
+		);
+		$('#count-removed-old').text(
+			'\u2212' + $('#changelog-old').find('li.changelog-remove:visible').size()
+		);
+	};
+
+	// ensures the treeview is consistent, given a checkbox that changed
+	var update_from_cb = function($cb) {
+		var checked = $cb.prop('checked')
+		var $item = $cb.closest('.audience-cbs').parent();
+
+		update_changelogs($item.data('room'), checked);
+
+		get_child_items($item).each(function check_desc() {
+			$child = $(this);
+
+			get_cb_for_item($child).prop({
+				'checked': checked,
+				'indeterminate': false
+			});
+
+			update_changelogs($child.data('room'), checked);
+
+			get_child_items($child).each(check_desc);
+		});
+
+		function go_up($p) {
+			if($p.size() == 0) return;
+
+			var all_checked = true;
+			var none_checked = true;
+			get_child_items($p).each(function () {
+				var $cb = get_cb_for_item($(this));
+				if($cb.prop('indeterminate')) {
+					none_checked = false;
+					all_checked = false;
+				} else if ($cb.prop('checked')) {
+					none_checked = false;
+				} else {
+					all_checked = false;
+				}
+			});
+
+			var $cb = get_cb_for_item($p);
+			$cb.prop('indeterminate', false);
+			if(all_checked)
+				$cb.prop('checked', true);
+			else if(none_checked)
+				$cb.prop('checked', false);
+			else
+				$cb.prop('indeterminate', true);
+
+			go_up(get_parent_item($p));
+		}
+
+		go_up(get_parent_item($item));
+
+		update_numbers();
+	};
+
+
+	$('.audience-cb input').click(function() { update_from_cb($(this)); });
+
+	// when a changelog entry is undone, update it in the tree view
+	$('.changelog-undo').click(function() {
+		var entry = $(this).parent('.changelog');
+
+		// find the checkbox in the tree view
+		var room = entry.data('room');
+		var $item = $('.item').filter(function() { return $(this).data('room') == room; });
+		var $cb = get_cb_for_item($item);
+
+		// determine whether to check or uncheck it, and update the tree
+		var added = entry.is('.changelog-remove');
+		$cb.prop('checked', added);
+		update_from_cb($cb);
+
+		return false;
+	});
+
+	update_numbers();
+});
+</script>
 <style>
 .group {
 }
@@ -78,115 +221,74 @@ input[type=checkbox].show-hide {
 .group-item label .show-hide-hidden { display: none; }
 .show-hide:checked ~ .group-item label .show-hide-shown { display: none; }
 .show-hide:checked ~ .group-item label .show-hide-hidden { display: inline; }
-
-
 </style>
 <%
 
-class fullset(set):
-	""" Models the universe set containing everything"""
-	def __and__(self, other):
-		return other
-	end
-end
-
-def all_listings(event, cl=root):
-	if not event:
-		return
-	end
-
-	for room in cl.rooms:
-		listing = room.listing_for.get(event.season)
-		if listing and event.type in listing.audience_types:
-			yield listing
-		end
-	end
-	for subcl in cl.children:
-		for listing in all_listings(event, subcl):
-			yield listing
-		end
-	end
-end
-
-listed_now = {listing.room for listing in all_listings(ballot_event)}
-listed_then = {listing.room for listing in all_listings(last_ballot_event)}
-
-def make_cluster_pred(pred, cl=root):
-	if any(r in pred for r in cl.rooms):
-		yield cl
-	end
-
-	for subcl in cl.children:
-		for c in make_cluster_pred(pred, subcl):
-			yield c
-			yield cl
-		end
-	end
-end
-
-
 # build up a dictionary of Cluster => (audiences that can see every room,
 #	                                   audiences that can see some rooms)
-audiences = {}
-def process(cl):
-	some_a = set()
-	all_a = fullset()
-	for room in cl.rooms:
-		listing = room.listing_for.get(ballot_event.season)
-		audiences[room] = set(listing.audience_types) if listing else set()
+Inclusion = namedtuple('Inclusion', 'all some')
+def find_inclusions(cl, evt):
+	"""
+	Return a dictionary of
+	    Room -> bool(room is included)
+	    Cluster -> Inclusion(all sub-things included, some sub-things included)
+	"""
+	is_included = {}
 
-		all_a = all_a & set(audiences[room])
-		some_a = some_a | set(audiences[room])
+	all_desc = True
+	some_desc = False
+	for room in cl.rooms:
+		listing = room.listing_for.get(evt.season)
+		is_included[room] = (evt.type in listing.audience_types) if listing else False
+
+		all_desc  &= is_included[room]
+		some_desc |= is_included[room]
 	end
 	for subcl in cl.children:
-		process(subcl)
-		all_as, some_as = audiences[subcl]
-		all_a = all_a & all_as
-		some_a = some_a | some_as
+		is_included.update(find_inclusions(subcl, evt))
+
+		sub_desc = is_included[subcl]
+		all_desc  &= sub_desc.all
+		some_desc |= sub_desc.some
 	end
-	audiences[cl] = all_a, some_a
+	is_included[cl] = Inclusion(all_desc, some_desc)
+
+	return is_included
 end
-process(root)
+is_included = find_inclusions(root, ballot_event)
+was_included = find_inclusions(root, last_ballot_event)
 %>
 
-% def display(cl, pred):
-	% cl_pred = set(make_cluster_pred(pred, cl))
+% def display(cl):
 	% for room in sorted(cl.rooms, key=lambda r: natural_sort_key(r.name)):
-		% if room not in pred:
-			% continue
-		% end
-		<div class="item">
+		<div class="item" data-room="{{ room.id }}">
 			<a href="/rooms/{{ room.id }}" target="_blank">{{ room.pretty_name(cl) }}</a>
 			<div class="audience-cbs">
 				<div class="audience-cb">
 					<input type="checkbox"
 					       title="{{ ballot_event.type.name }}"
-					       data-type="{{ ballot_event.type.name }}"
 					       name="rooms[{{ room.id }}]"
-					       {{ 'checked' if ballot_event.type in audiences[room] else '' }} />
+					       {{ 'checked' if is_included[room] else '' }} />
 				</div>
 			</div>
 		</div>
 	% end
 	% for subcl in cl.children:
-		% if subcl not in cl_pred:
-			% continue
-		% end
 		<div class="group">
-			% indeterminate = audiences[subcl][0] != audiences[subcl][1]
-			<input class="show-hide" type="checkbox" id="toggle-{{subcl.id}}-{{ id(pred) }}"
+			% indeterminate = is_included[subcl].some and not is_included[subcl].all
+			<input class="show-hide" type="checkbox" id="toggle-{{subcl.id}}"
 			       {{ '' if indeterminate else 'checked'}} />
 			<div class="group-item">
-				<label class="show-hide-buttons" for="toggle-{{subcl.id}}-{{ id(pred) }}">
+				<label class="show-hide-buttons" for="toggle-{{subcl.id}}">
 					<span class="show-hide-shown glyphicon glyphicon-chevron-down"></span>
 					<span class="show-hide-hidden glyphicon glyphicon-chevron-right"></span>
 				</label>
 				<a href="/places/{{ cl.id }}" target="_blank"><b>{{ subcl.pretty_name(cl) }}</b></a>
 				<div class="audience-cbs">
 					<%
-					if ballot_event.type in audiences[subcl][0]:
+					if is_included[subcl].all:
 						state = 'checked'
-					elif ballot_event.type in audiences[subcl][1]:
+					elif is_included[subcl].some:
 						state = 'indeterminate'
 					else:
 						state = ''
@@ -198,101 +300,82 @@ process(root)
 				</div>
 			</div>
 			<div class="group-children">
-				% display(subcl, pred)
+				% display(subcl)
 			</div>
 		</div>
 	% end
 % end
+
+<%
+def all_rooms_in(cl=root):
+	for r in cl.rooms:
+		yield r
+	end
+	for c in cl.children:
+		for r in all_rooms_in(c):
+			yield r
+		end
+	end
+end
+%>
+
+% def display_changes(inclusions, newer=None):
+	<ul class="list-group">
+		% for r in all_rooms_in(root):
+			% if not inclusions[r]:
+				<li class="changelog changelog-add list-group-item list-group-item-success"
+					style="display: {{'block' if newer and newer[r] else 'none'}}"
+					data-room="{{ r.id }}">
+					{{ r.pretty_name() }}
+					<a class="pull-right changelog-undo" href="#">
+						<span class="glyphicon glyphicon-share-alt" title="undo adding this room"></span>
+					</a>
+				</li>
+				</li>
+			% else:
+				<li class="changelog changelog-remove list-group-item list-group-item-danger"
+				    style="display: {{'block' if newer and not newer[r] else 'none'}}"
+				    data-room="{{ r.id }}">
+					{{ r.pretty_name() }}
+					<a class="pull-right changelog-undo" href="#">
+						<span class="glyphicon glyphicon-share-alt" title="undo removing this room"></span>
+					</a>
+				</li>
+			% end
+		% end
+	</ul>
+% end
+
+
 <div class="container">
-	<h1>Ballot for {{ ballot_event.season }}</h1>
-	<p>Select which rooms should be available in which sub-ballots using the checkboxes on the right</p>
+	<h1>{{ ballot_event.type.name }} ballot for {{ ballot_event.season }}</h1>
+	<p>Use the tree view in the left to column to select which rooms should be available in the ballot. The two other columns show changes, with additions shown in green, and deletions shown in red.</p>
 	<div class="row">
 		<div class="col-md-4">
-			<h2>Removed since last ballot</h2>
-			% display(root, listed_then - listed_now)
+			<h2>
+				Rooms in the ballot
+				<small id="count-room-total"></small>
+			</h2>
+			% display(root)
 		</div>
-		<div class="col-md-4">
-			<h2>Present in last ballot</h2>
-			% display(root, listed_then & listed_now)
+		<div class="col-md-4" id="changelog-save">
+			<h2>
+				Since last save
+				<small>
+					<span class="text-success" id="count-added-save"></span>,
+					<span class="text-danger" id="count-removed-save"></span>
+				</small>
+			</h2>
+			% display_changes(is_included)
 		</div>
-		<div class="col-md-4">
-			<h2>Added in current ballot</h2>
-			% display(root, listed_now - listed_then)
+		<div class="col-md-4" id="changelog-old">
+			<h2>Since last year's ballot
+				<small>
+					<span class="text-success" id="count-added-old"></span>,
+					<span class="text-danger" id="count-removed-old"></span>
+				</small>
+			</h2>
+			% display_changes(was_included, newer=is_included)
 		</div>
 	</div>
 </div>
-<script>
-$(function() {
-	// deal with indeterminate
-	$('input[indeterminate]').prop('indeterminate', true);
-
-	var get_cb_for_item = function($item, type) {
-		return $item.find('.audience-cb input').filter(function() {
-			return $(this).data('type') == type;
-		});
-	}
-
-	var get_child_items = function($item) {
-		if($item.is('.group-item')) {
-			return $item.siblings('.group-children').children().map(function() {
-				if($(this).is('.group'))
-					return $(this).children('.group-item')[0]
-				else
-					return this;
-			})
-		}
-		return $();
-	}
-
-	var get_parent_item = function($item) {
-		return $item.closest('.group-children').parent().children('.group-item');
-	}
-
-	$('.audience-cb input').click(function() {
-		var $cb = $(this)
-		var type = $cb.data('type');
-		var checked = $cb.prop('checked')
-		var $item = $cb.closest('.audience-cbs').parent();
-
-		get_child_items($item).each(function check_desc() {
-			get_cb_for_item($(this), type).prop({
-				'checked': checked,
-				'indeterminate': false
-			})
-
-			get_child_items($(this)).each(check_desc);
-		});
-
-		function go_up($p) {
-			if($p.size() == 0) return;
-
-			var all_checked = true;
-			var none_checked = true;
-			get_child_items($p).each(function () {
-				var $cb = get_cb_for_item($(this), type);
-				if($cb.prop('indeterminate')) {
-					none_checked = false;
-					all_checked = false;
-				} else if ($cb.prop('checked')) {
-					none_checked = false;
-				} else {
-					all_checked = false;
-				}
-			});
-
-			var $cb = get_cb_for_item($p, type);
-			$cb.prop('indeterminate', false);
-			if(all_checked)
-				$cb.prop('checked', true);
-			else if(none_checked)
-				$cb.prop('checked', false);
-			else
-				$cb.prop('indeterminate', true);
-
-			go_up(get_parent_item($p));
-		}
-
-		go_up(get_parent_item($item));
-	});
-});
-</script>
