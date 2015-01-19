@@ -7,7 +7,9 @@ import json
 rebase('layout')
 
 def layout_breadcrumb():
-	yield ('#', '{} - {} season'.format(ballot_event.season.year, ballot_event.season.year + 1))
+	yield (
+		'/ballots/{}'.format(ballot_event.season.year),
+		'{} - {} season'.format(ballot_event.season.year, ballot_event.season.year + 1))
 	yield ('#', ballot_event.type.name)
 end
 
