@@ -260,7 +260,7 @@ end
 			% if not inclusions[r]:
 				<li class="changelog changelog-add {{'included' if newer[r] else ''}}"
 					data-room="{{ r.id }}">
-					{{ r.pretty_name() }}
+					<a href="/rooms/{{ r.id }}" target="_blank">{{ r.pretty_name() }}</a>
 					<a class="changelog-undo" href="#">
 						<span class="glyphicon glyphicon-share-alt" title="undo adding this room"></span>
 					</a>
@@ -268,7 +268,7 @@ end
 			% else:
 				<li class="changelog changelog-remove {{'included' if newer[r] else ''}}"
 				    data-room="{{ r.id }}">
-					{{ r.pretty_name() }}
+					<a href="/rooms/{{ r.id }}" target="_blank">{{ r.pretty_name() }}</a>
 					<a class="changelog-undo" href="#">
 						<span class="glyphicon glyphicon-share-alt" title="undo removing this room"></span>
 					</a>

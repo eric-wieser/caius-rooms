@@ -6724,6 +6724,9 @@ input[type=checkbox].show-hide {
 .changelog.active:focus .list-group-item-text {
   color: #c7ddef;
 }
+.changelog a {
+  color: inherit;
+}
 .changelog-add {
   color: #3c763d;
   background-color: #dff0d8;
@@ -6778,7 +6781,6 @@ a.changelog-remove.active:focus {
 }
 .changelog-undo {
   float: right;
-  color: inherit;
 }
 td.shrink {
   width: 1px;
