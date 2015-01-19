@@ -168,6 +168,7 @@ def do_login(db):
 
 		r = raven.Response(request.query["WLS-Response"])
 
+		assert "WLS-Response" in request.url
 		base_url = request.url[:request.url.rfind("WLS-Response")-1]
 
 		if r.url != base_url:
