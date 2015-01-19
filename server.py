@@ -754,6 +754,29 @@ with base_route(app, '/ballots'):
 
 		return redirect(request.url)
 
+	@app.route('/<ballot_id:int>/<ballot_type_name>/edit-slots')
+	@needs_auth('admin')
+	def edit_ballot_slots(ballot_id, ballot_type_name, db):
+		if ballot_type_name.lower() != ballot_type_name:
+			raise redirect(request.url.replace(ballot_type_name, ballot_type_name.lower()))
+
+		from sqlalchemy import func
+		from sqlalchemy.orm import joinedload, joinedload_all
+
+		ballot_type = db.query(m.BallotType).filter(func.lower(m.BallotType.name) == ballot_type_name.lower()).one()
+
+		ballot_event = (db
+			.query(m.BallotEvent)
+			.join(m.BallotSeason)
+			.filter(m.BallotEvent.type == ballot_type)
+			.filter(m.BallotSeason.year == ballot_id)
+		).one()
+
+
+		return template('ballot-event-edit-slots',
+			ballot_event=ballot_event
+		)
+
 with base_route(app, '/tools'):
 	@app.route('/assign-room')
 	@app.post('/assign-room')
