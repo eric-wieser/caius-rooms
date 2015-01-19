@@ -6597,6 +6597,188 @@ table.sortable thead th:hover:not([data-defaultsort=disabled]) {
 table.sortable thead th div.mozilla {
   position: relative;
 }
+.item,
+.group-item {
+  overflow: hidden;
+}
+.group-item {
+  margin-top: 5px;
+  padding: 4px;
+  background-color: #f5f5f5;
+  border: 1px solid #dddddd;
+  border-radius: 3px;
+}
+.group-item .audience-cbs {
+  margin: -5px;
+  padding: 5px 0px;
+  height: 30px;
+}
+.group-children {
+  margin-left: 10px;
+  padding-left: 10px;
+  border-left: 1px solid #dddddd;
+  margin-bottom: 20px;
+  margin-top: -1px;
+  padding-top: 1px;
+}
+.group-children > * {
+  position: relative;
+}
+.group-children > :last-child::before {
+  content: "";
+  position: absolute;
+  top: 15px;
+  left: -11px;
+  bottom: 0;
+  width: 10px;
+  border-left: 1px solid white;
+}
+.audience-cbs {
+  float: right;
+  border-left: 1px solid #e7e7e7;
+  height: 20px;
+}
+.audience-cbs .audience-cb {
+  width: 40px;
+  height: 100%;
+  text-align: center;
+  float: left;
+}
+input[type=checkbox].show-hide {
+  display: none;
+}
+.show-hide:checked ~ .group-children {
+  display: none;
+}
+.show-hide-buttons {
+  display: inline;
+}
+.group-item label .show-hide-shown {
+  display: inline;
+}
+.group-item label .show-hide-hidden {
+  display: none;
+}
+.show-hide:checked ~ .group-item label .show-hide-shown {
+  display: none;
+}
+.show-hide:checked ~ .group-item label .show-hide-hidden {
+  display: inline;
+}
+.changelog {
+  position: relative;
+  display: block;
+  padding: 10px 15px;
+  margin-bottom: -1px;
+  background-color: #ffffff;
+  border: 1px solid #dddddd;
+}
+.changelog:first-child {
+  border-top-right-radius: 4px;
+  border-top-left-radius: 4px;
+}
+.changelog:last-child {
+  margin-bottom: 0;
+  border-bottom-right-radius: 4px;
+  border-bottom-left-radius: 4px;
+}
+.changelog.disabled,
+.changelog.disabled:hover,
+.changelog.disabled:focus {
+  background-color: #eeeeee;
+  color: #777777;
+  cursor: not-allowed;
+}
+.changelog.disabled .list-group-item-heading,
+.changelog.disabled:hover .list-group-item-heading,
+.changelog.disabled:focus .list-group-item-heading {
+  color: inherit;
+}
+.changelog.disabled .list-group-item-text,
+.changelog.disabled:hover .list-group-item-text,
+.changelog.disabled:focus .list-group-item-text {
+  color: #777777;
+}
+.changelog.active,
+.changelog.active:hover,
+.changelog.active:focus {
+  z-index: 2;
+  color: #ffffff;
+  background-color: #337ab7;
+  border-color: #337ab7;
+}
+.changelog.active .list-group-item-heading,
+.changelog.active:hover .list-group-item-heading,
+.changelog.active:focus .list-group-item-heading,
+.changelog.active .list-group-item-heading > small,
+.changelog.active:hover .list-group-item-heading > small,
+.changelog.active:focus .list-group-item-heading > small,
+.changelog.active .list-group-item-heading > .small,
+.changelog.active:hover .list-group-item-heading > .small,
+.changelog.active:focus .list-group-item-heading > .small {
+  color: inherit;
+}
+.changelog.active .list-group-item-text,
+.changelog.active:hover .list-group-item-text,
+.changelog.active:focus .list-group-item-text {
+  color: #c7ddef;
+}
+.changelog-add {
+  color: #3c763d;
+  background-color: #dff0d8;
+  display: none;
+}
+a.changelog-add {
+  color: #3c763d;
+}
+a.changelog-add .list-group-item-heading {
+  color: inherit;
+}
+a.changelog-add:hover,
+a.changelog-add:focus {
+  color: #3c763d;
+  background-color: #d0e9c6;
+}
+a.changelog-add.active,
+a.changelog-add.active:hover,
+a.changelog-add.active:focus {
+  color: #fff;
+  background-color: #3c763d;
+  border-color: #3c763d;
+}
+.changelog-add.included {
+  display: block;
+}
+.changelog-remove {
+  color: #a94442;
+  background-color: #f2dede;
+  display: block;
+}
+a.changelog-remove {
+  color: #a94442;
+}
+a.changelog-remove .list-group-item-heading {
+  color: inherit;
+}
+a.changelog-remove:hover,
+a.changelog-remove:focus {
+  color: #a94442;
+  background-color: #ebcccc;
+}
+a.changelog-remove.active,
+a.changelog-remove.active:hover,
+a.changelog-remove.active:focus {
+  color: #fff;
+  background-color: #a94442;
+  border-color: #a94442;
+}
+.changelog-remove.included {
+  display: none;
+}
+.changelog-undo {
+  float: right;
+  color: inherit;
+}
 td.shrink {
   width: 1px;
   white-space: nowrap;

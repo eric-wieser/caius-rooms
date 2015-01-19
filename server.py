@@ -695,6 +695,72 @@ with base_route(app, '/ballots'):
 
 		return template('ballot-edit-1', ballot_season=ballot, root=root)
 
+	@app.route('/<ballot_id:int>/<ballot_type_name>/edit')
+	@needs_auth('admin')
+	def edit_ballot_rooms(ballot_id, ballot_type_name, db):
+		if ballot_type_name.lower() != ballot_type_name:
+			raise redirect(request.url.replace(ballot_type_name, ballot_type_name.lower()))
+
+		from sqlalchemy import func
+		from sqlalchemy.orm import joinedload, joinedload_all
+
+		ballot_type = db.query(m.BallotType).filter(func.lower(m.BallotType.name) == ballot_type_name.lower()).one()
+
+		ballot_eventsq = (db
+			.query(m.BallotEvent)
+			.join(m.BallotSeason)
+			.filter(m.BallotEvent.type == ballot_type)
+			.filter(m.BallotSeason.year <= ballot_id)
+			.order_by(m.BallotSeason.year.desc())
+			.limit(2)
+		)
+		ballot_events = ballot_eventsq.all()
+
+		if ballot_events[0].season.year != ballot_id:
+			raise HTTPError(404, "No {} ballot for the {} season {} {}".format(ballot_type.name, ballot_id, ballot_eventsq, ballot_events))
+		else:
+			ballot = ballot_events[0]
+
+		if len(ballot_events) == 2:
+			last_ballot = ballot_events[1]
+		else:
+			last_ballot = None
+
+		root = db.query(m.Cluster).options(
+			joinedload_all('children.rooms.listing_for'),
+			joinedload_all('children.children.rooms.listing_for'),
+			joinedload_all('children.children.children.rooms.listing_for'),
+			joinedload_all('children.children.children.children.rooms.listing_for'),
+		).filter(m.Cluster.parent == None).one()
+
+		return template('ballot-event-edit-rooms',
+			ballot_event=ballot,
+			last_ballot_event=last_ballot,
+			root=root)
+
+
+	@app.post('/<ballot_id:int>/<ballot_type_name>/edit')
+	@needs_auth('admin')
+	def save_ballot_rooms(ballot_id, ballot_type_name, db):
+		from sqlalchemy import func
+
+		ballot_type = db.query(m.BallotType).filter(func.lower(m.BallotType.name) == ballot_type_name.lower()).one()
+		ballot_season = db.query(m.BallotSeason).filter(m.BallotSeason.year == ballot_id).one()
+
+		room_ids = set()
+		for name, value in request.forms.items():
+			match = re.match(r'rooms\[(\d+)\]', name)
+			if match and value == 'on':
+				room_ids.add(int(match.group(1)))
+
+		for l in ballot_season.room_listings:
+			if l.room_id in room_ids:
+				l.audience_types |= {ballot_type}
+			else:
+				l.audience_types -= {ballot_type}
+
+		return redirect(request.url)
+
 with base_route(app, '/tools'):
 	@app.route('/assign-room')
 	@app.post('/assign-room')
