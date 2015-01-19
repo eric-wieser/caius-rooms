@@ -696,7 +696,7 @@ with base_route(app, '/ballots'):
 
 	@app.route('/<ballot_id:int>/<ballot_type_name>/edit')
 	@needs_auth('admin')
-	def show_ballot(ballot_id, ballot_type_name, db):
+	def edit_ballot_rooms(ballot_id, ballot_type_name, db):
 		if ballot_type_name.lower() != ballot_type_name:
 			raise redirect(request.url.replace(ballot_type_name, ballot_type_name.lower()))
 
@@ -732,11 +732,33 @@ with base_route(app, '/ballots'):
 			joinedload_all('children.children.children.children.rooms.listing_for'),
 		).filter(m.Cluster.parent == None).one()
 
-		return template('ballot-edit-edit-rooms',
+		return template('ballot-event-edit-rooms',
 			ballot_event=ballot,
 			last_ballot_event=last_ballot,
 			root=root)
 
+
+	@app.post('/<ballot_id:int>/<ballot_type_name>/edit')
+	@needs_auth('admin')
+	def save_ballot_rooms(ballot_id, ballot_type_name, db):
+		from sqlalchemy import func
+
+		ballot_type = db.query(m.BallotType).filter(func.lower(m.BallotType.name) == ballot_type_name.lower()).one()
+		ballot_season = db.query(m.BallotSeason).filter(m.BallotSeason.year == ballot_id).one()
+
+		room_ids = set()
+		for name, value in request.forms.items():
+			match = re.match(r'rooms\[(\d+)\]', name)
+			if match and value == 'on':
+				room_ids.add(int(match.group(1)))
+
+		for l in ballot_season.room_listings:
+			if l.room_id in room_ids:
+				l.audience_types |= {ballot_type}
+			else:
+				l.audience_types -= {ballot_type}
+
+		return redirect(request.url)
 
 with base_route(app, '/tools'):
 	@app.route('/assign-room')

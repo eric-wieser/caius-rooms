@@ -280,34 +280,40 @@ end
 
 
 <div class="container">
-	<h1>{{ ballot_event.type.name }} ballot for {{ ballot_event.season }}</h1>
-	<p>Use the tree view in the left to column to select which rooms should be available in the ballot. The two other columns show changes, with additions shown in green, and deletions shown in red.</p>
-	<div class="row">
-		<div class="col-md-4">
-			<h2>
-				Rooms in the ballot
-				<small id="count-room-total"></small>
-			</h2>
-			% display(root)
+	<form method="post">
+		<button class="btn btn-primary btn-lg pull-right" type="submit">
+			<span class="glyphicon glyphicon-floppy-disk"></span>
+			Save
+		</button>
+		<h1>{{ ballot_event.type.name }} ballot for {{ ballot_event.season }}</h1>
+		<p>Use the tree view in the left to column to select which rooms should be available in the ballot. The two other columns show changes, with additions shown in green, and deletions shown in red.</p>
+		<div class="row">
+			<div class="col-md-4">
+				<h2>
+					Rooms in the ballot
+					<small id="count-room-total"></small>
+				</h2>
+				% display(root)
+			</div>
+			<div class="col-md-4" id="changelog-save">
+				<h2>
+					Since last save
+					<small>
+						<span class="text-success" id="count-added-save"></span>,
+						<span class="text-danger" id="count-removed-save"></span>
+					</small>
+				</h2>
+				% display_changes(is_included, is_included)
+			</div>
+			<div class="col-md-4" id="changelog-old">
+				<h2>Since previous year's
+					<small>
+						<span class="text-success" id="count-added-old"></span>,
+						<span class="text-danger" id="count-removed-old"></span>
+					</small>
+				</h2>
+				% display_changes(was_included, is_included)
+			</div>
 		</div>
-		<div class="col-md-4" id="changelog-save">
-			<h2>
-				Since last save
-				<small>
-					<span class="text-success" id="count-added-save"></span>,
-					<span class="text-danger" id="count-removed-save"></span>
-				</small>
-			</h2>
-			% display_changes(is_included, is_included)
-		</div>
-		<div class="col-md-4" id="changelog-old">
-			<h2>Since previous year's
-				<small>
-					<span class="text-success" id="count-added-old"></span>,
-					<span class="text-danger" id="count-removed-old"></span>
-				</small>
-			</h2>
-			% display_changes(was_included, is_included)
-		</div>
-	</div>
+	</form>
 </div>
