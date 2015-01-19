@@ -6672,6 +6672,7 @@ input[type=checkbox].show-hide {
   margin-bottom: -1px;
   background-color: #ffffff;
   border: 1px solid #dddddd;
+  padding: 4px 15px;
 }
 .changelog:first-child {
   border-top-right-radius: 4px;
