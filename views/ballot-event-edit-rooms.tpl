@@ -193,7 +193,7 @@ def find_inclusions(cl, evt):
 	return is_included
 end
 is_included = find_inclusions(root, ballot_event)
-was_included = find_inclusions(root, last_ballot_event)
+was_included = find_inclusions(root, last_ballot_event) if last_ballot_event else {}
 %>
 
 % def display(cl):
