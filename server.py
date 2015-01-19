@@ -114,6 +114,15 @@ def log_sql(callback):
 
 	return wrapper
 
+def get_last_ballot(db):
+	"""Get the ballot that was run to allocate the current students"""
+	from datetime import date
+	now = date.today()
+	if now.month <= 8:
+		return db.query(m.BallotSeason).get(now.year - 1)
+	else:
+		return db.query(m.BallotSeason).get(now.year)
+
 
 def get_ballot(db):
 	if request.query.ballot:
@@ -128,7 +137,7 @@ def get_ballot(db):
 			raise HTTPError(404, "Could not find a ballot for the year {}".format(byear))
 
 	else:
-		res = db.query(m.BallotSeason).order_by(m.BallotSeason.year.desc()).first()
+		res = get_last_ballot(db)
 		if res:
 			return res
 		else:
