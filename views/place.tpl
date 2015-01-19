@@ -19,23 +19,16 @@ layout_random = '/places/random'
 import itertools
 %>
 <div class="container">
-	% filtered_rooms = location.all_rooms_q.all()
-	% for filter in filters:
-		% filtered_rooms = [room for room in filtered_rooms if filter(room)]
-	% end
-	% filtered_rooms.sort(key=lambda r: (r.adjusted_rating, r.photo_count, -r.id), reverse=True)
+	% rooms = location.all_rooms_q.all()
+	% rooms.sort(key=lambda r: (r.adjusted_rating, r.photo_count, -r.id), reverse=True)
 
 	<h1>{{ location.pretty_name() }}</h1>
-	<p class="lead">
-		{{len(filtered_rooms)}} rooms
+	<p>
+		<span class="lead">{{len(rooms)}} rooms</span><br />
+		<small class="text-muted">Owners and prices show are for the year {{ ballot}}</small>
 	</p>
 
-	<ul class="list-group">
-		% for filter in filters:
-			<li class="list-group-item">{{filter.description}}</li>
-		% end
-	</ul>
-	% include('parts/room-table', rooms=filtered_rooms, ballot=ballot, relative_to=location)
+	% include('parts/room-table', rooms=rooms, ballot=ballot, relative_to=location)
 
 	<div id="map" style="height: 400px"></div>
 	% lat_lon = location.geocoords

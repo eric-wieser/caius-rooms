@@ -201,14 +201,7 @@ with base_route(app, '/rooms'):
 	@app.route('')
 	def show_rooms(db):
 		filters = []
-		if request.query.vacant:
-			filters.append(filter_vacant())
-		if request.query.place:
-			filters.append(filter_place(request.query.place))
-		if request.query.group:
-			filters.append(filter_group(request.query.group))
-
-		rooms = db.query(m.Room)
+		roomsq = db.query(m.Room)
 
 		if request.query.filter_id:
 			try:
@@ -216,9 +209,9 @@ with base_route(app, '/rooms'):
 			except TypeError:
 				raise HTTPError(400, 'malformed room id')
 
-			rooms = rooms.filter(m.Room.id.in_(ids))
+			filters.append(m.Room.id.in_(ids))
 
-		return template('rooms', rooms=rooms.all(), ballot=get_ballot(db), filters=filters)
+		return template('rooms', roomsq=roomsq, ballot=get_ballot(db), filters=filters)
 
 	@app.route('/<room_id>')
 	def show_room(room_id, db):
