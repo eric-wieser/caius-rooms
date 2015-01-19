@@ -516,43 +516,26 @@ with base_route(app, '/users'):
 	@app.route('/update')
 	@needs_auth('admin')
 	def update_names(db):
-		import requests
 		import utils
 
 		names = {}
 		initial_names = {}
 		to_query = {}
-		for some_users in utils.grouper(db.query(m.Person), 250):
-			# consume the iterator
-			some_users = list(some_users)
 
-			# read the lookup json data
-			r = requests.get(
-				'https://www.lookup.cam.ac.uk/api/v1/person/list',
-				params=dict(
-					format='json',
-					crsids=','.join(u.crsid for u in some_users)
-				),
-				auth=('anonymous', '')
-			)
-			r.raise_for_status()
-			data = r.json()[u'result'][u'people']
+		users = db.query(m.Person).all()
 
-			# make a lookup by crsid
-			data_lookup = {
-				d[u'identifier'][u'value']: d
-				for d in data
-			}
-			for u in some_users:
-				d = data_lookup.get(u.crsid)
-				if d:
-					if d[u'visibleName'] != u.name:
-						# name has changed
-						names[u] = d[u'visibleName']
-						initial_names[u] = d.get(u'registeredName')
-				else:
-					# crsid doesn't exist!
-					names[u] = None
+		data_lookup = utils.lookup_ldap(u.crsid for u in users)
+
+		for u in users:
+			d = data_lookup.get(u.crsid)
+			if d:
+				if d[u'visibleName'] != u.name:
+					# name has changed
+					names[u] = d[u'visibleName']
+					initial_names[u] = d.get(u'registeredName')
+			else:
+				# crsid doesn't exist!
+				names[u] = None
 
 		users = set(names.keys())
 

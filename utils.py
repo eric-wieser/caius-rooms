@@ -53,3 +53,51 @@ def grouper(iterable, n):
        if not chunk:
            return
        yield chunk
+
+def lookup_ldap(crsids):
+	"""
+	Looks up a bunch of crsids on lookup.cam.ac.uk, and return a dictionary
+	mapping crsids to results. Example result format is:
+
+	{
+      "cancelled" : false,
+      "identifier" : {
+        "scheme" : "crsid",
+        "value" : "efw27"
+      },
+      "displayName" : "Eric Wieser",
+      "registeredName" : "E.F. Wieser",
+      "surname" : "Wieser",
+      "visibleName" : "Eric Wieser",
+      "misAffiliation" : "student",
+      "staff" : false,
+      "student" : true
+    }
+
+    Not all crsids will have an associated result, and the presence of any of
+    these keys is not guaranteed
+    """
+	import requests
+
+	result = {}
+
+	# limit the numver per request
+	for some_crsids in grouper(crsids, 200):
+		r = requests.get(
+			'https://www.lookup.cam.ac.uk/api/v1/person/list',
+			params=dict(
+				format='json',
+				crsids=','.join(some_crsids)
+			),
+			auth=('anonymous', '')
+		)
+		r.raise_for_status()
+		data = r.json()[u'result'][u'people']
+
+		# update the lookup by crsid
+		result.update({
+			d[u'identifier'][u'value']: d
+			for d in data
+		})
+
+	return result
