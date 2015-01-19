@@ -305,15 +305,17 @@ end
 				</h2>
 				% display_changes(is_included, is_included)
 			</div>
-			<div class="col-md-4" id="changelog-old">
-				<h2>Since previous year's
-					<small>
-						<span class="text-success" id="count-added-old"></span>,
-						<span class="text-danger" id="count-removed-old"></span>
-					</small>
-				</h2>
-				% display_changes(was_included, is_included)
-			</div>
+			% if any(i for r, i in was_included.items() if isinstance(r, m.Room)):
+				<div class="col-md-4" id="changelog-old">
+					<h2>Since previous year's
+						<small>
+							<span class="text-success" id="count-added-old"></span>,
+							<span class="text-danger" id="count-removed-old"></span>
+						</small>
+					</h2>
+					% display_changes(was_included, is_included)
+				</div>
+			% end
 		</div>
 	</form>
 </div>
