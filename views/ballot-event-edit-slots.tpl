@@ -52,10 +52,15 @@ textarea {
 	<div class="row">
 		<div class="col-md-4">
 			<h2>Edit</h2>
-			<a class="btn btn-default btn-block" href="slots.csv">Download slots.csv</a>
-			<small class="text-muted">
+			<p>
+				<a class="btn btn-primary btn-block" href="slots.csv">Download slots.csv</a>
+			</p>
+			<p class="small text-muted">
 				We've had to suffix every date and crsid with an @. This stops excel doing <i>stupid</i> things like reordering the day and month, or converting crsids into dates.
-			</small>
+			</p>
+			<p class="small text-muted">
+				Leave a date column empty to use the same date as the previous slot. Leave the time column empty to use a time 3 minutes later than the previous slot.
+			</p>
 			<table class="table small table-condensed" style="table-layout: fixed">
 				<thead>
 					<tr>
@@ -88,7 +93,7 @@ textarea {
 				<div class="form-group">
 					<input type="file" class="form-control" name="slot_csv" />
 				</div>
-				<button class="btn btn-block btn-default" type="submit">Upload new version</button>
+				<button class="btn btn-block btn-primary" type="submit">Upload new version</button>
 			</form>
 		</div>
 		% if step2:
