@@ -746,14 +746,128 @@ with base_route(app, '/ballots'):
 
 		return redirect(request.url)
 
-	@app.route('/<ballot_id:int>/<ballot_type_name>/edit-slots')
+	@app.route('/<ballot_id:int>/<ballot_type_name>/edit-slots', method=('GET', 'POST'))
 	@needs_auth('admin')
 	def edit_ballot_slots(ballot_id, ballot_type_name, db):
 		if ballot_type_name.lower() != ballot_type_name:
 			raise redirect(request.url.replace(ballot_type_name, ballot_type_name.lower()))
 
 		from sqlalchemy import func
-		from sqlalchemy.orm import joinedload, joinedload_all
+
+		ballot_type = db.query(m.BallotType).filter(func.lower(m.BallotType.name) == ballot_type_name.lower()).one()
+
+		ballot_event = (db
+			.query(m.BallotEvent)
+			.join(m.BallotSeason)
+			.filter(m.BallotEvent.type == ballot_type)
+			.filter(m.BallotSeason.year == ballot_id)
+		).one()
+
+		def parse_csv(r):
+			from datetime import datetime, timedelta
+			import utils
+
+			errors = []
+			data = []
+
+			headers = next(r)
+
+			if headers != ["date", "time", "crsid", "name (ignored)"]:
+				errors += ['bad-header']
+				return None, errors
+
+			last_date = None
+			last_time = None
+			for l in r:
+				if len(l) < 3:
+					errors += [('bad row {}'.format(l))]
+					continue
+
+				date, time, crsid = l[:3]
+
+				if date:
+					try:
+						date = datetime.strptime(date, "%Y-%m-%d@")
+					except ValueError:
+						errors += [('bad-date', date)]
+						continue
+					last_date = date
+
+				elif last_date:
+					date = last_date
+				else:
+					errors += [('no-date')]
+					continue
+
+
+				if time:
+					try:
+						time = datetime.strptime(time, "%H:%M:%S")
+					except ValueError:
+						errors += [('bad-time', time)]
+						continue
+					last_time = time
+				elif last_time:
+					time = last_time + timedelta(minutes=3)
+					last_time = time
+				else:
+					errors += [('no-time')]
+					continue
+
+				ts = datetime.combine(date.date(), time.time())
+
+				data += [(ts, crsid.rstrip('@'))]
+
+
+			# get all crsids
+			crsids = [crsid for ts, crsid in data]
+
+			# find existing users attached to them
+			db_users = [db.query(m.Person).get(c) for c in crsids]
+			users = {u.crsid: u for u in db_users if u}
+
+			new_users = set(crsids) - set(users.keys())
+
+			# lookup the rest
+			lookup = utils.lookup_ldap(new_users)
+
+			for crsid in new_users:
+				d = lookup.get(crsid)
+				if d:
+					name = d.get('visibleName')
+					users[crsid] = m.Person(crsid=crsid, name=name)
+				else:
+					errors += [('bad-crsid', crsid)]
+
+			data = {
+				users[crsid]: ts
+				for ts, crsid in data
+				if crsid in users
+			}
+
+			return data, errors
+
+
+		if request.method == "POST" and request.files.slot_csv:
+			import csv
+			r = csv.reader(iter(request.files.slot_csv.file))
+			step2 = parse_csv(r)
+		else:
+			step2 = None
+
+
+		return template('ballot-event-edit-slots',
+			ballot_event=ballot_event,
+			step2=step2
+		)
+
+	@app.route('/<ballot_id:int>/<ballot_type_name>/slots.csv')
+	@needs_auth('admin')
+	def csv_ballot_slots(ballot_id, ballot_type_name, db):
+		if ballot_type_name.lower() != ballot_type_name:
+			raise redirect(request.url.replace(ballot_type_name, ballot_type_name.lower()))
+
+		from sqlalchemy import func
 
 		ballot_type = db.query(m.BallotType).filter(func.lower(m.BallotType.name) == ballot_type_name.lower()).one()
 
@@ -765,9 +879,23 @@ with base_route(app, '/ballots'):
 		).one()
 
 
-		return template('ballot-event-edit-slots',
-			ballot_event=ballot_event
-		)
+		import csv
+		import StringIO
+		sfile = StringIO.StringIO()
+		o = csv.writer(sfile)
+
+		o.writerow(["date", "time", "crsid", "name (ignored)"])
+		last_date = None
+		for s in sorted(ballot_event.slots, key=lambda s: s.time):
+			if s.time.date() != last_date:
+				o.writerow([str(s.time.date()) + "@", s.time.time(), s.person.crsid + "@", s.person.name])
+				last_date = s.time.date()
+			else:
+				o.writerow(["", s.time.time(), s.person.crsid + "@", s.person.name])
+
+		response.content_type = 'text/csv'
+		return sfile.getvalue()
+
 
 with base_route(app, '/tools'):
 	@app.route('/assign-room')

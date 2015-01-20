@@ -47,30 +47,204 @@ textarea {
 }
 </style>
 <div class="container">
-	<form method="post">
-		<button class="btn btn-primary btn-lg pull-right" type="submit">
-			<span class="glyphicon glyphicon-floppy-disk"></span>
-			Save
-		</button>
-		<h1>{{ ballot_event.type.name }} ballot for {{ ballot_event.season }}</h1>
-		<p>Use the tree view in the left to column to select which rooms should be available in the ballot. The two other columns show changes, with additions shown in green, and deletions shown in red.</p>
-		<div class="row">
-			% it = group_slots()
-			% import itertools
-			% for day, slot_groups in itertools.groupby(it, key=lambda (dt, slots): slots[0].time.date()):
-				<div class="col-md-6">
-					<h2>{{ day }}</h2>
-					% for dt, slots in slot_groups:
-						<h3>
-							{{ slots[0].time.time() }}
-							% if dt:
-								<small>every {{ dt }}</small>
+	<h1>{{ ballot_event.type.name }} ballot for {{ ballot_event.season }}</h1>
+	<p>Use the tree view in the left to column to select which rooms should be available in the ballot. The two other columns show changes, with additions shown in green, and deletions shown in red.</p>
+	<div class="row">
+		<div class="col-md-4">
+			<h2>Edit</h2>
+			<a class="btn btn-default btn-block" href="slots.csv">Download slots.csv</a>
+			<small class="text-muted">
+				We've had to suffix every date and crsid with an @. This stops excel doing <i>stupid</i> things like reordering the day and month, or converting crsids into dates.
+			</small>
+			<table class="table small table-condensed" style="table-layout: fixed">
+				<thead>
+					<tr>
+						<th>date</th>
+						<th>time</th>
+						<th>crsid</th>
+						<th>name (ignored)</th>
+					</tr>
+				</thead>
+				% last_date = None
+				% for s in sorted(ballot_event.slots, key=lambda s: s.time)[:10]:
+					<tr>
+						% if s.time.date() != last_date:
+							<td>{{ s.time.date() }}@</td>
+							% last_date = s.time.date()
+						% else:
+							<td></td>
+						% end
+						<td>{{ s.time.time() }}</td>
+						<td>{{ s.person.crsid }}@</td><td><div style="text-overflow: ellipsis; white-space: nowrap; overflow: hidden">{{ s.person.name }}</div></td>
+					</tr>
+				% end
+				<tfoot>
+					<tr>
+						<td colspan="4" class="text-center lead">&#8230;</td>
+					</tr>
+				</tfoot>
+			</table>
+			<form action="" method="POST" enctype="multipart/form-data">
+				<div class="form-group">
+					<input type="file" class="form-control" name="slot_csv" />
+				</div>
+				<button class="btn btn-block btn-default" type="submit">Upload new version</button>
+			</form>
+		</div>
+		% if step2:
+			% result, errors = step2
+			<div class="col-md-4">
+				<h2>Uploaded results</h2>
+				% if not errors:
+					<table class="table table-condensed">
+						<tbody>
+							% last_day = None
+							% for i, (user, date) in enumerate(sorted(result.items(), key=lambda (u, d): d), 1):
+								<tr>
+									<th>
+										{{ i }}
+									</th>
+									<td>
+										<a href="/users/{{ user.crsid }}" style="display: inline-block; padding-left: 25px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">
+											<img src="{{ user.gravatar(size=20) }}" width="20" height="20" style="margin-left: -25px; float: left" />
+											{{user.name}}
+										</a>
+									</td>
+									% day = '{:%d %b}'.format(date)
+									<td style="white-space: nowrap">
+										{{ day if day != last_day else ''}}
+									</td>
+									% last_day = day
+									<td>
+										{{ '{:%H:%M}'.format(date) }}
+									</td>
+								</tr>
 							% end
-						</h3>
-						<textarea class="form-control" rows="{{ len(slots)}}">{{ '\n'.join('{t} - {s.person.crsid} ({s.person.name})'.format(s=s, t=s.time.time()) for s in slots) }}</textarea>
+						</tbody>
+					</table>
+				% else:
+					% for error in errors:
+						<div class="alert alert-danger">
+							% cat, args = error[0], error[1:]
+							% if cat == 'bad-header':
+								Header row has been changed or removed
+							% elif cat == 'no-date':
+								First data row must contain a date
+							% elif cat == 'no-time':
+								First data row must contain a time
+							% elif cat == 'bad-date':
+								Invalid date column <code>{{args[0]}}</code> - expecting <code>YYYY-MM-DD@</code>
+							% elif cat == 'bad-time':
+								Invalid time column <code>{{args[0]}}</code> - expecting <code>HH:MM:SS</code>
+							% elif cat == 'bad-crsid':
+								No person can be found for the crsid <code>{{args[0]}}</code>
+							% else:
+								Unknown error code <code>{{error}}</code>
+							% end
+						</div>
 					% end
+				% end
+			</div>
+			% if not errors:
+				<div class="col-md-4">
+					<h2>Changes</h2>
+					% old = sorted(ballot_event.slots, key=lambda s: s.time)
+					% old_lookup = {o.person.crsid: o.time for o in old}
+					% new_lookup = {u.crsid: t for u, t in result.items()}
+
+					<%
+					diffs = []
+					for o in old:
+						if o.person.crsid not in new_lookup:
+							diffs.append(['remove', o.person, o.time])
+						end
+					end
+					for o in old:
+						if o.person.crsid in new_lookup:
+							n_t = new_lookup[o.person.crsid]
+							o_t = old_lookup[o.person.crsid]
+							if n_t != o_t:
+								diffs.append(['modify', o.person, o_t, n_t])
+							end
+						end
+					end
+					for (user, date) in result.items():
+						if user.crsid not in old_lookup:
+							diffs.append(['add', user, date])
+						end
+					end
+
+					diffs = sorted(diffs, key=lambda d: d[2])
+
+					%>
+
+					<table class="table table-condensed">
+						% last_day = None
+						% for d in diffs:
+							% mode, user, t = d[:3]
+							% if mode == 'remove':
+								<tr class="danger">
+									<td>
+										<a href="/users/{{ user.crsid }}" style="display: inline-block; padding-left: 25px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">
+											<img src="{{ user.gravatar(size=20) }}" width="20" height="20" style="margin-left: -25px; float: left" />
+											{{user.name}}
+										</a>
+									</td>
+									% day = '{:%d %b}'.format(t)
+									<td style="white-space: nowrap">
+										{{ day if day != last_day else ''}}
+									</td>
+									% last_day = day
+									<td>
+										{{ '{:%H:%M}'.format(t) }}
+									</td>
+								</tr>
+							% elif mode == 'modify':
+								% t2 = d[3]
+								<tr class="warning">
+									<td>
+										<a href="/users/{{ user.crsid }}" style="display: inline-block; padding-left: 25px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">
+											<img src="{{ user.gravatar(size=20) }}" width="20" height="20" style="margin-left: -25px; float: left" />
+											{{user.name}}
+										</a>
+									</td>
+									% if t.date() == t2.date():
+										% day = '{:%d %b}'.format(t)
+										<td style="white-space: nowrap">
+											{{ day if day != last_day else ''}}
+										</td>
+										% last_day = day
+										<td>
+											{{ '{:%H:%M}'.format(t) }}&nbsp;&#8594;&nbsp;{{ '{:%H:%M}'.format(t2) }}
+										</td>
+									% else:
+										<td colspan="2">
+											{{ '{:%d %b %H:%M}'.format(t) }} &#8594;<br />{{ '{:%d %b %H:%M}'.format(t2)  }}
+										</td>
+									% end
+								</tr>
+							% elif mode == 'add':
+								<tr class="success">
+									<td>
+										<a href="/users/{{ user.crsid }}" style="display: inline-block; padding-left: 25px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">
+											<img src="{{ user.gravatar(size=20) }}" width="20" height="20" style="margin-left: -25px; float: left" />
+											{{user.name}}
+										</a>
+									</li>
+									% day = '{:%d %b}'.format(t)
+									<td style="white-space: nowrap">
+										{{ day if day != last_day else ''}}
+									</td>
+									% last_day = day
+									<td>
+										{{ '{:%H:%M}'.format(t) }}
+									</td>
+								</tr>
+							% end
+						% end
+					</table>
 				</div>
 			% end
-		</div>
-	</form>
+		% end
+	</div>
 </div>
