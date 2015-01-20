@@ -39,6 +39,16 @@
 						</td>
 					</tr>
 				% end
+				% if not events:
+					<tr>
+						<th class="vert-align">
+							<a href="/ballots/{{ballot_season.year}}">
+								{{ ballot_season.year }} - {{ ballot_season.year + 1 }}
+							</a>
+						</th>
+						<td colspan="4" class="text-muted">No events</td>
+					</tr>
+				% end
 			% end
 		</tbody>
 	</table>
