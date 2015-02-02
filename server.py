@@ -658,7 +658,8 @@ with base_route(app, '/ballots'):
 			closes_at=datetime.strptime(request.forms.closes_at, "%Y-%m-%d")
 		)
 
-		session.add(e)
+		db.add(e)
+		return redirect(request.url)
 
 	@app.route('/<ballot_id>/edit2')
 	@needs_auth('admin')
