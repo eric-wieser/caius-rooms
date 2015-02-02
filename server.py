@@ -661,25 +661,6 @@ with base_route(app, '/ballots'):
 		db.add(e)
 		return redirect(request.url)
 
-	@app.route('/<ballot_id>/edit2')
-	@needs_auth('admin')
-	def show_ballot(ballot_id, db):
-		from sqlalchemy.orm import joinedload, joinedload_all
-
-		ballot = db.query(m.BallotSeason).options(
-			joinedload(m.BallotSeason.events),
-			joinedload(m.BallotSeason.room_listings).subqueryload(m.RoomListing.audience_types),
-		).filter(m.BallotSeason.year == ballot_id).one()
-
-
-		root = db.query(m.Cluster).options(
-			joinedload_all('children.rooms.listing_for'),
-			joinedload_all('children.children.rooms.listing_for'),
-			joinedload_all('children.children.children.rooms.listing_for'),
-			joinedload_all('children.children.children.children.rooms.listing_for'),
-		).filter(m.Cluster.parent == None).one()
-
-		return template('ballot-edit-1', ballot_season=ballot, root=root)
 
 	@app.route('/<ballot_id:int>/<ballot_type_name>/edit')
 	@needs_auth('admin')
