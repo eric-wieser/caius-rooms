@@ -138,20 +138,42 @@ $(function() {
 
 	$('.audience-cb input').click(function() { update_from_cb($(this)); });
 
-	// when a changelog entry is undone, update it in the tree view
-	$('.changelog-undo').click(function() {
-		var entry = $(this).parent('.changelog');
-
+	var update_from_change = function($entry) {
 		// find the checkbox in the tree view
-		var room = entry.data('room');
+		var room = $entry.data('room');
 		var $item = $('.item').filter(function() { return $(this).data('room') == room; });
 		var $cb = get_cb_for_item($item);
 
 		// determine whether to check or uncheck it, and update the tree
-		var added = entry.is('.changelog-remove');
+		var added = $entry.is('.changelog-remove');
 		$cb.prop('checked', added);
 		update_from_cb($cb);
+	};
 
+	// when a changelog entry is undone, update it in the tree view
+	$('.changelog-undo').click(function() {
+		update_from_change($(this).parent('.changelog'));
+		return false;
+	});
+
+	$('#reset-to-old').click(function() {
+		var to_reset = $(
+			'#changelog-old .changelog-add.included').add(
+			'#changelog-old .changelog-remove:not(.included)');
+		var i = 0;
+		var $this = $(this);
+		$this.addClass('active');
+		var process_next = function() {
+			if(i < to_reset.length) {
+				update_from_change(to_reset.eq(i));
+				i++;
+				setTimeout(process_next, 0);
+			} else {
+				$this.removeClass('active');
+				$this.blur();
+			}
+		};
+		process_next();
 		return false;
 	});
 
@@ -309,13 +331,19 @@ end
 			</div>
 			% if any(i for r, i in was_included.items() if isinstance(r, m.Room)):
 				<div class="col-md-4" id="changelog-old">
-					<h2>Since previous year's
+					<h2>Since {{ last_ballot_event.season.year }}'s
 						<small>
 							<span class="text-success" id="count-added-old"></span>,
 							<span class="text-danger" id="count-removed-old"></span>
 						</small>
 					</h2>
 					% display_changes(was_included, is_included)
+					<p class="text-right">
+						<button class="btn btn-default" id="reset-to-old">
+							Reset to match {{ last_ballot_event.season.year }}'s
+							<span class="glyphicon glyphicon-repeat"></span>
+						</button>
+					</p>
 				</div>
 			% end
 		</div>
