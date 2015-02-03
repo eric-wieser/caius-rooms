@@ -103,28 +103,9 @@ textarea {
 				% if not errors:
 					<table class="table table-condensed">
 						<tbody>
-							% last_day = None
-							% for i, (user, date) in enumerate(sorted(result.items(), key=lambda (u, d): d), 1):
-								<tr>
-									<th>
-										{{ i }}
-									</th>
-									<td>
-										<a href="/users/{{ user.crsid }}" style="display: inline-block; padding-left: 25px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">
-											<img src="{{ user.gravatar(size=20) }}" width="20" height="20" style="margin-left: -25px; float: left" />
-											{{user.name}}
-										</a>
-									</td>
-									% day = '{:%d %b}'.format(date)
-									<td style="white-space: nowrap">
-										{{ day if day != last_day else ''}}
-									</td>
-									% last_day = day
-									<td>
-										{{ '{:%H:%M}'.format(date) }}
-									</td>
-								</tr>
-							% end
+							<%
+							include('parts/slot-list-rows', slot_tuples=result.items())
+							%>
 						</tbody>
 					</table>
 				% else:

@@ -59,29 +59,12 @@ show_edit = request.user and request.user.is_admin
 				<h3>{{ event.type.name }}</h3>
 				<table class="table table-condensed">
 					<tbody>
-						% last_day = None
-						% for i, slot in enumerate(sorted(event.slots, key=lambda s: s.time), 1):
-							<tr>
-								<th>
-									<div class="anchor" id="slot-{{ slot.id }}"></div>
-									{{ i }}
-								</th>
-								<td>
-									<a href="/users/{{ slot.person.crsid }}" style="display: inline-block; padding-left: 25px;">
-										<img src="{{ slot.person.gravatar(size=20) }}" width="20" height="20" style="margin-left: -25px; float: left" />
-										{{slot.person.name}}
-									</a>
-								</td>
-								% day = '{:%d %b}'.format(slot.time)
-								<td style="white-space: nowrap">
-									{{ day if day != last_day else ''}}
-								</td>
-								% last_day = day
-								<td>
-									{{ '{:%H:%M}'.format(slot.time) }}
-								</td>
-							</tr>
-						% end
+						<%
+						include('parts/slot-list-rows', slot_tuples=(
+							(s.person, s.time)
+							for s in event.slots
+						))
+						%>
 					</tbody>
 				</table>
 			</div>
