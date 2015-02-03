@@ -17,7 +17,7 @@ import raven
 # our includes
 import database.orm as m
 import database.db
-
+from utils import needs_auth
 
 @contextlib.contextmanager
 def base_route(app, base):
@@ -67,23 +67,6 @@ def get_authed_user(callback):
 
 	return wrapper
 
-
-def needs_auth(reason_or_callback, reason='privacy'):
-	# handle the optional "reason" argument
-	if isinstance(reason_or_callback, basestring):
-		reason = reason_or_callback
-		return lambda callback: needs_auth(callback, reason)
-	else:
-		callback = reason_or_callback
-
-	def wrapper(*args, **kwargs):
-		if not request.user or (reason == 'admin' and not request.user.is_admin):
-			response.status = 403
-			return template('messages/needs-auth', reason=reason)
-
-		return callback(*args, **kwargs)
-
-	return wrapper
 
 sqlalchemy_log = logging.getLogger('sqlalchemy.engine')
 sqlalchemy_log.setLevel(logging.INFO)
