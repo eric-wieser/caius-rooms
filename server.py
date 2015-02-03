@@ -875,6 +875,10 @@ with base_route(app, '/ballots'):
 			else:
 				o.writerow(["", s.time.time(), s.person.crsid + "@", s.person.name])
 
+		if not ballot_event.slots:
+			n = datetime.now().replace(second=0, microsecond=0)
+			o.writerow([str(n.date()) + "@", n.time(), "crsid123@", 'example student (delete!)'])
+
 		response.content_type = 'text/csv'
 		return sfile.getvalue()
 
