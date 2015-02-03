@@ -48,7 +48,7 @@ textarea {
 </style>
 <div class="container">
 	<h1>{{ ballot_event.type.name }} ballot for {{ ballot_event.season }}</h1>
-	<p>Use the tree view in the left to column to select which rooms should be available in the ballot. The two other columns show changes, with additions shown in green, and deletions shown in red.</p>
+	<p>This page allows you to edit the times that people may choose their rooms in the ballot. Download the csv file below, edit it, and reupload it. It will be checked for errors. Hit save to accept the changes.</p>
 	<div class="row">
 		<div class="col-md-4">
 			<h2>Edit</h2>
