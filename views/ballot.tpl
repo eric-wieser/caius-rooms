@@ -61,7 +61,7 @@ show_edit = request.user and request.user.is_admin
 					<tbody>
 						<%
 						include('parts/slot-list-rows', slot_tuples=(
-							(s.person, s.time)
+							(s.id, s.person, s.time)
 							for s in event.slots
 						))
 						%>

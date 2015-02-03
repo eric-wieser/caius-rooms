@@ -104,7 +104,10 @@ textarea {
 					<table class="table table-condensed">
 						<tbody>
 							<%
-							include('parts/slot-list-rows', slot_tuples=result.items())
+							include('parts/slot-list-rows', slot_tuples=(
+								(None, p, d)
+								for (p, d) in result.items()
+							))
 							%>
 						</tbody>
 					</table>

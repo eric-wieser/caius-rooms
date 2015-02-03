@@ -1,8 +1,11 @@
 % last_day = None
-% slot_tuples = sorted(slot_tuples, key=lambda (p, t): t)
-% for i, (person, ts) in enumerate(slot_tuples, 1):
+% slot_tuples = sorted(slot_tuples, key=lambda (id, p, t): t)
+% for i, (id, person, ts) in enumerate(slot_tuples, 1):
 	<tr>
 		<th>
+			% if id:
+				<div class="anchor" id="slot-{{ id }}"></div>
+			% end
 			{{ i }}
 		</th>
 		<td>
