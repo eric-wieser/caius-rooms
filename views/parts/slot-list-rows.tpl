@@ -9,10 +9,7 @@
 			{{ i }}
 		</th>
 		<td>
-			<a href="/users/{{ person.crsid }}" style="display: block; padding-left: 25px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">
-				<img src="{{ person.gravatar(size=20) }}" width="20" height="20" style="margin-left: -25px; float: left" />
-				{{person.name}}
-			</a>
+			% include('parts/user-link', user=person)
 		</td>
 		% day = '{:%d %b}'.format(ts)
 		<td style="white-space: nowrap">

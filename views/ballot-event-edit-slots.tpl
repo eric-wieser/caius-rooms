@@ -174,10 +174,7 @@ textarea {
 							% if mode == 'remove':
 								<tr class="danger">
 									<td>
-										<a href="/users/{{ user.crsid }}" style="display: inline-block; padding-left: 25px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">
-											<img src="{{ user.gravatar(size=20) }}" width="20" height="20" style="margin-left: -25px; float: left" />
-											{{user.name}}
-										</a>
+										% include('parts/user-link', user=user)
 									</td>
 									% day = '{:%d %b}'.format(t)
 									<td style="white-space: nowrap">
@@ -192,10 +189,7 @@ textarea {
 								% t2 = d[3]
 								<tr class="warning">
 									<td>
-										<a href="/users/{{ user.crsid }}" style="display: inline-block; padding-left: 25px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">
-											<img src="{{ user.gravatar(size=20) }}" width="20" height="20" style="margin-left: -25px; float: left" />
-											{{user.name}}
-										</a>
+										% include('parts/user-link', user=user)
 									</td>
 									% if t.date() == t2.date():
 										% day = '{:%d %b}'.format(t)
@@ -215,10 +209,7 @@ textarea {
 							% elif mode == 'add':
 								<tr class="success">
 									<td>
-										<a href="/users/{{ user.crsid }}" style="display: inline-block; padding-left: 25px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">
-											<img src="{{ user.gravatar(size=20) }}" width="20" height="20" style="margin-left: -25px; float: left" />
-											{{user.name}}
-										</a>
+										% include('parts/user-link', user=user)
 									</li>
 									% day = '{:%d %b}'.format(t)
 									<td style="white-space: nowrap">
