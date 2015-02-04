@@ -21,7 +21,7 @@ def add_routes(app):
 
 	@app.route('/<ballot_id>/add-event')
 	@needs_auth('admin')
-	def show_ballot(ballot_id, db):
+	def show_ballot_event_add(ballot_id, db):
 		ballot = db.query(m.BallotSeason).options(
 			joinedload(m.BallotSeason.events)
 		).filter(m.BallotSeason.year == ballot_id).one()
@@ -35,7 +35,7 @@ def add_routes(app):
 
 	@app.post('/<ballot_id>/add-event')
 	@needs_auth('admin')
-	def show_ballot(ballot_id, db):
+	def process_ballot_event_add(ballot_id, db):
 		ballot = db.query(m.BallotSeason).filter(m.BallotSeason.year == ballot_id).one()
 		event_type = db.query(m.BallotType).filter(m.BallotType.id == int(request.forms.type)).one()
 
@@ -53,7 +53,7 @@ def add_routes(app):
 
 	@app.route('/<ballot_id:int>/<ballot_type_name>/edit')
 	@needs_auth('admin')
-	def edit_ballot_rooms(ballot_id, ballot_type_name, db):
+	def show_ballot_control_panel(ballot_id, ballot_type_name, db):
 		if ballot_type_name.lower() != ballot_type_name:
 			raise redirect(request.url.replace(ballot_type_name, ballot_type_name.lower()))
 
@@ -70,7 +70,7 @@ def add_routes(app):
 
 	@app.route('/<ballot_id:int>/<ballot_type_name>/edit-rooms')
 	@needs_auth('admin')
-	def edit_ballot_rooms(ballot_id, ballot_type_name, db):
+	def show_ballot_room_editor(ballot_id, ballot_type_name, db):
 		if ballot_type_name.lower() != ballot_type_name:
 			raise redirect(request.url.replace(ballot_type_name, ballot_type_name.lower()))
 

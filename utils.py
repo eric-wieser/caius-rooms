@@ -1,4 +1,4 @@
-from datetime import datetime, date
+from datetime import datetime
 import random
 import string
 import itertools
@@ -47,12 +47,12 @@ def restricted(message=None):
 	])
 
 def grouper(iterable, n):
-    it = iter(iterable)
-    while True:
-       chunk = tuple(itertools.islice(it, n))
-       if not chunk:
-           return
-       yield chunk
+	it = iter(iterable)
+	while True:
+		chunk = tuple(itertools.islice(it, n))
+		if not chunk:
+			return
+		yield chunk
 
 def lookup_ldap(crsids):
 	"""
@@ -102,7 +102,7 @@ def lookup_ldap(crsids):
 
 	return result
 
-from bottle import request, template
+from bottle import request, template, response
 
 def needs_auth(reason_or_callback, reason='privacy'):
 	# handle the optional "reason" argument

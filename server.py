@@ -177,7 +177,7 @@ def do_login(db):
 				abort(403, "Something went wrong when logging in: check_iact_aauth failed")
 
 			request.session["user"] = r.principal
-			print("Successfully logged in as {0}".format(r.principal))
+			print "Successfully logged in as {0}".format(r.principal)
 			return redirect(request.query.return_to)
 		else:
 			abort(403, "Login failed: reason unknown")
@@ -299,7 +299,7 @@ with base_route(app, '/reviews'):
 
 	@app.post('/new/<occ_id>', name="new-review")
 	@needs_auth('ownership')
-	def show_new_review_form(occ_id, db):
+	def handle_new_review_form(occ_id, db):
 		try:
 			occupancy = db.query(m.Occupancy).filter(m.Occupancy.id == occ_id).one()
 		except NoResultFound:
@@ -309,7 +309,7 @@ with base_route(app, '/reviews'):
 			raise HTTPError(403, "You must have been a resident of a room to review it")
 
 		review = db.query(m.Review).filter_by(occupancy_id=occ_id).order_by(m.Review.published_at.desc()).first()
-		
+
 		# Rating was submitted initially - save that right now
 		rating = request.forms.get('rating')
 		if not review and rating:
@@ -475,7 +475,7 @@ with base_route(app, '/occupancies'):
 
 with base_route(app, '/locations'):
 	@app.route('/<loc_id>', name="location-list")
-	def show_place(loc_id, db):
+	def show_location_heirarchy(loc_id, db):
 		try:
 			location = db.query(m.Cluster).filter(m.Cluster.id == loc_id).one()
 			return template('locations', location=location)
@@ -503,7 +503,6 @@ with base_route(app, '/users'):
 
 		names = {}
 		initial_names = {}
-		to_query = {}
 
 		users = db.query(m.Person).all()
 
@@ -525,7 +524,6 @@ with base_route(app, '/users'):
 		# crsids didn't match
 		users_unknown = {u for u in users if names[u] is None}
 		users -= users_unknown
-		users_unknown
 
 		# names has gone back to initials
 		users_reverted = {u for u in users if names[u] == initial_names[u]}
@@ -568,7 +566,7 @@ with base_route(app, '/users'):
 
 	@app.route('/random')
 	@needs_auth
-	def show_random_room(db):
+	def show_random_user(db):
 		users = db.query(m.Person)
 		redirect('/users/{}'.format(users[random.randrange(users.count())].crsid))
 
