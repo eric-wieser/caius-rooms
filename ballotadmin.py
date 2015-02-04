@@ -115,17 +115,37 @@ def add_routes(app):
 		ballot_type = db.query(m.BallotType).filter(func.lower(m.BallotType.name) == ballot_type_name.lower()).one()
 		ballot_season = db.query(m.BallotSeason).filter(m.BallotSeason.year == ballot_id).one()
 
+		# collect all the checked rooms from the form
 		room_ids = set()
 		for name, value in request.forms.items():
 			match = re.match(r'rooms\[(\d+)\]', name)
 			if match and value == 'on':
 				room_ids.add(int(match.group(1)))
 
+		# for existing listings, update the audiences
+		not_visible = set()
 		for l in ballot_season.room_listings:
 			if l.room_id in room_ids:
 				l.audience_types |= {ballot_type}
+				room_ids.remove(l.room_id)
 			else:
 				l.audience_types -= {ballot_type}
+				if not l.audience_types:
+					not_visible.add(l)
+
+		# remove listings with no information left
+		for l in not_visible:
+			if l.rent is None:
+				ballot_season.room_listings.remove(l)
+
+		# now find rooms with no listing
+		for i in room_ids:
+			r = db.query(m.Room).get(i)
+			if r:
+				r.listing_for[ballot_season] = m.RoomListing(
+					ballot_season=ballot_season,
+					audience_types={ballot_type}
+				)
 
 		return redirect(request.url)
 
