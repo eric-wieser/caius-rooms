@@ -177,11 +177,11 @@ textarea {
 										% include('parts/user-link', user=user)
 									</td>
 									% day = '{:%d %b}'.format(t)
-									<td style="white-space: nowrap">
+									<td style="white-space: nowrap; width: 1px">
 										{{ day if day != last_day else ''}}
 									</td>
 									% last_day = day
-									<td>
+									<td style="width: 1px">
 										{{ '{:%H:%M}'.format(t) }}
 									</td>
 								</tr>
@@ -193,15 +193,15 @@ textarea {
 									</td>
 									% if t.date() == t2.date():
 										% day = '{:%d %b}'.format(t)
-										<td style="white-space: nowrap">
+										<td style="white-space: nowrap; width: 1px">
 											{{ day if day != last_day else ''}}
 										</td>
 										% last_day = day
-										<td>
+										<td style="width: 1px">
 											{{ '{:%H:%M}'.format(t) }}&nbsp;&#8594;&nbsp;{{ '{:%H:%M}'.format(t2) }}
 										</td>
 									% else:
-										<td colspan="2">
+										<td colspan="2" style="width: 1px">
 											{{ '{:%d %b %H:%M}'.format(t) }} &#8594;<br />{{ '{:%d %b %H:%M}'.format(t2)  }}
 										</td>
 									% end
@@ -212,11 +212,11 @@ textarea {
 										% include('parts/user-link', user=user)
 									</li>
 									% day = '{:%d %b}'.format(t)
-									<td style="white-space: nowrap">
+									<td style="white-space: nowrap; width: 1px">
 										{{ day if day != last_day else ''}}
 									</td>
 									% last_day = day
-									<td>
+									<td style="width: 1px">
 										{{ '{:%H:%M}'.format(t) }}
 									</td>
 								</tr>
