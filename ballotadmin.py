@@ -160,94 +160,16 @@ def add_routes(app):
 			.filter(m.BallotSeason.year == ballot_id)
 		).one()
 
-		def parse_csv(r):
 
-			errors = []
-			data = []
-
-			headers = next(r)
-
-			if headers != ["date", "time", "crsid", "name (ignored)"]:
-				errors += ['bad-header']
-				return None, errors
-
-			last_date = None
-			last_time = None
-			for l in r:
-				if len(l) < 3:
-					errors += [('bad row {}'.format(l))]
-					continue
-
-				date, time, crsid = l[:3]
-
-				if date:
-					try:
-						date = datetime.strptime(date, "%Y-%m-%d@")
-					except ValueError:
-						errors += [('bad-date', date)]
-						continue
-					last_date = date
-
-				elif last_date:
-					date = last_date
-				else:
-					errors += [('no-date')]
-					continue
-
-
-				if time:
-					try:
-						time = datetime.strptime(time, "%H:%M:%S")
-					except ValueError:
-						errors += [('bad-time', time)]
-						continue
-					last_time = time
-				elif last_time:
-					time = last_time + timedelta(minutes=3)
-					last_time = time
-				else:
-					errors += [('no-time')]
-					continue
-
-				ts = datetime.combine(date.date(), time.time())
-
-				data += [(ts, crsid.rstrip('@'))]
-
-
-			# get all crsids
-			crsids = [crsid for ts, crsid in data]
-
-			# find existing users attached to them
-			db_users = [db.query(m.Person).get(c) for c in crsids]
-			users = {u.crsid: u for u in db_users if u}
-
-			new_users = set(crsids) - set(users.keys())
-
-			# lookup the rest
-			lookup = lookup_ldap(new_users)
-
-			for crsid in new_users:
-				d = lookup.get(crsid)
-				if d:
-					name = d.get('visibleName')
-					users[crsid] = m.Person(crsid=crsid, name=name)
-				else:
-					errors += [('bad-crsid', crsid)]
-
-			data = {
-				users[crsid]: ts
-				for ts, crsid in data
-				if crsid in users
-			}
-
-			return data, errors
-
-
+		step2 = None
 		if request.method == "POST" and request.files.slot_csv:
-			r = csv.reader(iter(request.files.slot_csv.file))
-			step2 = parse_csv(r)
-		else:
-			step2 = None
+			raw_data, parse_errors = parse_csv(iter(request.files.slot_csv.file))
+
+			data, data_errors = process_slot_tuples(db, raw_data)
+			step2 = data, data_errors + parse_errors
+
+
+
 
 
 		return template('ballot-event-edit-slots',
@@ -286,3 +208,97 @@ def add_routes(app):
 
 		response.content_type = 'text/csv'
 		return sfile.getvalue()
+
+
+def parse_csv(f):
+	"""
+	Read in a sparse CSV, and produce tuples of (datetime ts, str crsid)
+	Also returns a list of parse errors
+	"""
+	reader = csv.reader(f)
+	errors = []
+	data = []
+
+	headers = next(reader)
+
+	if headers != ["date", "time", "crsid", "name (ignored)"]:
+		errors += ['bad-header']
+		return [], errors
+
+	last_date = None
+	last_time = None
+	for l in reader:
+		if len(l) < 3:
+			errors += [('bad row {}'.format(l))]
+			continue
+
+		date, time, crsid = l[:3]
+
+		# either parse the date, or reuse the last one
+		if date:
+			try:
+				date = datetime.strptime(date, "%Y-%m-%d@")
+			except ValueError:
+				errors += [('bad-date', date)]
+				continue
+			last_date = date
+		elif last_date:
+			date = last_date
+		else:
+			errors += [('no-date')]
+			continue
+
+		# either parse the time, or reuse the last one + 3 minutes
+		if time:
+			try:
+				time = datetime.strptime(time, "%H:%M:%S")
+			except ValueError:
+				errors += [('bad-time', time)]
+				continue
+			last_time = time
+		elif last_time:
+			time = last_time + timedelta(minutes=3)
+			last_time = time
+		else:
+			errors += [('no-time')]
+			continue
+
+		# save the (ts, crsid) tuple
+		data += [(
+			datetime.combine(date.date(), time.time()),
+			crsid.rstrip('@')
+		)]
+
+	return data, errors
+
+def process_slot_tuples(db, data):
+	errors = []
+
+	# get all crsids
+	crsids = [crsid for _, crsid in data]
+
+	# find existing users attached to them
+	db_users = [db.query(m.Person).get(c) for c in crsids]
+	users = {u.crsid: u for u in db_users if u}
+
+	new_users = set(crsids) - set(users.keys())
+
+	# lookup the rest
+	lookup = lookup_ldap(new_users)
+
+	for crsid in new_users:
+		d = lookup.get(crsid)
+		if d:
+			name = d.get('visibleName')
+			users[crsid] = m.Person(crsid=crsid, name=name)
+		else:
+			errors += [('bad-crsid', crsid)]
+
+	data = {
+		users[crsid]: ts
+		for ts, crsid in data
+		if crsid in users
+	}
+
+	return data, errors
+
