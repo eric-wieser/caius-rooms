@@ -165,72 +165,78 @@ textarea {
 
 					diffs = sorted(diffs, key=lambda d: d[2])
 					%>
-
-					<table class="table table-condensed">
-						% last_day = None
-						% for d in diffs:
-							% mode, user, t = d[:3]
-							% if mode == 'remove':
-								<tr class="danger">
-									<td>
-										% include('parts/user-link', user=user)
-									</td>
-									% day = '{:%d %b}'.format(t)
-									<td style="white-space: nowrap; width: 1px">
-										{{ day if day != last_day else ''}}
-									</td>
-									% last_day = day
-									<td style="width: 1px">
-										{{ '{:%H:%M}'.format(t) }}
-									</td>
-								</tr>
-							% elif mode == 'modify':
-								% t2 = d[3]
-								<tr class="warning">
-									<td>
-										% include('parts/user-link', user=user)
-									</td>
-									% if t.date() == t2.date():
+					% if diffs:
+						<table class="table table-condensed">
+							% last_day = None
+							% for d in diffs:
+								% mode, user, t = d[:3]
+								% if mode == 'remove':
+									<tr class="danger">
+										<td>
+											% include('parts/user-link', user=user)
+										</td>
 										% day = '{:%d %b}'.format(t)
 										<td style="white-space: nowrap; width: 1px">
 											{{ day if day != last_day else ''}}
 										</td>
 										% last_day = day
 										<td style="width: 1px">
-											{{ '{:%H:%M}'.format(t) }}&nbsp;&#8594;&nbsp;{{ '{:%H:%M}'.format(t2) }}
+											{{ '{:%H:%M}'.format(t) }}
 										</td>
-									% else:
-										<td colspan="2" style="width: 1px">
-											{{ '{:%d %b %H:%M}'.format(t) }} &#8594;<br />{{ '{:%d %b %H:%M}'.format(t2)  }}
+									</tr>
+								% elif mode == 'modify':
+									% t2 = d[3]
+									<tr class="warning">
+										<td>
+											% include('parts/user-link', user=user)
 										</td>
-									% end
-								</tr>
-							% elif mode == 'add':
-								<tr class="success">
-									<td>
-										% include('parts/user-link', user=user)
-									</li>
-									% day = '{:%d %b}'.format(t)
-									<td style="white-space: nowrap; width: 1px">
-										{{ day if day != last_day else ''}}
-									</td>
-									% last_day = day
-									<td style="width: 1px">
-										{{ '{:%H:%M}'.format(t) }}
-									</td>
-								</tr>
+										% if t.date() == t2.date():
+											% day = '{:%d %b}'.format(t)
+											<td style="white-space: nowrap; width: 1px">
+												{{ day if day != last_day else ''}}
+											</td>
+											% last_day = day
+											<td style="width: 1px">
+												{{ '{:%H:%M}'.format(t) }}&nbsp;&#8594;&nbsp;{{ '{:%H:%M}'.format(t2) }}
+											</td>
+										% else:
+											<td colspan="2" style="width: 1px">
+												{{ '{:%d %b %H:%M}'.format(t) }} &#8594;<br />{{ '{:%d %b %H:%M}'.format(t2)  }}
+											</td>
+										% end
+									</tr>
+								% elif mode == 'add':
+									<tr class="success">
+										<td>
+											% include('parts/user-link', user=user)
+										</li>
+										% day = '{:%d %b}'.format(t)
+										<td style="white-space: nowrap; width: 1px">
+											{{ day if day != last_day else ''}}
+										</td>
+										% last_day = day
+										<td style="width: 1px">
+											{{ '{:%H:%M}'.format(t) }}
+										</td>
+									</tr>
+								% end
 							% end
-						% end
-					</table>
-					<form method="POST">
-						<%
-						j = json.dumps([
-							(t.isoformat(), u.crsid) for u, t in result.items()
-						])
-						%>
-						<input type="hidden" name="slot_json" value="{{ j }}" />
-						<button type="submit" class="btn btn-danger">Confirm changes</button>
-					</form>
+						</table>
+						<form method="POST">
+							<%
+							j = json.dumps([
+								(t.isoformat(), u.crsid) for u, t in result.items()
+							])
+							%>
+							<input type="hidden" name="slot_json" value="{{ j }}" />
+							<button type="submit" class="btn btn-danger">Confirm changes</button>
+						</form>
+					% else:
+						<div class="alert alert-info">
+							<strong>Did you change anything?</strong>
+							<p>The data all looks the same to us. Did you upload the right file?</p>
+						</div>
+					% end
 				</div>
 			% end
 		% end
