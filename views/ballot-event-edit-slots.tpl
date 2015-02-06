@@ -131,111 +131,115 @@ textarea {
 					</tbody>
 				</table>
 			</div>
-			% if not errors:
-				<div class="col-md-4">
-					<h2>Changes</h2>
-					<%
-					old = sorted(ballot_event.slots, key=lambda s: s.time)
-					old_lookup = {o.person.crsid: o.time for o in old}
-					new_lookup = {u.crsid: t for u, t in result.items()}
+			<div class="col-md-4">
+				<h2>Changes</h2>
+				<%
+				old = sorted(ballot_event.slots, key=lambda s: s.time)
+				old_lookup = {o.person.crsid: o.time for o in old}
+				new_lookup = {u.crsid: t for u, t in result.items()}
 
-					diffs = []
-					for o in old:
-						if o.person.crsid not in new_lookup:
-							diffs.append(['remove', o.person, o.time])
+				diffs = []
+				for o in old:
+					if o.person.crsid not in new_lookup:
+						diffs.append(['remove', o.person, o.time])
+					end
+				end
+				for o in old:
+					if o.person.crsid in new_lookup:
+						n_t = new_lookup[o.person.crsid]
+						o_t = old_lookup[o.person.crsid]
+						if n_t != o_t:
+							diffs.append(['modify', o.person, o_t, n_t])
 						end
 					end
-					for o in old:
-						if o.person.crsid in new_lookup:
-							n_t = new_lookup[o.person.crsid]
-							o_t = old_lookup[o.person.crsid]
-							if n_t != o_t:
-								diffs.append(['modify', o.person, o_t, n_t])
-							end
-						end
+				end
+				for (user, date) in result.items():
+					if user.crsid not in old_lookup:
+						diffs.append(['add', user, date])
 					end
-					for (user, date) in result.items():
-						if user.crsid not in old_lookup:
-							diffs.append(['add', user, date])
-						end
-					end
+				end
 
-					diffs = sorted(diffs, key=lambda d: d[2])
-					%>
-					% if diffs:
-						<table class="table table-condensed">
-							% last_day = None
-							% for d in diffs:
-								% mode, user, t = d[:3]
-								% if mode == 'remove':
-									<tr class="danger">
-										<td>
-											% include('parts/user-link', user=user)
-										</td>
+				diffs = sorted(diffs, key=lambda d: d[2])
+				%>
+				% if diffs:
+					<table class="table table-condensed">
+						% last_day = None
+						% for d in diffs:
+							% mode, user, t = d[:3]
+							% if mode == 'remove':
+								<tr class="danger">
+									<td>
+										% include('parts/user-link', user=user)
+									</td>
+									% day = '{:%d %b}'.format(t)
+									<td style="white-space: nowrap; width: 1px">
+										{{ day if day != last_day else ''}}
+									</td>
+									% last_day = day
+									<td style="width: 1px">
+										{{ '{:%H:%M}'.format(t) }}
+									</td>
+								</tr>
+							% elif mode == 'modify':
+								% t2 = d[3]
+								<tr class="warning">
+									<td>
+										% include('parts/user-link', user=user)
+									</td>
+									% if t.date() == t2.date():
 										% day = '{:%d %b}'.format(t)
 										<td style="white-space: nowrap; width: 1px">
 											{{ day if day != last_day else ''}}
 										</td>
 										% last_day = day
 										<td style="width: 1px">
-											{{ '{:%H:%M}'.format(t) }}
+											{{ '{:%H:%M}'.format(t) }}&nbsp;&#8594;&nbsp;{{ '{:%H:%M}'.format(t2) }}
 										</td>
-									</tr>
-								% elif mode == 'modify':
-									% t2 = d[3]
-									<tr class="warning">
-										<td>
-											% include('parts/user-link', user=user)
+									% else:
+										<td colspan="2" style="width: 1px">
+											{{ '{:%d %b %H:%M}'.format(t) }} &#8594;<br />{{ '{:%d %b %H:%M}'.format(t2)  }}
 										</td>
-										% if t.date() == t2.date():
-											% day = '{:%d %b}'.format(t)
-											<td style="white-space: nowrap; width: 1px">
-												{{ day if day != last_day else ''}}
-											</td>
-											% last_day = day
-											<td style="width: 1px">
-												{{ '{:%H:%M}'.format(t) }}&nbsp;&#8594;&nbsp;{{ '{:%H:%M}'.format(t2) }}
-											</td>
-										% else:
-											<td colspan="2" style="width: 1px">
-												{{ '{:%d %b %H:%M}'.format(t) }} &#8594;<br />{{ '{:%d %b %H:%M}'.format(t2)  }}
-											</td>
-										% end
-									</tr>
-								% elif mode == 'add':
-									<tr class="success">
-										<td>
-											% include('parts/user-link', user=user)
-										</li>
-										% day = '{:%d %b}'.format(t)
-										<td style="white-space: nowrap; width: 1px">
-											{{ day if day != last_day else ''}}
-										</td>
-										% last_day = day
-										<td style="width: 1px">
-											{{ '{:%H:%M}'.format(t) }}
-										</td>
-									</tr>
-								% end
+									% end
+								</tr>
+							% elif mode == 'add':
+								<tr class="success">
+									<td>
+										% include('parts/user-link', user=user)
+									</li>
+									% day = '{:%d %b}'.format(t)
+									<td style="white-space: nowrap; width: 1px">
+										{{ day if day != last_day else ''}}
+									</td>
+									% last_day = day
+									<td style="width: 1px">
+										{{ '{:%H:%M}'.format(t) }}
+									</td>
+								</tr>
 							% end
-						</table>
-						<form method="POST">
-							<%
-							j = json.dumps([
-								(t.isoformat(), u.crsid) for u, t in result.items()
-							])
-							%>
-							<input type="hidden" name="slot_json" value="{{ j }}" />
-							<button type="submit" class="btn btn-danger">Confirm changes</button>
-						</form>
-					% else:
-						<div class="alert alert-info">
-							<strong>Did you change anything?</strong>
-							<p>The data all looks the same to us. Did you upload the right file?</p>
-						</div>
-					% end
-				</div>
-			% end
+						% end
+					</table>
+					<form method="POST">
+						<%
+						j = json.dumps([
+							(t.isoformat(), u.crsid) for u, t in result.items()
+						])
+						%>
+						<input type="hidden" name="slot_json" value="{{ j }}" />
+						% if errors:
+							<div class="alert alert-danger">
+								<strong>Are you sure?</strong>
+								<p>There were {{ len(errors) }} errors in your data, shown on the left. The changelist above may likely not match what you intended.</p>
+							</div>
+						% end
+						<button type="submit" class="btn btn-danger">Confirm changes</button>
+					</form>
+				% else:
+					<div class="alert alert-info">
+						<strong>Did you change anything?</strong>
+						<p>The data all looks the same to us. Did you upload the right file?</p>
+					</div>
+				% end
+			</div>
 		% end
 	</div>
 </div>
