@@ -100,39 +100,36 @@ textarea {
 			% result, errors = step2
 			<div class="col-md-4">
 				<h2>Uploaded results</h2>
-				% if not errors:
-					<table class="table table-condensed">
-						<tbody>
-							<%
-							include('parts/slot-list-rows', slot_tuples=(
-								(None, p, d)
-								for (p, d) in result.items()
-							))
-							%>
-						</tbody>
-					</table>
-				% else:
-					% for error in errors:
-						<div class="alert alert-danger">
-							% cat, args = error[0], error[1:]
-							% if cat == 'bad-header':
-								Header row has been changed or removed
-							% elif cat == 'no-date':
-								First data row must contain a date
-							% elif cat == 'no-time':
-								First data row must contain a time
-							% elif cat == 'bad-date':
-								Invalid date column <code>{{args[0]}}</code> - expecting <code>YYYY-MM-DD@</code>
-							% elif cat == 'bad-time':
-								Invalid time column <code>{{args[0]}}</code> - expecting <code>HH:MM:SS</code>
-							% elif cat == 'bad-crsid':
-								No person can be found for the crsid <code>{{args[0]}}</code>
-							% else:
-								Unknown error code <code>{{error}}</code>
-							% end
-						</div>
-					% end
+				% for error in errors:
+					<div class="alert alert-danger">
+						% cat, args = error[0], error[1:]
+						% if cat == 'bad-header':
+							Header row has been changed or removed
+						% elif cat == 'no-date':
+							First data row must contain a date
+						% elif cat == 'no-time':
+							First data row must contain a time
+						% elif cat == 'bad-date':
+							Invalid date column <code>{{args[0]}}</code> - expecting <code>YYYY-MM-DD@</code>
+						% elif cat == 'bad-time':
+							Invalid time column <code>{{args[0]}}</code> - expecting <code>HH:MM:SS</code>
+						% elif cat == 'bad-crsid':
+							No person can be found for the crsid <code>{{args[0]}}</code>
+						% else:
+							Unknown error code <code>{{error}}</code>
+						% end
+					</div>
 				% end
+				<table class="table table-condensed">
+					<tbody>
+						<%
+						include('parts/slot-list-rows', slot_tuples=(
+							(None, p, d)
+							for (p, d) in result.items()
+						))
+						%>
+					</tbody>
+				</table>
 			</div>
 			% if not errors:
 				<div class="col-md-4">
