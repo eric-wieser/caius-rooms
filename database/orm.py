@@ -329,8 +329,14 @@ class BallotSlot(Base):
 	person_id = Column(CRSID, ForeignKey(Person.crsid), nullable=False)
 	event_id  = Column(Integer, ForeignKey(BallotEvent.id), nullable=False)
 
-	person = relationship(lambda: Person, backref="slots", lazy='joined')
-	event  = relationship(lambda: BallotEvent, backref="slots", lazy='joined')
+	person = relationship(
+		lambda: Person,
+		backref=backref("slots", cascade='all, delete-orphan'),
+		lazy='joined')
+	event  = relationship(
+		lambda: BallotEvent,
+		backref=backref("slots", cascade='all, delete-orphan'),
+		lazy='joined')
 
 	def __repr__(self):
 		return "<BallotSlot(resident_id={!r}, ballot_event={!r}, time={!r})>".format(
