@@ -137,11 +137,11 @@ textarea {
 			% if not errors:
 				<div class="col-md-4">
 					<h2>Changes</h2>
-					% old = sorted(ballot_event.slots, key=lambda s: s.time)
-					% old_lookup = {o.person.crsid: o.time for o in old}
-					% new_lookup = {u.crsid: t for u, t in result.items()}
-
 					<%
+					old = sorted(ballot_event.slots, key=lambda s: s.time)
+					old_lookup = {o.person.crsid: o.time for o in old}
+					new_lookup = {u.crsid: t for u, t in result.items()}
+
 					diffs = []
 					for o in old:
 						if o.person.crsid not in new_lookup:
@@ -164,7 +164,6 @@ textarea {
 					end
 
 					diffs = sorted(diffs, key=lambda d: d[2])
-
 					%>
 
 					<table class="table table-condensed">
