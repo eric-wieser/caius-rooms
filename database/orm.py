@@ -388,34 +388,6 @@ class Occupancy(Base):
 	reviews     = relationship(lambda: Review, cascade='all, delete-orphan', backref="occupancy", order_by=lambda: Review.published_at.desc())
 	photos      = relationship(lambda: Photo,  backref="occupancy", order_by=lambda: Photo.published_at.desc())
 
-	@property
-	def ballot_slot(self):
-		from sqlalchemy.orm.exc import NoResultFound
-
-		pair = (object_session(self)
-			# pair slots with event
-			.query(BallotSlot, Occupancy)
-			.join(BallotEvent)
-
-			# pair slot with listings
-			.join(Occupancy, BallotSlot.person_id == Occupancy.resident_id)
-			.join(RoomListing)
-
-			# match event and listing years
-			.filter(RoomListing.ballot_season_id == BallotEvent.season_id)
-
-			# match current occupancy
-			.filter(RoomListing.id == self.listing_id)
-
-			.order_by(Occupancy.chosen_at)
-		).first()
-
-		if pair:
-			slot, occ = pair
-			if occ == self:
-				return slot
-
-
 	__table_args__ = (UniqueConstraint(resident_id, listing_id, name='_resident_listing_uc'),)
 
 
@@ -725,4 +697,22 @@ Occupancy.review = relationship(
 	viewonly=True,
 	uselist=False,
 	primaryjoin=(Review.occupancy_id == Occupancy.id) & Review.is_newest
+)
+
+
+_se = aliased(BallotSeason)
+_oc = aliased(Occupancy)
+_sl = aliased(BallotSlot)
+Occupancy.ballot_slot = relationship(
+	BallotSlot,
+	viewonly=True,
+	backref='choice',
+	uselist=False,
+
+	# traverse through Occupancy->RoomListing->BallotSeason<-BallotEvent<-Slot
+	secondary=
+		join(_oc, RoomListing).join(BallotSeason).outerjoin(BallotEvent).outerjoin(_sl)
+	,
+	primaryjoin=Occupancy.id == _oc.id,
+	secondaryjoin=(BallotSlot.id == _sl.id) & (_sl.person_id == _oc.resident_id)
 )
