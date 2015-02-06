@@ -77,7 +77,7 @@ def log_sql(callback):
 	def wrapper(*args, **kwargs):
 		import os
 
-		fname = 'logs/{}.log'.format(request.path
+		fname = 'logs/{}.html'.format(request.path
 			.replace('/', '.')
 			.replace('<', '')
 			.replace('>', '')
@@ -88,12 +88,15 @@ def log_sql(callback):
 		except:
 			pass
 
-		handler = logging.FileHandler(fname)
-		sqlalchemy_log.addHandler(handler)
+		import sqltap
+
+		profiler = sqltap.start()
+
 		try:
 			return callback(*args, **kwargs)
 		finally:
-			sqlalchemy_log.removeHandler(handler)
+			statistics = profiler.collect()
+			sqltap.report(statistics, fname)
 
 	return wrapper
 
@@ -131,6 +134,11 @@ def get_ballot(db):
 @app.route('/static/<path:path>', name='static', skip=[get_authed_user])
 def static(path):
 	return static_file(path, root='static')
+
+@app.route('/logs/<path:path>', name='logs')
+@needs_auth('admin')
+def static_logs(db, path):
+	return static_file(path, root='logs')
 
 @app.route('/')
 def show_index(db):
@@ -192,8 +200,14 @@ def do_logout(db):
 with base_route(app, '/rooms'):
 	@app.route('')
 	def show_rooms(db):
+		from sqlalchemy.orm import joinedload
+
 		filters = []
-		roomsq = db.query(m.Room)
+		roomsq = db.query(m.Room).options(
+			joinedload(m.Room.listing_for)
+				.joinedload(m.RoomListing.occupancies)
+				.load_only(m.Occupancy.resident_id)
+		)
 
 		if request.query.filter_id:
 			try:
