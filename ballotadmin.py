@@ -51,11 +51,14 @@ def add_routes(app):
 
 
 
-	@app.route('/<ballot_id:int>/<ballot_type_name>/edit')
+	@app.route('/<ballot_id:int>/<ballot_type_name>/edit', name="edit-ballot-event")
 	@needs_auth('admin')
 	def show_ballot_control_panel(ballot_id, ballot_type_name, db):
 		if ballot_type_name.lower() != ballot_type_name:
-			raise redirect(request.url.replace(ballot_type_name, ballot_type_name.lower()))
+			raise redirect(app.get_url(
+				'edit-ballot-event',
+				ballot_id=ballot_id, ballot_type_name=ballot_type_name.lower()
+			))
 
 		ballot_type = db.query(m.BallotType).filter(func.lower(m.BallotType.name) == ballot_type_name.lower()).one()
 
@@ -71,10 +74,6 @@ def add_routes(app):
 	@app.route('/<ballot_id:int>/<ballot_type_name>/edit-rooms')
 	@needs_auth('admin')
 	def show_ballot_room_editor(ballot_id, ballot_type_name, db):
-		if ballot_type_name.lower() != ballot_type_name:
-			raise redirect(request.url.replace(ballot_type_name, ballot_type_name.lower()))
-
-
 		ballot_type = db.query(m.BallotType).filter(func.lower(m.BallotType.name) == ballot_type_name.lower()).one()
 
 		ballot_eventsq = (db
@@ -152,9 +151,6 @@ def add_routes(app):
 	@app.route('/<ballot_id:int>/<ballot_type_name>/edit-slots', method=('GET', 'POST'))
 	@needs_auth('admin')
 	def edit_ballot_slots(ballot_id, ballot_type_name, db):
-		if ballot_type_name.lower() != ballot_type_name:
-			raise redirect(request.url.replace(ballot_type_name, ballot_type_name.lower()))
-
 		ballot_type = db.query(m.BallotType).filter(func.lower(m.BallotType.name) == ballot_type_name.lower()).one()
 
 		ballot_event = (db
@@ -262,9 +258,6 @@ def add_routes(app):
 	@app.route('/<ballot_id:int>/<ballot_type_name>/slots.csv')
 	@needs_auth('admin')
 	def csv_ballot_slots(ballot_id, ballot_type_name, db):
-		if ballot_type_name.lower() != ballot_type_name:
-			raise redirect(request.url.replace(ballot_type_name, ballot_type_name.lower()))
-
 		ballot_type = db.query(m.BallotType).filter(func.lower(m.BallotType.name) == ballot_type_name.lower()).one()
 
 		ballot_event = (db
