@@ -627,6 +627,9 @@ import sqlalchemy.event
 sqlalchemy.event.listen(Photo, 'after_insert', Photo._inserted)
 
 
+RoomListing.bad_listing = column_property(
+	~RoomListing.audience_types.any() & ~RoomListing.occupancies.any()
+)
 r = aliased(Review)
 Review.is_newest = column_property(
 	select([

@@ -46,7 +46,7 @@
 			% end
 
 			% last_listing = room.listing_for.get(ballot)
-			% is_in_ballot = bool(last_listing and (last_listing.audience_types or last_listing.occupancies))
+			% is_in_ballot = bool(last_listing and not last_listing.bad_listing)
 
 			<tr class="room{{ ' warning' if not is_in_ballot else ''}}" data-roomid="{{ room.id }}">
 				<td class="shrink{{ ' rule-right' if skip_place else '' }}" style="text-align: right">
