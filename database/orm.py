@@ -699,6 +699,14 @@ Occupancy.review = relationship(
 	primaryjoin=(Review.occupancy_id == Occupancy.id) & Review.is_newest
 )
 
+o = aliased(Occupancy)
+Occupancy.is_first = column_property(
+	select([
+		Occupancy.chosen_at == func.min(o.chosen_at)
+	])
+	.select_from(o)
+	.where(o.listing_id == Occupancy.listing_id)
+)
 
 _se = aliased(BallotSeason)
 _oc = aliased(Occupancy)
@@ -709,10 +717,11 @@ Occupancy.ballot_slot = relationship(
 	backref='choice',
 	uselist=False,
 
-	# traverse through Occupancy->RoomListing->BallotSeason<-BallotEvent<-Slot
 	secondary=
 		join(_oc, RoomListing).join(BallotSeason).outerjoin(BallotEvent).outerjoin(_sl)
 	,
-	primaryjoin=Occupancy.id == _oc.id,
+	# if we're not the first occupant of this room, then we didn't ballot
+	# TODO: add a flag for edited balloters
+	primaryjoin=(Occupancy.id == _oc.id) & _oc.is_first,
 	secondaryjoin=(BallotSlot.id == _sl.id) & (_sl.person_id == _oc.resident_id)
 )
