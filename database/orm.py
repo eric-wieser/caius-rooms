@@ -331,7 +331,11 @@ class BallotSlot(Base):
 
 	person = relationship(
 		lambda: Person,
-		backref=backref("slots", cascade='all, delete-orphan'),
+		backref=backref(
+			"slot_for",
+			collection_class=attribute_mapped_collection('event'),
+			cascade='all, delete-orphan'
+		),
 		lazy='joined')
 	event  = relationship(
 		lambda: BallotEvent,
@@ -714,12 +718,10 @@ _sl = aliased(BallotSlot)
 Occupancy.ballot_slot = relationship(
 	BallotSlot,
 	viewonly=True,
-	backref='choice',
+	backref=backref('choice', uselist=False),
 	uselist=False,
 
-	secondary=
-		join(_oc, RoomListing).join(BallotSeason).outerjoin(BallotEvent).outerjoin(_sl)
-	,
+	secondary=join(_oc, RoomListing).join(BallotSeason).outerjoin(BallotEvent).outerjoin(_sl),
 	# if we're not the first occupant of this room, then we didn't ballot
 	# TODO: add a flag for edited balloters
 	primaryjoin=(Occupancy.id == _oc.id) & _oc.is_first,

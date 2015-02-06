@@ -167,6 +167,20 @@ def add_routes(app):
 			raw_data, parse_errors = parse_csv(iter(request.files.slot_csv.file))
 
 			data, data_errors = process_slot_tuples(db, raw_data)
+
+			# check for times which changed
+			for u, ts in data.items():
+				s = u.slot_for.get(ballot_event)
+				if s and s.choice and s.time != ts:
+					data[u] = s.time
+					data_errors += [('slot-used-move', s, ts)]
+
+			# check for deleted items
+			for s in ballot_event.slots:
+				if s.choice and s.person not in data:
+					data[s.person] = s.time
+					data_errors += [('slot-used-delete', s)]
+
 			step2 = data, data_errors + parse_errors
 
 		elif request.method == "POST" and request.forms.slot_json:

@@ -115,6 +115,25 @@ textarea {
 							Invalid time column <code>{{args[0]}}</code> - expecting <code>HH:MM:SS</code>
 						% elif cat == 'bad-crsid':
 							No person can be found for the crsid <code>{{args[0]}}</code>
+						% elif cat == 'slot-used-move':
+							% s = args[0]
+							% r = s.choice.listing.room
+							% ts = args[1]
+							Cannot change slot time for
+							<a target="_blank" href="/users/{{s.person.crsid}}">{{s.person.name}}</a>.
+							They have already chosen
+							<a target="_blank" href="/rooms/{{ r.id }}">{{ r.pretty_name() }}</a>!
+							<p>
+								<b>Old time:</b>{{ s.time }} <br />
+								<b>New time:</b>{{ ts }}
+							</p>
+						% elif cat == 'slot-used-delete':
+							% s = args[0]
+							% r = s.choice.listing.room
+							Cannot delete slot time for
+							<a target="_blank" href="/users/{{s.person.crsid}}">{{s.person.name}}</a>.
+							They have already chosen
+							<a target="_blank" href="/rooms/{{ r.id }}">{{ r.pretty_name() }}</a>!
 						% else:
 							Unknown error code <code>{{error}}</code>
 						% end
