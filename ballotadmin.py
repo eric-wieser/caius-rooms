@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 import csv
 import StringIO
+import json
 
 from bottle import *
 from sqlalchemy import func
@@ -168,8 +169,20 @@ def add_routes(app):
 			data, data_errors = process_slot_tuples(db, raw_data)
 			step2 = data, data_errors + parse_errors
 
+		elif request.method == "POST" and request.forms.slot_json:
+			raw_data = parse_json(request.forms.slot_json)
+			data, data_errors = process_slot_tuples(db, raw_data)
+			if data_errors:
+				step2 = data, data_errors
+			else:
+				ballot_event.slots[:] = [
+					m.BallotSlot(person=person, time=ts, event=ballot_event)
+					for person, ts in data.items()
+				]
 
+				db.commit()
 
+				raise redirect(app.get_url('show-ballot', ballot_id=ballot_id))
 
 
 		return template('ballot-event-edit-slots',
@@ -209,6 +222,12 @@ def add_routes(app):
 		response.content_type = 'text/csv'
 		return sfile.getvalue()
 
+
+def parse_json(j):
+	return [
+		(datetime.strptime(date, "%Y-%m-%dT%H:%M:%S"), crsid)
+		for date, crsid in json.loads(j)
+	]
 
 def parse_csv(f):
 	"""

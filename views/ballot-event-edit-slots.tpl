@@ -222,6 +222,15 @@ textarea {
 							% end
 						% end
 					</table>
+					<form method="POST">
+						<%
+						j = json.dumps([
+							(t.isoformat(), u.crsid) for u, t in result.items()
+						])
+						%>
+						<input type="hidden" name="slot_json" value="{{ j }}" />
+						<button type="submit" class="btn btn-danger">Confirm changes</button>
+					</form>
 				</div>
 			% end
 		% end
