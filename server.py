@@ -96,6 +96,7 @@ def log_sql(callback):
 			return callback(*args, **kwargs)
 		finally:
 			statistics = profiler.collect()
+			profiler.stop()
 			sqltap.report(statistics, fname)
 
 	return wrapper
