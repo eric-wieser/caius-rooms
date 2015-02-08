@@ -23,7 +23,7 @@ end
 		% for user in users:
 			<div class="col-lg-2 col-md-3 col-sm-4 col-xs-6" style="margin-top: 5px; margin-bottom: 5px">
 				<div style="padding-left: 50px; position: relative; min-height: 40px">
-					<a href="/users/{{ user.crsid }}">
+					<a href="{{ url_for(user) }}">
 						<img src="{{ user.gravatar(size=40) }}" width="40" height="40" style="position: absolute; left: 0; right: 0" />
 						<div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis">
 							{{ user.name }}

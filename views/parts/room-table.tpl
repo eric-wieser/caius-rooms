@@ -53,11 +53,11 @@
 					% if room.is_suite:
 						<span class="glyphicon glyphicon-th-large text-muted" title="Suite"></span>
 					% end
-					<a href="/rooms/{{room.id}}">{{room.pretty_name(containing_place) }}</a>
+					<a href="{{ url_for(room) }}">{{room.pretty_name(containing_place) }}</a>
 				</td>
 				% if not skip_place:
 					<td class="rule-right">
-						<a href="{{ get_url('place', place_id=containing_place.id) }}">{{ containing_place.pretty_name(relative_to) }}</a>
+						<a href="{{ url_for(containing_place) }}">{{ containing_place.pretty_name(relative_to) }}</a>
 					</td>
 				% end
 				<td>
@@ -96,7 +96,7 @@
 					% n = room.stats.review_count
 					% if n:
 						% m = '1 review' if n == 1 else '{} reviews'.format(n)
-						<a href="/rooms/{{room.id}}#reviews" style="color: inherit; text-decoration: none">
+						<a href="{{ url_for(room) }}#reviews" style="color: inherit; text-decoration: none">
 							<span class="hidden-xs" style="display: inline-block; width: 2ex; text-align: right">{{ n if n != 1 else '' }}</span>
 							<span class="glyphicon glyphicon-comment" title="{{m}}"></span>
 						</a>
@@ -116,7 +116,7 @@
 					% n = room.stats.photo_count
 					% if n:
 						% m = '1 photo' if n == 1 else '{} photos'.format(n)
-						<a href="/rooms/{{room.id}}#photos" style="color: inherit; text-decoration: none">
+						<a href="{{ url_for(room) }}#photos" style="color: inherit; text-decoration: none">
 							<span class="hidden-xs" style="display: inline-block; width: 2ex; text-align: right">{{ n if n != 1 else '' }}</span>
 							<span class="glyphicon glyphicon-picture" title="{{m}}"></span>
 						</a>
@@ -126,7 +126,7 @@
 					% n = room.stats.reference_count
 					% if n:
 						% m = '1 reference' if n == 1 else '{} references'.format(n)
-						<a href="/rooms/{{room.id}}#references" style="color: inherit; text-decoration: none">
+						<a href="{{ url_for(room) }}#references" style="color: inherit; text-decoration: none">
 							<span class="hidden-xs" style="display: inline-block; width: 2ex; text-align: right">{{ n if n != 1 else '' }}</span>
 							<span class="glyphicon glyphicon-link" title="{{m}}"></span>
 						</a>
@@ -166,7 +166,7 @@
 					% resident = last_listing.occupancies[0].resident
 					% if resident:
 						<td style="vertical-align: middle" class="small" data-value="{{ resident.crsid }}">
-							<a href="/users/{{ resident.crsid }}" style="display: inline-block; padding-left: 20px;">
+							<a href="{{ url_for(resident) }}" style="display: inline-block; padding-left: 20px;">
 								<img src="{{ resident.gravatar(size=15) }}" width="15" height="15" style="margin-left: -20px; float: left" />
 								{{resident.name}}
 							</a>

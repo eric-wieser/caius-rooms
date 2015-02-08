@@ -120,9 +120,9 @@ textarea {
 							% r = s.choice.listing.room
 							% ts = args[1]
 							Cannot change slot time for
-							<a target="_blank" href="/users/{{s.person.crsid}}">{{s.person.name}}</a>.
+							<a target="_blank" href="{{ url_for(s.person) }}">{{s.person.name}}</a>.
 							They have already chosen
-							<a target="_blank" href="/rooms/{{ r.id }}">{{ r.pretty_name() }}</a>!
+							<a target="_blank" href="{{ url_for(r) }}">{{ r.pretty_name() }}</a>!
 							<p>
 								<b>Old time:</b>{{ s.time }} <br />
 								<b>New time:</b>{{ ts }}
@@ -131,9 +131,9 @@ textarea {
 							% s = args[0]
 							% r = s.choice.listing.room
 							Cannot delete slot time for
-							<a target="_blank" href="/users/{{s.person.crsid}}">{{s.person.name}}</a>.
+							<a target="_blank" href="{{ url_for(s.person) }}">{{s.person.name}}</a>.
 							They have already chosen
-							<a target="_blank" href="/rooms/{{ r.id }}">{{ r.pretty_name() }}</a>!
+							<a target="_blank" href="{{ url_for(r) }}">{{ r.pretty_name() }}</a>!
 						% else:
 							Unknown error code <code>{{error}}</code>
 						% end

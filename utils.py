@@ -120,3 +120,20 @@ def needs_auth(reason_or_callback, reason='privacy'):
 		return callback(*args, **kwargs)
 
 	return wrapper
+
+def url_for(x):
+	import database.orm as m
+
+	if isinstance(x, m.Room):
+		base = '/rooms/{}'.format(x.id)
+	elif isinstance(x, m.Person):
+		base = '/users/{}'.format(x.crsid)
+	elif isinstance(x, m.BallotSeason):
+		base = '/ballots/{}'.format(x.year)
+	elif isinstance(x, m.Cluster):
+		base = '/places/{}'.format(x.id)
+	else:
+		raise ValueError
+
+	return base
+

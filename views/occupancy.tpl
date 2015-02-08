@@ -90,14 +90,14 @@ def make_diff(prev, curr):
 <div class="container">
 	<h1>Revision history
 	<small>Of the {{ occupancy.listing.ballot_season }} review for
-		<a href="/rooms/{{ occupancy.listing.room.id }}">
+		<a href="{{ url_for(occupancy.listing.room) }}">
 			{{ occupancy.listing.room.pretty_name() }}</a>
 	</small></h1>
 	% if occupancy.resident:
 		<p>
 			Authored by
 			% if request.user:
-				<a href="/users/{{ occupancy.resident.crsid }}">
+				<a href="{{ url_for(occupancy.resident) }}">
 					{{occupancy.resident.name}}
 				</a>
 			% else:

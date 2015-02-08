@@ -13,12 +13,12 @@
 		</div>
 		<div class="review-header-thing">
 			% if show_room:
-				<a href="/rooms/{{ occupancy.listing.room.id }}">
+				<a href="{{ url_for(occupancy.listing.room) }}">
 					{{ occupancy.listing.room.pretty_name() }}
 				</a>
 			% elif occupancy.resident:
 				% if request.user:
-					<a itemprop="author" href="/users/{{ occupancy.resident.crsid }}">
+					<a itemprop="author" href="{{ url_for(occupancy.resident) }}">
 						{{occupancy.resident.name}}
 					</a>
 				% else:
@@ -32,7 +32,7 @@
 			% if occupancy.resident:
 				% sl = occupancy.ballot_slot
 				% if sl:
-					<a href="/ballots/{{ occupancy.listing.ballot_season.year }}#slot-{{ sl.id }}">
+					<a href="{{ url_for(occupancy.listing.ballot_season) }}#slot-{{ sl.id }}">
 						#{{ sl.ranking }}</a>
 					in the {{ sl.event.type.name.lower() }} ballot
 				% else:

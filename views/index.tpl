@@ -49,12 +49,12 @@ rebase('layout')
 					% author = review.occupancy.resident
 					<tr>
 						<td class="text-right">
-							<a href="/rooms/{{room.id}}#occupancy-{{review.occupancy.id}}">{{ room.pretty_name() }}</a>
+							<a href="{{ url_for(room) }}#occupancy-{{review.occupancy.id}}">{{ room.pretty_name() }}</a>
 						</td>
 						% if request.user:
 							<td>
 								% if author:
-									<a href="/users/{{author.crsid}}" style="display: block; padding-left: 25px;">
+									<a href="{{ url_for(author) }}" style="display: block; padding-left: 25px;">
 										<img src="{{ author.gravatar(size=20) }}" width="20" height="20" style="margin-left: -25px; float: left" />
 										{{ author.name }}
 									</a>
@@ -92,12 +92,12 @@ rebase('layout')
 					% author = occupancy.resident
 					<tr>
 						<td class="text-right">
-							<a href="/rooms/{{room.id}}">{{ room.pretty_name() }}</a>
+							<a href="{{ url_for(room) }}">{{ room.pretty_name() }}</a>
 						</td>
 						% if request.user:
 							<td>
 								% if author:
-									<a href="/users/{{author.crsid}}" style="display: block; padding-left: 25px;">
+									<a href="{{ url_for(author) }}" style="display: block; padding-left: 25px;">
 										<img src="{{ author.gravatar(size=20) }}" width="20" height="20" style="margin-left: -25px; float: left" />
 										{{ author.name }}
 									</a>
@@ -161,7 +161,7 @@ rebase('layout')
 		% for photo in ordered_photos():
 			% room = photo.occupancy.listing.room
 			<div class="{{ 'col-md-4 col-sm-6 col-xs-12' if photo.is_panorama else 'col-md-2 col-sm-3 col-xs-6' }} ">
-				<a href="/rooms/{{room.id}}" title="{{ photo.caption }}&NewLine;{{ photo.published_at }}" class="thumbnail cropped-photo" style="display: block; height: 150px; background-image: url({{ photo.href }}); margin: 15px 0px; position: relative; overflow: hidden" target="_blank"><span class="label label-default" style="display: block; position: absolute; top: 0; left: 0;">{{room.pretty_name()}}</span></a>
+				<a href="{{ url_for(room) }}" title="{{ photo.caption }}&NewLine;{{ photo.published_at }}" class="thumbnail cropped-photo" style="display: block; height: 150px; background-image: url({{ photo.href }}); margin: 15px 0px; position: relative; overflow: hidden" target="_blank"><span class="label label-default" style="display: block; position: absolute; top: 0; left: 0;">{{room.pretty_name()}}</span></a>
 			</div>
 		% end
 

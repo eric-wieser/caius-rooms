@@ -33,9 +33,9 @@ end
 			{{ photo.caption }}
 			<span class="text-muted pull-right">
 				% if photo.occupancy.resident:
-					<a href="/users/{{ photo.occupancy.resident.crsid }}">{{ photo.occupancy.resident.name }}</a> &bullet;
+					<a href="{{ url_for(photo.occupancy.resident) }}">{{ photo.occupancy.resident.name }}</a> &bullet;
 				% end
-				<a href="/rooms/{{ room.id }}">{{ room.pretty_name() }}</a> &bullet;
+				<a href="{{ url_for(room) }}">{{ room.pretty_name() }}</a> &bullet;
 				{{! format_ts_html(photo.published_at) }}
 			</span>
 		</div>

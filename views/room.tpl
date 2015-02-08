@@ -308,7 +308,7 @@ photos = [
 					<div class="col-md-6">
 						<h3>
 							% o = section.review.occupancy
-							<a href="/rooms/{{ refered_by.id }}#occupancy-{{ o.id }}">
+							<a href="{{ url_for(refered_by) }}#occupancy-{{ o.id }}">
 								{{ refered_by.pretty_name() }}</a>
 							<small>{{ o.listing.ballot_season }}
 							&bull; {{ section.heading.name }}</small>

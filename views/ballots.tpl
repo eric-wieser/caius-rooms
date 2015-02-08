@@ -18,13 +18,13 @@
 					<tr>
 						% if i == 0:
 							<th rowspan="{{ len(events) }}" class="vert-align">
-								<a href="/ballots/{{ballot_season.year}}">
+								<a href="{{ url_for(ballot_season) }}">
 									{{ ballot_season }}
 								</a>
 							</th>
 						% end
 						<td>
-							<a href="/ballots/{{ballot_season.year}}/{{ event.type.name.lower() }}/edit">
+							<a href="{{ url_for(ballot_season) }}/{{ event.type.name.lower() }}/edit">
 								{{ event.type.name }}
 							</a>
 						</td>
@@ -42,7 +42,7 @@
 				% if not events:
 					<tr>
 						<th class="vert-align">
-							<a href="/ballots/{{ballot_season.year}}">
+							<a href="{{ url_for(ballot_season) }}">
 								{{ ballot_season }}
 							</a>
 						</th>

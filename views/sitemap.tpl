@@ -17,7 +17,7 @@
 
 	% for c in db.query(m.Cluster).filter(m.Cluster.id != 1):
 		<url>
-			<loc>http://roompicks.caiusjcr.co.uk/places/{{ c.id }}</loc>
+			<loc>http://roompicks.caiusjcr.co.uk{{ url_for(c) }}</loc>
 			<priority>1</priority>
 		</url>
 	% end

@@ -12,7 +12,7 @@
 					<tr>
 						<td>
 							<div style="padding-left: 25px; position: relative; min-height: 20px">
-								<a href="/users/{{ user.crsid }}">
+								<a href="{{ url_for(user) }}">
 									<img src="{{ user.gravatar(size=20) }}" width="20" height="20" style="position: absolute; left: 0; right: 0" />
 									<div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis">
 										% if user.name:
@@ -40,7 +40,7 @@
 					<tr>
 						<td>
 							<div style="padding-left: 25px; position: relative; min-height: 20px">
-								<a href="/users/{{ user.crsid }}">
+								<a href="{{ url_for(user) }}">
 									<img src="{{ user.gravatar(size=20) }}" width="20" height="20" style="position: absolute; left: 0; right: 0" />
 									<div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis">
 										% if user.name:
@@ -76,7 +76,7 @@
 							<tr>
 								<td>
 									<div style="padding-left: 25px; position: relative; min-height: 20px">
-										<a href="/users/{{ user.crsid }}">
+										<a href="{{ url_for(user) }}">
 											<img src="{{ user.gravatar(size=20) }}" width="20" height="20" style="position: absolute; left: 0; right: 0" />
 											<div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis">
 												% if user.name:

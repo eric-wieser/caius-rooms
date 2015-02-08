@@ -103,10 +103,10 @@ end
 										<img width="30" height="30" style="display: inline-block; vertical-align: top; margin: -5px 5px -5px 0" src="{{ request.user.gravatar(size=30) }}" />{{request.user.name}} <span class="caret"></span>
 									</a>
 									<ul class="dropdown-menu" role="menu">
-										<li><a href="/users/{{ request.user.crsid }}">Profile</a></li>
+										<li><a href="{{ url_for(request.user) }}">Profile</a></li>
 										% cr = request.user.current_room
 										% if cr:
-											<li><a href="/rooms/{{ cr.id }}">My room</a></li>
+											<li><a href="{{ url_for(cr) }}">My room</a></li>
 										% else:
 											<li class="disabled"><a>My room</a></li>
 										% end

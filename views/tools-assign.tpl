@@ -10,7 +10,7 @@
 					<label for="user-input">User</label>
 					% if user:
 						<div class="form-control">
-							<img width="30" height="30" style="display: inline-block; vertical-align: top; margin: -5px 5px -5px 0" src="{{ user.gravatar(size=30) }}" /><a href="/users/{{ user.crsid}}">{{user.name}}</a>
+							<img width="30" height="30" style="display: inline-block; vertical-align: top; margin: -5px 5px -5px 0" src="{{ user.gravatar(size=30) }}" /><a href="{{ url_for(user) }}">{{user.name}}</a>
 						</div>
 						<input id="user-input" name="user" type="hidden" value="{{ user.crsid }}" />
 					% else:
@@ -24,7 +24,7 @@
 					<label for="room-input">Room</label>
 					% if room:
 						<div class="form-control">
-							<a href="/rooms/{{ room.id }}">{{ room.pretty_name() }}</a>
+							<a href="{{ url_for(room) }}">{{ room.pretty_name() }}</a>
 						</div>
 						<input id="room-input" name="room" type="hidden" value="{{ room.id }}" />
 					% else:
