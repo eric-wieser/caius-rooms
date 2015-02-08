@@ -19,15 +19,11 @@ layout_random = '/places/random'
 import itertools
 %>
 <div class="container">
-	% rooms = location.all_rooms_q.all()
+	% roomsq = location.all_rooms_q
 
 	<h1>{{ location.pretty_name() }}</h1>
-	<p>
-		<span class="lead">{{len(rooms)}} rooms</span><br />
-		<small class="text-muted">Owners and prices show are for the year {{ ballot}}</small>
-	</p>
-
-	% include('parts/room-table', rooms=rooms, ballot=ballot, relative_to=location)
+	
+	% include('parts/room-table', roomsq=roomsq, ballot=ballot, relative_to=location)
 
 	<div id="map" style="height: 400px"></div>
 	% lat_lon = location.geocoords
