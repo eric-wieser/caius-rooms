@@ -20,7 +20,12 @@ import itertools
 %>
 <div class="container">
 	% rooms = location.all_rooms_q.all()
-	% rooms.sort(key=lambda r: (r.adjusted_rating, r.photo_count, -r.id), reverse=True)
+	<%
+	rooms.sort(
+		key=lambda r: (r.stats.adjusted_rating, r.stats.photo_count, -r.id),
+		reverse=True
+	)
+	%>
 
 	<h1>{{ location.pretty_name() }}</h1>
 	<p>
