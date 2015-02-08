@@ -9,7 +9,7 @@ layout_random = '/rooms/random'
 
 def layout_breadcrumb():
 	for part in room.parent.path:
-		yield ("/places/{}".format(part.id), part.pretty_name(part.parent))
+		yield (url_for(part), part.pretty_name(part.parent))
 	end
 	yield ('#', room.pretty_name(room.parent))
 end

@@ -3,7 +3,7 @@ rebase('layout')
 
 def layout_breadcrumb():
 	for part in place.path:
-		yield ("/places/{}".format(part.id), part.pretty_name(part.parent))
+		yield (url_for(part), part.pretty_name(part.parent))
 	end
 end
 

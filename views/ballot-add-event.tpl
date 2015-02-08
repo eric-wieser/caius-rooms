@@ -2,7 +2,7 @@
 rebase('layout')
 def layout_breadcrumb():
 	yield (
-		'/ballots/{}'.format(ballot_season.year),
+		url_for(ballot_season),
 		'{} season'.format(ballot_season))
 	yield ('#', 'Add new event')
 end
