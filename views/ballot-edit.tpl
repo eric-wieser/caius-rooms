@@ -64,7 +64,7 @@
 					% for room, listing in rooms_and_listings:
 						<tr>
 							<td>
-								<a href="/rooms/{{ room.id }}">{{ room.pretty_name() }}</a>
+								<a href="{{ url_for(room) }}">{{ room.pretty_name() }}</a>
 							</td>
 							<td class="rule-right shrink">
 								% if listing:

@@ -3,7 +3,7 @@ rebase('layout')
 
 def layout_breadcrumb():
 	for part in place.path:
-		yield ("/places/{}".format(part.id), part.pretty_name(part.parent))
+		yield (url_for(part), part.pretty_name(part.parent))
 	end
 end
 
@@ -65,7 +65,7 @@ end
 	<div class="row">
 		% for room, photo in all_photos():
 			<div class="{{ 'col-md-6 col-sm-12 col-xs-12' if photo.is_panorama else 'col-md-3 col-sm-4 col-xs-6' }} ">
-				<a href="/rooms/{{room.id}}" title="{{ photo.caption }}" class="thumbnail cropped-photo" style="display: block; height: 200px; background-image: url({{ photo.href }}); margin: 15px 0px; position: relative; overflow: hidden" target="_blank"><span class="label label-default" style="display: block; position: absolute; top: 0; left: 0;">{{room.pretty_name(place)}}</span></a>
+				<a href="{{ url_for(room) }}" title="{{ photo.caption }}" class="thumbnail cropped-photo" style="display: block; height: 200px; background-image: url({{ photo.href }}); margin: 15px 0px; position: relative; overflow: hidden" target="_blank"><span class="label label-default" style="display: block; position: absolute; top: 0; left: 0;">{{room.pretty_name(place)}}</span></a>
 			</div>
 		% end
 	</div>

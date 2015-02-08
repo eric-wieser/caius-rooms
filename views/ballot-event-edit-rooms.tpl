@@ -8,7 +8,7 @@ rebase('layout')
 
 def layout_breadcrumb():
 	yield (
-		'/ballots/{}'.format(ballot_event.season.year),
+		url_for(ballot_event.season),
 		'{} - {} season'.format(ballot_event.season.year, ballot_event.season.year + 1))
 	yield ('#', ballot_event.type.name)
 end
@@ -221,7 +221,7 @@ was_included = find_inclusions(root, last_ballot_event) if last_ballot_event els
 % def display(cl):
 	% for room in sorted(cl.rooms, key=lambda r: natural_sort_key(r.name)):
 		<div class="item" data-room="{{ room.id }}">
-			<a href="/rooms/{{ room.id }}" target="_blank">{{ room.pretty_name(cl) }}</a>
+			<a href="{{ url_for(room) }}" target="_blank">{{ room.pretty_name(cl) }}</a>
 			<div class="audience-cbs">
 				<div class="audience-cb">
 					<input type="checkbox"
@@ -242,7 +242,7 @@ was_included = find_inclusions(root, last_ballot_event) if last_ballot_event els
 					<span class="show-hide-shown glyphicon glyphicon-chevron-down"></span>
 					<span class="show-hide-hidden glyphicon glyphicon-chevron-right"></span>
 				</label>
-				<a href="/places/{{ cl.id }}" target="_blank"><b>{{ subcl.pretty_name(cl) }}</b></a>
+				<a href="{{ url_for(cl) }}" target="_blank"><b>{{ subcl.pretty_name(cl) }}</b></a>
 				<div class="audience-cbs">
 					<%
 					if is_included[subcl].all:
@@ -284,7 +284,7 @@ end
 			% if not inclusions[r]:
 				<li class="changelog changelog-add {{'included' if newer[r] else ''}}"
 					data-room="{{ r.id }}">
-					<a href="/rooms/{{ r.id }}" target="_blank">{{ r.pretty_name() }}</a>
+					<a href="{{ url_for(r) }}" target="_blank">{{ r.pretty_name() }}</a>
 					<a class="changelog-undo" href="#">
 						<span class="glyphicon glyphicon-share-alt" title="undo adding this room"></span>
 					</a>
@@ -292,7 +292,7 @@ end
 			% else:
 				<li class="changelog changelog-remove {{'included' if newer[r] else ''}}"
 				    data-room="{{ r.id }}">
-					<a href="/rooms/{{ r.id }}" target="_blank">{{ r.pretty_name() }}</a>
+					<a href="{{ url_for(r) }}" target="_blank">{{ r.pretty_name() }}</a>
 					<a class="changelog-undo" href="#">
 						<span class="glyphicon glyphicon-share-alt" title="undo removing this room"></span>
 					</a>

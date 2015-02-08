@@ -26,14 +26,14 @@ end
 					<strong>{{! format_ballot_html(occupancy.listing.ballot_season) }}</strong>
 				</div>
 				<div class="col-xs-6">
-					<a itemprop="author" href="/users/{{ occupancy.resident.crsid }}">
+					<a itemprop="author" href="{{ url_for(occupancy.resident) }}">
 						{{ occupancy.resident.name }}
 					</a>
 				</div>
 				<div class="col-xs-4 text-right">
 					% sl = occupancy.ballot_slot
 					% if sl:
-						<a href="/ballots/{{ occupancy.listing.ballot_season.year }}#slot-{{ sl.id }}">
+						<a href="{{ url_for(occupancy.listing.ballot_season) }}#slot-{{ sl.id }}">
 							#{{ sl.ranking }}</a>
 						in the {{ sl.event.type.name.lower() }} ballot
 					% else:
@@ -93,7 +93,7 @@ end
 			</div>
 		</div>
 		<div class="text-right">
-			<a href="/rooms/{{ occupancy.listing.room.id }}#occupancy-{{ occupancy.id }}" class="btn btn-default btn-lg">Cancel</a>
+			<a href="{{ url_for(occupancy.listing.room) }}#occupancy-{{ occupancy.id }}" class="btn btn-default btn-lg">Cancel</a>
 			<button type="submit" class="btn btn-success btn-lg">Submit</button>
 		</div>
 	</form>

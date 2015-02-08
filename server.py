@@ -18,6 +18,7 @@ import raven
 import database.orm as m
 import database.db
 from utils import needs_auth
+import utils
 
 @contextlib.contextmanager
 def base_route(app, base):
@@ -35,6 +36,7 @@ app = Bottle()
 
 # expose get_url to all templates, so that they don't need to hard-code urls
 SimpleTemplate.defaults["get_url"] = app.get_url
+SimpleTemplate.defaults["url_for"] = utils.url_for
 
 # install the sqlalchemy plugin, which injects a `db` argument into every route
 app.install(SQLAlchemyPlugin(

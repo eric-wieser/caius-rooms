@@ -50,14 +50,14 @@ end
 								{{ o.listing.ballot_season }}
 							</th>
 							<td>
-								<a href="/rooms/{{ o.listing.room.id }}">
+								<a href="{{ url_for(o.listing.room) }}">
 									{{ o.listing.room.pretty_name() }}
 								</a>
 							</td>
 							<td>
 								% sl = o.ballot_slot
 								% if sl:
-									<a href="/ballots/{{ o.listing.ballot_season.year }}#slot-{{ sl.id }}">
+									<a href="{{ url_for(o.listing.ballot_season) }}#slot-{{ sl.id }}">
 										#{{ sl.ranking }}</a>
 									in the {{ sl.event.type.name.lower() }} ballot
 								% else:
