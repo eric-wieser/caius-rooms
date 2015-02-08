@@ -71,12 +71,12 @@ def layout_extra_nav(): %>
 					<span class="label label-success">yours</span>
 				% end
 
-				% if room.adjusted_rating:
+				% if room.stats.adjusted_rating:
 					<small itemprop="aggregateRating" itemscope itemtype="http://schema.org/AggregateRating">
-						<span itemprop="ratingValue">{{ '{:.1f}'.format(room.adjusted_rating) }}</span><!--
+						<span itemprop="ratingValue">{{ '{:.1f}'.format(room.stats.adjusted_rating) }}</span><!--
 						-->/<span itemprop="bestRating">10</span>
-						<meta itemprop="ratingCount" content="{{ room.rating_count }}" />
-						<meta itemprop="reviewCount" content="{{ room.review_count }}" />
+						<meta itemprop="ratingCount" content="{{ room.stats.rating_count }}" />
+						<meta itemprop="reviewCount" content="{{ room.stats.review_count }}" />
 					</small>
 				% end
 			</h1>

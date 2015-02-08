@@ -85,13 +85,13 @@
 						% end
 					</span>
 				</td>
-				<td class="rule-right" data-value="{{room.adjusted_rating or 0}}">
-					%if room.adjusted_rating is not None:
-						{{ '{:.1f}'.format(room.adjusted_rating) }}<span class="hidden-xs">/10</span>
+				<td class="rule-right" data-value="{{room.stats.adjusted_rating or 0}}">
+					%if room.stats.adjusted_rating is not None:
+						{{ '{:.1f}'.format(room.stats.adjusted_rating) }}<span class="hidden-xs">/10</span>
 					% end
 				</td>
 				<td class="shrink center">
-					% n = room.review_count
+					% n = room.stats.review_count
 					% if n:
 						% m = '1 review' if n == 1 else '{} reviews'.format(n)
 						<a href="/rooms/{{room.id}}#reviews" style="color: inherit; text-decoration: none">
@@ -101,7 +101,7 @@
 					% end
 				</td>
 				<td class="shrink center">
-					% n = room.resident_count
+					% n = room.stats.resident_count
 					% if n:
 						% m = '1 recorded resident' if n == 1 else '{} recorded residents'.format(n)
 						% if n != 0:
@@ -111,7 +111,7 @@
 					% end
 				</td>
 				<td class="shrink center">
-					% n = room.photo_count
+					% n = room.stats.photo_count
 					% if n:
 						% m = '1 photo' if n == 1 else '{} photos'.format(n)
 						<a href="/rooms/{{room.id}}#photos" style="color: inherit; text-decoration: none">
@@ -121,7 +121,7 @@
 					% end
 				</td>
 				<td class="shrink center rule-right">
-					% n = room.reference_count
+					% n = room.stats.reference_count
 					% if n:
 						% m = '1 reference' if n == 1 else '{} references'.format(n)
 						<a href="/rooms/{{room.id}}#references" style="color: inherit; text-decoration: none">

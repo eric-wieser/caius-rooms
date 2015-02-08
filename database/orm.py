@@ -640,44 +640,35 @@ Review.is_newest = column_property(
 )
 
 # Now add a bunch of convenience columns to room objects
-Room.adjusted_rating = column_property(
-	select([
-		(3.0 + func.sum(Review.rating)) / (1 + func.count(Review.rating))
-	])
-	.select_from(
-		join(Review, Occupancy).join(RoomListing)
-	)
-	.where((Room.id == RoomListing.room_id) & Review.is_newest)
+
+class RoomStats(Base):
+	__table__ = select([
+		Room.id
+			.label('room_id'),
+		func.count(func.distinct(Occupancy.resident_id))
+			.label('resident_count'),
+		func.count(Photo.id)
+			.label('photo_count'),
+		func.count(Review.id)
+			.label('review_count'),
+		func.count(Review.rating)
+			.label('rating_count'),
+		((3.0 + func.sum(Review.rating)) / (1 + func.count(Review.rating))
+			).label('adjusted_rating')
+	]).select_from(
+		join(Occupancy, RoomListing).join(Room)
+			.outerjoin(Review)
+			.outerjoin(Photo)
+	).where((Review.id == None) | Review.is_newest).group_by(Room.id).alias(name='room_stats')
+
+Room.stats = relationship(
+	RoomStats,
+	uselist=False,
+	primaryjoin=RoomStats.room_id == Room.id,
+	foreign_keys=RoomStats.room_id
 )
-Room.review_count = column_property(
-	select([func.count(Review.id)])
-	.select_from(
-		join(Review, Occupancy).join(RoomListing)
-	)
-	.where((Room.id == RoomListing.room_id) & Review.is_newest)
-)
-Room.rating_count = column_property(
-	select([func.count(Review.rating)])
-	.select_from(
-		join(Review, Occupancy).join(RoomListing)
-	)
-	.where((Room.id == RoomListing.room_id) & Review.is_newest)
-)
-Room.photo_count = column_property(
-	select([func.count(Photo.id)])
-	.select_from(
-		join(Photo, Occupancy).join(RoomListing)
-	)
-	.where(Room.id == RoomListing.room_id)
-)
-Room.resident_count = column_property(
-	select([func.count(func.distinct(Occupancy.resident_id))])
-	.select_from(
-		join(Occupancy, RoomListing)
-	)
-	.where(Room.id == RoomListing.room_id)
-)
-Room.reference_count = column_property(
+
+RoomStats.reference_count = column_property(
 	select([func.count(ReviewRoomReference.id)])
 	.select_from(
 		join(ReviewRoomReference, ReviewSection)
@@ -685,9 +676,9 @@ Room.reference_count = column_property(
 			.join(Occupancy)
 			.join(RoomListing)
 	)
-	.where(Room.id == ReviewRoomReference.room_id)
+	.where(RoomStats.room_id == ReviewRoomReference.room_id)
 	.where(Review.is_newest)
-	.where(Room.id != RoomListing.room_id)  # filter self-references
+	.where(RoomStats.room_id != RoomListing.room_id)  # filter self-references
 )
 
 bs = aliased(BallotSlot)

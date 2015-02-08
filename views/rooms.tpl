@@ -10,7 +10,7 @@
 
 	<%
 	rooms.sort(
-		key=lambda r: (r.adjusted_rating, r.photo_count, -r.id),
+		key=lambda r: (r.stats.adjusted_rating, r.stats.photo_count, -r.id),
 		reverse=True
 	)
 	%>
