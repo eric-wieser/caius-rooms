@@ -47,7 +47,7 @@ from sqlalchemy import (
 	UnicodeText,
 )
 from sqlalchemy import func
-from sqlalchemy.orm import relationship, backref, column_property, aliased, join
+from sqlalchemy.orm import relationship, backref, column_property, aliased, join, outerjoin
 from sqlalchemy.orm.session import object_session
 from sqlalchemy.orm.collections import attribute_mapped_collection
 from sqlalchemy.ext.declarative import declarative_base
@@ -647,8 +647,6 @@ class RoomStats(Base):
 			.label('room_id'),
 		func.count(func.distinct(Occupancy.resident_id))
 			.label('resident_count'),
-		func.count(Photo.id)
-			.label('photo_count'),
 		func.count(Review.id)
 			.label('review_count'),
 		func.count(Review.rating)
@@ -656,9 +654,8 @@ class RoomStats(Base):
 		((3.0 + func.sum(Review.rating)) / (1 + func.count(Review.rating))
 			).label('adjusted_rating')
 	]).select_from(
-		join(Occupancy, RoomListing).join(Room)
+		outerjoin(Room, RoomListing).outerjoin(Occupancy)
 			.outerjoin(Review)
-			.outerjoin(Photo)
 	).where((Review.id == None) | Review.is_newest).group_by(Room.id).alias(name='room_stats')
 
 Room.stats = relationship(
@@ -668,6 +665,15 @@ Room.stats = relationship(
 	foreign_keys=RoomStats.room_id
 )
 
+RoomStats.photo_count = column_property(
+	select([func.count(Photo.id)])
+	.select_from(
+		join(Photo, Occupancy)
+			.join(RoomListing)
+			.join(Room)
+	)
+	.where(RoomStats.room_id == Room.id)
+)
 RoomStats.reference_count = column_property(
 	select([func.count(ReviewRoomReference.id)])
 	.select_from(
