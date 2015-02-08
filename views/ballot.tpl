@@ -4,7 +4,7 @@
 
 <%
 def layout_breadcrumb():
-	yield ('#', '{} season'.format(ballot_season))
+	yield ('#', u'{} season'.format(ballot_season))
 end
 
 show_edit = request.user and request.user.is_admin
