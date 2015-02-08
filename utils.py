@@ -135,5 +135,9 @@ def url_for(x):
 	else:
 		raise ValueError
 
+	if request.query.ballot:
+		# TODO: only show this on /places/ and /rooms/
+		return base + '?ballot={}'.format(request.query.ballot)
+
 	return base
 
