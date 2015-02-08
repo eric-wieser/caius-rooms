@@ -85,7 +85,9 @@
 						% end
 					</span>
 				</td>
-				<td class="rule-right" data-value="{{room.stats.adjusted_rating or 0}}">
+				<td class="rule-right" data-value="{{room.stats.adjusted_rating or 0}}"
+					{{! 'title="from {} ratings"'.format(room.stats.rating_count) if room.stats.adjusted_rating else ''}}
+					>
 					%if room.stats.adjusted_rating is not None:
 						{{ '{:.1f}'.format(room.stats.adjusted_rating) }}<span class="hidden-xs">/10</span>
 					% end
