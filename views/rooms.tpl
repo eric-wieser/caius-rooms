@@ -13,12 +13,6 @@ layout_random = '/rooms/random'
 	% end
 	% rooms = roomsq.all()
 
-	<%
-	rooms.sort(
-		key=lambda r: (r.stats.adjusted_rating, r.stats.photo_count, -r.id),
-		reverse=True
-	)
-	%>
 	<div class="dropdown pull-right">
 		<button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
 			Change year

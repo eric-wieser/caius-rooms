@@ -2,6 +2,12 @@
 % from bottle import request
 % from utils import restricted
 
+<%
+rooms.sort(
+	key=lambda r: (r.stats.adjusted_rating, r.stats.photo_count, -r.id),
+	reverse=True
+)
+%>
 <div class="table-responsive">
 <table class="table table-condensed table-hover sortable">
 	<thead>
