@@ -4,7 +4,7 @@
 
 <%
 def layout_breadcrumb():
-	yield ('#', '{} - {} season'.format(ballot_season.year, ballot_season.year + 1))
+	yield ('#', '{} season'.format(ballot_season))
 end
 
 show_edit = request.user and request.user.is_admin
@@ -16,7 +16,7 @@ show_edit = request.user and request.user.is_admin
 		</a>
 	% end
 
-	<h1>Ballots for {{ ballot_season.year }} - {{ ballot_season.year + 1 }}</h1>
+	<h1>Ballots for {{ ballot_season }}</h1>
 
 	<div class="row">
 		% for event in ballot_season.events:

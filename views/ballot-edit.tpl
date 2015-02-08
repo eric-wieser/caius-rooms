@@ -3,7 +3,7 @@
 % rebase('layout')
 
 <div class="container">
-	<h1>Ballot for {{ ballot_season.year }} - {{ ballot_season.year + 1 }}</h1>
+	<h1>Ballot for {{ ballot_season }}</h1>
 	<div class="row">
 		<div class="col-lg-6">
 			<h2>Events</h2>

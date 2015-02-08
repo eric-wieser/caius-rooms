@@ -3,7 +3,7 @@ rebase('layout')
 def layout_breadcrumb():
 	yield (
 		'/ballots/{}'.format(ballot_season.year),
-		'{} - {} season'.format(ballot_season.year, ballot_season.year + 1))
+		'{} season'.format(ballot_season))
 	yield ('#', 'Add new event')
 end
 %>

@@ -300,7 +300,7 @@ class BallotSeason(Base):
 		return "BallotSeason(year={})".format(self.year)
 
 	def __str__(self):
-		return "{}-{}".format(self.year, self.year+1)
+		return u"{} \u2012 {}".format(self.year, self.year+1)
 
 
 class BallotEvent(Base):

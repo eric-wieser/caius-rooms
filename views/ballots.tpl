@@ -19,7 +19,7 @@
 						% if i == 0:
 							<th rowspan="{{ len(events) }}" class="vert-align">
 								<a href="/ballots/{{ballot_season.year}}">
-									{{ ballot_season.year }} - {{ ballot_season.year + 1 }}
+									{{ ballot_season }}
 								</a>
 							</th>
 						% end
@@ -43,7 +43,7 @@
 					<tr>
 						<th class="vert-align">
 							<a href="/ballots/{{ballot_season.year}}">
-								{{ ballot_season.year }} - {{ ballot_season.year + 1 }}
+								{{ ballot_season }}
 							</a>
 						</th>
 						<td colspan="4" class="text-muted">No events</td>

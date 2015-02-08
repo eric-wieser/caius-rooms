@@ -47,7 +47,7 @@ end
 					% for o in occs:
 						<tr>
 							<th>
-								{{ o.listing.ballot_season.year }} - {{ o.listing.ballot_season.year + 1 }}
+								{{ o.listing.ballot_season }}
 							</th>
 							<td>
 								<a href="/rooms/{{ o.listing.room.id }}">
