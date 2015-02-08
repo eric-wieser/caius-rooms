@@ -639,9 +639,11 @@ Review.is_newest = column_property(
 	.where(r.occupancy_id == Review.occupancy_id)
 )
 
-# Now add a bunch of convenience columns to room objects
-
 class RoomStats(Base):
+	# http://fulmicoton.com/posts/bayesian_rating/
+	C = 0.5 # closeness function
+	M = 5.5 # mean rating
+
 	__table__ = select([
 		Room.id
 			.label('room_id'),
@@ -651,7 +653,7 @@ class RoomStats(Base):
 			.label('review_count'),
 		func.count(Review.rating)
 			.label('rating_count'),
-		((3.0 + func.sum(Review.rating)) / (1 + func.count(Review.rating))
+		((M*C + func.sum(Review.rating)) / (C + func.count(Review.rating))
 			).label('adjusted_rating')
 	]).select_from(
 		outerjoin(Room, RoomListing).outerjoin(Occupancy)
