@@ -204,13 +204,14 @@ def do_logout(db):
 with base_route(app, '/rooms'):
 	@app.route('')
 	def show_rooms(db):
-		from sqlalchemy.orm import joinedload
+		from sqlalchemy.orm import joinedload, subqueryload
 
 		filters = []
 		roomsq = db.query(m.Room).options(
 			joinedload(m.Room.listing_for)
 				.joinedload(m.RoomListing.occupancies)
-				.load_only(m.Occupancy.resident_id)
+				.load_only(m.Occupancy.resident_id),
+			subqueryload(m.Room.stats)
 		)
 
 		if request.query.filter_id:
