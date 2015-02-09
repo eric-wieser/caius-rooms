@@ -343,7 +343,7 @@ class BallotSlot(Base):
 		lazy='joined')
 
 	def __repr__(self):
-		return "<BallotSlot(resident_id={!r}, ballot_event={!r}, time={!r})>".format(
+		return "<BallotSlot(person_id={!r}, event={!r}, time={!r})>".format(
 			self.person_id, self.event, self.time
 		)
 
@@ -370,6 +370,11 @@ class RoomListing(Base):
 		backref="all_time_listings",
 		collection_class=set)
 
+	def __repr__(self):
+		return "<RoomListing(ballot_season_id={!r}, room={!r})>".format(
+			self.ballot_season_id, self.room
+		)
+
 	__table_args__ = (UniqueConstraint(ballot_season_id, room_id, name='_ballot_room_uc'),)
 
 room_listing_audiences_assoc = Table('room_listing_audiences',	Base.metadata,
@@ -394,6 +399,10 @@ class Occupancy(Base):
 
 	__table_args__ = (UniqueConstraint(resident_id, listing_id, name='_resident_listing_uc'),)
 
+	def __repr__(self):
+		return "<Occupancy(resident_id={!r}, listing={!r})>".format(
+			self.resident_id, self.listing
+		)
 
 class Review(Base):
 	__tablename__ = 'reviews'
