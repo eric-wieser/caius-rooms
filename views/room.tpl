@@ -78,6 +78,9 @@ def layout_extra_nav(): %>
 						Heads up:
 					</strong>
 					This room isn't and won't be available in the {{ e.type.name }} ballot
+					% if ballot_count == 2:
+						<small class="text-muted" style="display: block">{{ e.type.name }}, {{ e.season }}</small>
+					% end
 				</div>
 			% elif not active_occ:
 				% if slot.time >= datetime.now():
