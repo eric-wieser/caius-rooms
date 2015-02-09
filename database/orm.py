@@ -111,7 +111,7 @@ class Cluster(Base):
 	id         = Column(Integer,                         primary_key=True)
 	name       = Column(Unicode(255),                    nullable=False)
 	parent_id  = Column(Integer, ForeignKey(id))
-	type       = Column(Enum("staircase", "building", "road"))
+	type       = Column(Enum("staircase", "building", "road", name='cluster_type'))
 
 	latitude  = Column(Float)
 	longitude = Column(Float)
@@ -212,7 +212,8 @@ class Cluster(Base):
 
 RoomView = Enum(
 	"Overlooking a street",
-	"Overlooking a court or garden"
+	"Overlooking a court or garden",
+	name='room_view_type'
 )
 
 class Room(Base):
@@ -345,7 +346,7 @@ class BallotSlot(Base):
 			cascade='all, delete-orphan'
 		),
 		lazy='joined')
-	event  = relationship(
+	event = relationship(
 		lambda: BallotEvent,
 		backref=backref("slots", cascade='all, delete-orphan'),
 		lazy='joined')
