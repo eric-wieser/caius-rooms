@@ -36,7 +36,7 @@ end
 						% else:
 						<td></td>
 						% end
-						% ratings = [r.adjusted_rating for r in sub_loc.rooms if r.adjusted_rating is not None]
+						% ratings = [r.stats.adjusted_rating for r in sub_loc.rooms if r.stats.adjusted_rating is not None]
 						<td>
 							% if ratings:
 								{{ '{:.1f}'.format(sum(ratings) / len(ratings)) }}
