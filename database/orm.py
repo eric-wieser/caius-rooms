@@ -50,11 +50,10 @@ from sqlalchemy import func
 from sqlalchemy.orm import relationship, backref, column_property, aliased, join, outerjoin
 from sqlalchemy.orm.session import object_session
 from sqlalchemy.orm.collections import attribute_mapped_collection
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.sql.expression import select, extract, case
 
-Base = declarative_base()
+from db import Base
 
 CRSID = String(10)
 

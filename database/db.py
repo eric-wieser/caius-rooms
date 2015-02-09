@@ -2,7 +2,9 @@ import os
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.declarative import declarative_base
 
+Base = declarative_base()
 
 try:
 	import db_conn
@@ -36,6 +38,6 @@ else:
 			)
 		)
 		import orm
-		orm.Base.metadata.schema = 'roompicks'
+		Base.metadata.schema = 'roompicks'
 
 Session = sessionmaker(engine)
