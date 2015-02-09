@@ -257,10 +257,10 @@ with base_route(app, '/places'):
 
 		# load the entire heirarchy in one query
 		root = db.query(m.Cluster).options(
-			joinedload_all('children.rooms').load_only('adjusted_rating'),
-			joinedload_all('children.children.rooms').load_only('adjusted_rating'),
-			joinedload_all('children.children.children.rooms').load_only('adjusted_rating'),
-			joinedload_all('children.children.children.children.rooms').load_only('adjusted_rating')
+			joinedload_all('children.rooms'),
+			joinedload_all('children.children.rooms'),
+			joinedload_all('children.children.children.rooms'),
+			joinedload_all('children.children.children.children.rooms')
 		).filter(m.Cluster.parent == None).one()
 
 		return template('places', location=root)
