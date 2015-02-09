@@ -70,7 +70,7 @@ def layout_extra_nav(): %>
 				% continue
 			% end
 			% active_listing = room.listing_for.get(e.season)
-			% active_occ = next(iter(active_listing.occupancies), None)
+			% active_occ = active_listing and next(iter(active_listing.occupancies), None)
 			% if not active_listing or e.type not in active_listing.audience_types:
 				<div class="alert alert-warning lead">
 					<strong>
