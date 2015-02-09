@@ -11,15 +11,6 @@ from utils import needs_auth, lookup_ldap
 import database.orm as m
 
 def add_routes(app):
-	@app.route('/<ballot_id>/edit')
-	@needs_auth('admin')
-	def show_ballot(ballot_id, db):
-		ballot = db.query(m.BallotSeason).options(
-			joinedload(m.BallotSeason.events),
-			joinedload(m.BallotSeason.room_listings).subqueryload(m.RoomListing.audience_types),
-		).filter(m.BallotSeason.year == ballot_id).one()
-		return template('ballot-edit', ballot_season=ballot, db=db)
-
 	@app.route('/<ballot_id>/add-event')
 	@needs_auth('admin')
 	def show_ballot_event_add(ballot_id, db):
