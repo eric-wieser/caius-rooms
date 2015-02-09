@@ -81,6 +81,12 @@ class Person(Base):
 		)
 
 	@property
+	def active_ballot_events(self):
+		all_events = object_session(self).query(BallotEvent).filter(BallotEvent.is_active).all()
+
+		return { e: self.slot_for.get(e) for e in all_events }
+
+	@property
 	def current_room(self):
 		# get the ballot year where current rooms were assigned
 		from datetime import datetime
@@ -311,6 +317,8 @@ class BallotEvent(Base):
 	season_id = Column(Integer, ForeignKey(BallotSeason.year), nullable=False)
 	opens_at  = Column(Date)
 	closes_at = Column(Date)
+
+	is_active = column_property((opens_at < func.now()) & (func.now() < closes_at))
 
 	type      = relationship(lambda: BallotType,   backref="events")
 	season    = relationship(lambda: BallotSeason, backref="events")

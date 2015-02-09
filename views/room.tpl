@@ -2,6 +2,7 @@
 from utils import format_ts_html, restricted
 from bottle import request
 import json
+from datetime import datetime
 
 rebase('layout')
 
@@ -47,29 +48,111 @@ def layout_extra_nav(): %>
 <div style="margin-bottom: 6em" itemscope itemtype="http://schema.org/Product">
 <div class="container">
 	<%
-	last_listing = room.listing_for.get(ballot)
-	if last_listing and last_listing.occupancies:
-		last_occupancy = last_listing.occupancies[-1]
-	else:
-		last_occupancy = None
-	end
+	active_listing = None
+
 	%>
+	% if not request.user:
+		% pass
+	% else:
+		% slot_dict = request.user.active_ballot_events
+		% ballot_count = sum(x is not None for x in slot_dict.values())
+		% if ballot_count > 1:
+			<div class="alert alert-info">
+				<strong>
+					<span class="glyphicon glyphicon glyphicon-fire text-danger"></span>
+					Experimental
+				</strong>
+				You're entered into multiple ballots which are happening right now. Rents and other info could be incorrect. Stuff will go wrong. You should probably contact efw27.
+			</div>
+		% end
+		% for e, slot in slot_dict.items():
+			% if not slot:
+				% continue
+			% end
+			% active_listing = room.listing_for.get(e.season)
+			% active_occ = next(iter(active_listing.occupancies), None)
+			% if not active_listing or e.type not in active_listing.audience_types:
+				<div class="alert alert-warning lead">
+					<strong>
+						<span class="glyphicon glyphicon-warning-sign"></span>
+						Heads up:
+					</strong>
+					This room isn't and won't be available in the {{ e.type.name }} ballot
+				</div>
+			% elif not active_occ:
+				% if slot.time >= datetime.now():
+					<div class="alert alert-info lead">
+						<strong>
+							<span class="glyphicon glyphicon-time"></span>
+							You can't choose this room yet.
+						</strong>
+						You'll have to wait till your slot time comes up
+						% if ballot_count == 2:
+							<small class="text-muted" style="display: block">{{ e.type.name }}, {{ e.season }}</small>
+						% end
+					</div>
+				% else:
+					<div class="alert alert-success lead">
+						<strong>
+							<span class="glyphicon glyphicon-ok"></span>
+							All systems go!
+						</strong>
+						This room is available
+						<a href="#" class="btn btn-md btn-success pull-right">Reserve this room</a>
+						% if ballot_count == 2:
+							<small class="text-muted" style="display: block">{{ e.type.name }}, {{ e.season }}</small>
+						% end
+					</div>
+				% end
+			% elif active_occ.resident != request.user:
+				<div class="alert alert-danger lead">
+					<strong>
+						<span class="glyphicon glyphicon-remove"></span>
+						Darn!
+					</strong>
+					You're {{ datetime.now() - active_occ.chosen_at }} too late - 
+					% if active_occ.resident:
+						<a href="{{ url_for(active_occ.resident) }}">
+							{{active_occ.resident.name}}</a>
+					% else:
+						someone else
+					% end
+					has already taken this room
+					% if ballot_count == 2:
+						<small class="text-muted" style="display: block">{{ e.type.name }}, {{ e.season }}</small>
+					% end
+				</div>
+			% else:
+				<div class="alert alert-success lead">
+					<strong>
+						<span class="glyphicon glyphicon glyphicon-home"></span>
+						That's it.
+					</strong>
+					You've chosen this room, and are done with balloting for the season
+					% if ballot_count == 2:
+						<small class="text-muted" style="display: block">{{ e.type.name }}, {{ e.season }}</small>
+					% end
+				</div>
+			% end
+		% end
+		% if slot_dict and ballot_count == 0:
+			<div class="alert alert-warning lead">
+				<strong>
+					<span class="glyphicon glyphicon-warning-sign"></span>
+					You're not in any ballot
+				</strong>
+				There are ballots in progress ({{ ', '.join(e.type.name for e in slot_dict) }}), but you're not entered in any of them. If you think this is a mistake, please contact someone ASAP!
+			</div>
+		% end
+	% end
+
+
+	% last_listing = active_listing or room.listing_for.get(ballot)
+
 	<div id="info" class="row anchor">
 		<div class="col-md-6">
 			<h1>
 				<span itemprop="name">{{ room.pretty_name() }}</span>
-
-				% if not last_listing:
-					<span class="label label-warning" title="Not on offer for the {{ ballot.year }} ballot">unavailable</span>
-				% elif not last_occupancy:
-					% pass
-				% elif not last_occupancy.resident:
-					<span class="label label-danger" title="Owner not recorded...">reserved</span>
-				% elif last_occupancy.resident != request.user:
-					<span class="label label-danger" title="By {{ last_occupancy.resident.name }}">reserved</span>
-				% else:
-					<span class="label label-success">yours</span>
-				% end
 
 				% if room.stats.adjusted_rating:
 					<small itemprop="aggregateRating" itemscope itemtype="http://schema.org/AggregateRating">
