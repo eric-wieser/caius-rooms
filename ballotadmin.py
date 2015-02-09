@@ -34,8 +34,8 @@ def add_routes(app):
 		e = m.BallotEvent(
 			season=ballot,
 			type=event_type,
-			opens_at=datetime.strptime(request.forms.opens_at, "%Y-%m-%d"),
-			closes_at=datetime.strptime(request.forms.closes_at, "%Y-%m-%d")
+			opens_at=datetime.strptime(request.forms.opens_at, "%Y-%m-%d").date(),
+			closes_at=datetime.strptime(request.forms.closes_at, "%Y-%m-%d").date()
 		)
 
 		db.add(e)
@@ -60,6 +60,24 @@ def add_routes(app):
 			.filter(m.BallotEvent.type == ballot_type)
 			.filter(m.BallotSeason.year == ballot_id)
 		).one()
+
+		return template('ballot-event-edit', ballot_event=ballot_event)
+
+	@app.post('/<ballot_id:int>/<ballot_type_name>/edit', name="edit-ballot-event")
+	@needs_auth('admin')
+	def save_ballot_times(ballot_id, ballot_type_name, db):
+		ballot_type = db.query(m.BallotType).filter(func.lower(m.BallotType.name) == ballot_type_name.lower()).one()
+
+		ballot_event = (db
+			.query(m.BallotEvent)
+			.join(m.BallotSeason)
+			.filter(m.BallotEvent.type == ballot_type)
+			.filter(m.BallotSeason.year == ballot_id)
+		).one()
+
+
+		ballot_event.opens_at = datetime.strptime(request.forms.opens_at, "%Y-%m-%d").date()
+		ballot_event.closes_at = datetime.strptime(request.forms.closes_at, "%Y-%m-%d").date()
 
 		return template('ballot-event-edit', ballot_event=ballot_event)
 
