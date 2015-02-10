@@ -20,7 +20,7 @@ def makeSQLLite():
 
 def makeMySQL(user, password):
 	return create_engine(
-		'mysql+mysqldb://{user}:{password}@localhost/gcsu/roompicks?charset=utf8&use_unicode=1'.format(
+		'mysql+mysqldb://{user}:{password}@127.0.0.1/gcsu/roompicks?charset=utf8&use_unicode=1'.format(
 			user=user,
 			password=password
 		),
