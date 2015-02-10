@@ -634,11 +634,11 @@ class Photo(Base):
 
 	@classmethod
 	def _inserted(cls, mapper, connection, target):
-		assert target.raw_im
-		if target.mime_type == 'image/jpeg' and 'exif' in target.raw_im.info:
-			target.raw_im.save(target.storage_path, exif=target.raw_im.info['exif'])
-		else:
-			target.raw_im.save(target.storage_path)
+		if target.raw_im:
+			if target.mime_type == 'image/jpeg' and 'exif' in target.raw_im.info:
+				target.raw_im.save(target.storage_path, exif=target.raw_im.info['exif'])
+			else:
+				target.raw_im.save(target.storage_path)
 
 
 import sqlalchemy.event
