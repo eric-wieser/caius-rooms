@@ -236,7 +236,7 @@ def layout_extra_nav(): %>
 		<div class="col-md-6" style="padding-top: 20px; padding-bottom: 20px">
 
 			<div style="position: absolute; top: 25px; right: 20px; z-index: 1; text-shadow: 0px 0px 15px white; font-size: 36px">
-				% n = last_listing and last_listing.has_ethernet
+				% n = room.has_ethernet
 				% if n == True:
 					<span class="glyphicon glyphicon-cloud text-success" title="Ethernet"></span>
 				% elif n == False:
@@ -245,7 +245,7 @@ def layout_extra_nav(): %>
 					<span class="glyphicon glyphicon-cloud text-muted" title="Possible Ethernet"></span>
 				% end
 
-				% w = last_listing and last_listing.has_washbasin
+				% w = room.has_washbasin
 				% if w == True:
 					<span class="glyphicon glyphicon-tint text-success" title="Washbasin"></span>
 				% elif w == False:
@@ -254,7 +254,7 @@ def layout_extra_nav(): %>
 					<span class="glyphicon glyphicon-tint text-muted" title="Possible Washbasin"></span>
 				% end
 
-				% p = last_listing and last_listing.has_piano
+				% p = room.has_piano
 				% if p == True:
 					<span class="glyphicon glyphicon-music text-success" title="Piano"></span>
 				% elif p == False:

@@ -234,6 +234,12 @@ class Room(Base):
 	living_room_y = Column(Integer)
 	living_room_view = Column(RoomView)
 
+	has_piano     = Column(Boolean)
+	has_washbasin = Column(Boolean)
+	has_eduroam   = Column(Boolean)
+	has_uniofcam  = Column(Boolean)
+	has_ethernet  = Column(Boolean)
+
 	parent   = relationship(lambda: Cluster, backref="rooms", lazy='joined')
 
 	listing_for = relationship(
@@ -366,11 +372,6 @@ class RoomListing(Base):
 	room_id          = Column(Integer, ForeignKey(Room.id), index=True)
 
 	rent          = Column(Numeric(6, 2))
-	has_piano     = Column(Boolean)
-	has_washbasin = Column(Boolean)
-	has_eduroam   = Column(Boolean)
-	has_uniofcam  = Column(Boolean)
-	has_ethernet  = Column(Boolean)
 
 	room           = relationship(lambda: Room, backref=backref("listings", lazy='subquery', order_by=ballot_season_id.desc()))
 	ballot_season  = relationship(lambda: BallotSeason, backref="room_listings")

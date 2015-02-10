@@ -181,7 +181,7 @@ rooms.sort(
 					% end
 				</td>
 				<td class="shrink center">
-					% n = last_listing and last_listing.has_ethernet
+					% n = room.has_ethernet
 					% if n == True:
 						<span class="glyphicon glyphicon-cloud text-success" title="Ethernet"></span>
 					% elif n == False:
@@ -191,7 +191,7 @@ rooms.sort(
 					% end
 				</td>
 				<td class="shrink center">
-					% w = last_listing and last_listing.has_washbasin
+					% w = room.has_washbasin
 					% if w == True:
 						<span class="glyphicon glyphicon-tint text-success" title="Washbasin"></span>
 					% elif w == False:
@@ -201,7 +201,7 @@ rooms.sort(
 					% end
 				</td>
 				<td class="shrink center  rule-right">
-					% p = last_listing and last_listing.has_piano
+					% p = room.has_piano
 					% if p == True:
 						<span class="glyphicon glyphicon-music text-success" title="Piano"></span>
 					% elif p == False:
