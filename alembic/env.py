@@ -32,7 +32,13 @@ db_names = config.get_main_option('databases')
 #       'engine1':mymodel.metadata1,
 #       'engine2':mymodel.metadata2
 #}
-target_metadata = {}
+import sys, os
+sys.path.append(os.getcwd())
+import database.orm
+target_metadata = {
+    'local': database.orm.Base.metadata,
+    'live': database.orm.Base.metadata
+}
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
