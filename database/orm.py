@@ -52,8 +52,9 @@ from sqlalchemy.orm.session import object_session
 from sqlalchemy.orm.collections import attribute_mapped_collection
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.sql.expression import select, extract, case
+from sqlalchemy.ext.declarative import declarative_base
 
-from db import Base
+Base = declarative_base()
 
 CRSID = String(10)
 
