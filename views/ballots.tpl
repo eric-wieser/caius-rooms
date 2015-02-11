@@ -24,9 +24,7 @@
 							</th>
 						% end
 						<td>
-							<a href="{{ url_for(ballot_season) }}/{{ event.type.name.lower() }}/edit">
-								{{ event.type.name }}
-							</a>
+							{{ event.type.name }}
 						</td>
 						<td>
 							{{ event.opens_at }}

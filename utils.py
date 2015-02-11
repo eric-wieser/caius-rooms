@@ -122,7 +122,9 @@ def needs_auth(reason_or_callback, reason='privacy'):
 	return wrapper
 
 def url_for(x):
+def url_for(x, extra_path=None, qs={}):
 	import database.orm as m
+	from urllib import urlencode
 
 	if isinstance(x, m.Room):
 		base = '/rooms/{}'.format(x.id)
@@ -134,10 +136,18 @@ def url_for(x):
 		base = '/places/{}'.format(x.id)
 	else:
 		raise ValueError
+	if extra_path:
+		base += '/' + extra_path
+
+	query = {}
 
 	if request.query.ballot:
-		# TODO: only show this on /places/ and /rooms/
-		return base + '?ballot={}'.format(request.query.ballot)
+		query['ballot'] = request.query.ballot
 
-	return base
+	query.update(qs)
+
+	if query:
+		return base + '?' + urlencode(query)
+	else:
+		return base
 

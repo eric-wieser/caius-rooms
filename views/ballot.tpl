@@ -11,7 +11,7 @@ show_edit = request.user and request.user.is_admin
 %>
 <div class="container">
 	% if show_edit:
-		<a href="{{ url_for(ballot_season) }}/add-event" class="btn btn-primary pull-right">
+		<a href="{{ url_for(ballot_season, extra_path='add-event') }}" class="btn btn-primary pull-right">
 			<span class="glyphicon glyphicon-plus"></span> Add new ballot event
 		</a>
 	% end
@@ -28,7 +28,7 @@ show_edit = request.user and request.user.is_admin
 						&#x2012;
 						{{ '{:%d %b}'.format(event.closes_at) }}
 
-						<a href="{{ url_for(ballot_season) }}/{{ event.type.name }}/edit">
+						<a href="{{ url_for(ballot_season, extra_path="{}/edit".format(event.type.name)) }}">
 							<span class="glyphicon glyphicon-pencil"></span>
 						</a>
 					</small>
