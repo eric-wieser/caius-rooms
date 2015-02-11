@@ -3,7 +3,7 @@ rebase('layout')
 
 def layout_breadcrumb():
 	for part in location.path:
-		yield ("/places/{}".format(part.id), part.pretty_name(part.parent))
+		yield (url_for(part), part.pretty_name(part.parent))
 	end
 end
 
@@ -22,7 +22,7 @@ import itertools
 	% roomsq = location.all_rooms_q
 
 	<h1>{{ location.pretty_name() }}</h1>
-	
+
 	% include('parts/room-table', roomsq=roomsq, ballot=ballot, relative_to=location)
 
 	<div id="map" style="height: 400px"></div>
