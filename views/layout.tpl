@@ -139,7 +139,7 @@ end
 								<span class="glyphicon glyphicon-warning-sign"></span>
 								You're not in any ballot
 							</strong>
-							There are ballots in progress ({{ ', '.join(e.type.name for e in e_dict) }}), but you're not entered in any of them. If you think this is a mistake, please contact someone ASAP!
+							There are ballots in progress ({{ ', '.join(u'{} {}'.format(e.season, e.type.name) for e in e_dict) }}), but you're not entered in any of them. If you think this is a mistake, please contact someone ASAP!
 						</div>
 					</div>
 				% elif ballot:
