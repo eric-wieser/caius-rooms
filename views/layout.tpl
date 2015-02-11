@@ -174,7 +174,7 @@ end
 							<div class="container">
 								You're not looking at information for the right ballot ({{ sl.event.type.name }} {{ sl.event.season }}).
 								<span class="pull-right">
-									<a class="btn btn-xs btn-danger" href="?ballot={{ sl.event.season.year}}">Switch to my ballot</a>
+									<a class="btn btn-xs btn-danger" href="?ballot={{ sl.event.season.year}}-{{s.event.type.name}}">Switch to my ballot</a>
 								</span>
 							</div>
 						</div>
