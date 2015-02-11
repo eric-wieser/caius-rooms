@@ -143,7 +143,7 @@ end
 						</div>
 					</div>
 				% elif ballot:
-					% sl = next((sl for sl in active_slots if sl.event.season == ballot), None)
+					% sl = next((sl for sl in active_slots if sl.event == ballot), None)
 					% if sl:
 						<div class="ballot-banner ballot-banner-correct-view">
 							<div class="container">
@@ -158,8 +158,8 @@ end
 											</button>
 											<ul class="dropdown-menu dropdown-menu-right" role="menu">
 												% for s in active_slots:
-													<li {{!'class="active"' if s.event.season == ballot else '' }}>
-														<a href="?ballot={{ s.event.season.year }}">{{ s.event.season}}: {{ s.event.type.name }} </a>
+													<li {{!'class="active"' if s == sl else '' }}>
+														<a href="?ballot={{ s.event.season.year }}-{{s.event.type.name}}">{{ s.event.season}}: {{ s.event.type.name }} </a>
 													</li>
 												% end
 											</ul>
@@ -169,6 +169,7 @@ end
 							</div>
 						</div>
 					% elif len(active_slots) == 1:
+						% sl = active_slots[0]
 						<div class="ballot-banner ballot-banner-incorrect-view">
 							<div class="container">
 								You're not looking at information for the right ballot ({{ sl.event.type.name }} {{ sl.event.season }}).
@@ -189,7 +190,7 @@ end
 									<ul class="dropdown-menu dropdown-menu-right" role="menu">
 										% for s in active_slots:
 											<li>
-												<a href="?ballot={{ s.event.season.year }}">{{ s.event.season}}: {{ s.event.type.name }}</a>
+												<a href="?ballot={{ s.event.season.year }}-{{s.event.type.name}}">{{ s.event.season}}: {{ s.event.type.name }}</a>
 											</li>
 										% end
 									</ul>
