@@ -7095,3 +7095,24 @@ input::-webkit-inner-spin-button {
   line-height: 99px;
   border-style: dotted;
 }
+.ballot-banner {
+  margin-top: -20px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid;
+  padding: 5px 0;
+}
+.ballot-banner-not-assigned {
+  background-color: #fcf8e3;
+  border-bottom-color: #faebcc;
+  color: #8a6d3b;
+}
+.ballot-banner-correct-view {
+  background-color: #dff0d8;
+  border-bottom-color: #d6e9c6;
+  color: #3c763d;
+}
+.ballot-banner-incorrect-view {
+  background-color: #f2dede;
+  border-bottom-color: #ebccd1;
+  color: #a94442;
+}

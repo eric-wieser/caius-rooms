@@ -232,3 +232,27 @@ input::-webkit-inner-spin-button {
 		border-style: dotted;
 	}
 }
+
+.ballot-banner {
+	margin-top: -20px;
+	margin-bottom: 20px;
+	border-bottom: 1px solid;
+	padding: 5px 0;
+}
+
+.ballot-banner-not-assigned {
+	background-color: @state-warning-bg;
+	border-bottom-color: @state-warning-border;
+	color: @state-warning-text;
+}
+
+.ballot-banner-correct-view {
+	background-color: @state-success-bg;
+	border-bottom-color: @state-success-border;
+	color: @state-success-text;
+}
+.ballot-banner-incorrect-view {
+	background-color: @state-danger-bg;
+	border-bottom-color: @state-danger-border;
+	color: @state-danger-text;
+}

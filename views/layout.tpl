@@ -50,7 +50,7 @@ end
 							<li class="dropdown">
 								% url, name, icon = matching_nav or (None, '', '')
 								<a href="#" title="{{ name }}" class="dropdown-toggle brand" data-toggle="dropdown">
-									<span class="glyphicon {{icon}}"></span><span class="caret"></span>
+									<span class="glyphicon {{icon}}"></span> <span class="caret"></span>
 								</a>
 								<ul class="dropdown-menu" role="menu">
 									% for url, name, icon in nav:
@@ -126,6 +126,81 @@ end
 				</div>
 			</div>
 		</nav>
+		% """Render the banner prompting the user to take part in a ballot"""
+		% if request.user:
+			% e_dict = request.user.active_ballot_events
+			% active_slots = [s for s in e_dict.values()]
+			% ballot = get('ballot')
+			% if e_dict:
+				% if not active_slots:
+					<div class="ballot-banner ballot-banner-not-assigned">
+						<div class="container">
+							<strong>
+								<span class="glyphicon glyphicon-warning-sign"></span>
+								You're not in any ballot
+							</strong>
+							There are ballots in progress ({{ ', '.join(e.type.name for e in e_dict) }}), but you're not entered in any of them. If you think this is a mistake, please contact someone ASAP!
+						</div>
+					</div>
+				% elif ballot:
+					% sl = active_slots[0]
+					% if sl.event.season == ballot:
+						<div class="ballot-banner ballot-banner-correct-view">
+							<div class="container">
+								You're looking at information for your ballot (<a href="{{ url_for(sl.event.season) }}">{{ sl.event.season }}</a> {{ sl.event.type.name }})
+								<span class="pull-right">
+									Your slot is at {{ sl.time }}
+									% if len(active_slots) > 1:
+										<div class="dropdown" style="display: inline-block">
+											<button class="btn btn-success btn-xs dropdown-toggle" type="button"  data-toggle="dropdown" aria-expanded="true">
+												Switch ballots
+												<span class="caret"></span>
+											</button>
+											<ul class="dropdown-menu dropdown-menu-right" role="menu">
+												% for s in active_slots:
+													<li {{!'class="active"' if s.event.season == ballot else '' }}>
+														<a href="?ballot={{ s.event.season.year }}">{{ s.event.season}}: {{ s.event.type.name }} </a>
+													</li>
+												% end
+											</ul>
+										</div>
+									% end
+								</span>
+							</div>
+						</div>
+					% elif len(active_slots) == 1:
+						<div class="ballot-banner ballot-banner-incorrect-view">
+							<div class="container">
+								You're not looking at information for the right ballot ({{ sl.event.type.name }} {{ sl.event.season }}).
+								<span class="pull-right">
+									<a class="btn btn-xs btn-danger" href="?ballot={{ sl.event.season.year}}">Switch to my ballot</a>
+								</span>
+							</div>
+						</div>
+					% else:
+						<div class="ballot-banner ballot-banner-incorrect-view">
+							<div class="container">
+								You're not looking at information for the right ballot.
+								<div class="dropdown pull-right">
+									<button class="btn btn-danger btn-xs dropdown-toggle" type="button"  data-toggle="dropdown" aria-expanded="true">
+										Switch to my ballots
+										<span class="caret"></span>
+									</button>
+									<ul class="dropdown-menu dropdown-menu-right" role="menu">
+										% for s in active_slots:
+											<li>
+												<a href="?ballot={{ s.event.season.year }}">{{ s.event.season}}: {{ s.event.type.name }}</a>
+											</li>
+										% end
+									</ul>
+								</div>
+							</div>
+						</div>
+
+					% end
+				% end
+			% end
+		% end
 
 		{{!base}}
 
