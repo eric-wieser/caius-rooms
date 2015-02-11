@@ -143,8 +143,8 @@ end
 						</div>
 					</div>
 				% elif ballot:
-					% sl = active_slots[0]
-					% if sl.event.season == ballot:
+					% sl = next((sl for sl in active_slots if sl.event.season == ballot), None)
+					% if sl:
 						<div class="ballot-banner ballot-banner-correct-view">
 							<div class="container">
 								You're looking at information for your ballot (<a href="{{ url_for(sl.event.season) }}">{{ sl.event.season }}</a> {{ sl.event.type.name }})
