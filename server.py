@@ -380,10 +380,8 @@ with base_route(app, '/reviews'):
 		sections = []
 
 		for key, value in request.forms.iteritems():
-			print key, value
 			match = re.match(r'^section-(\d+)$', key)
 			if match:
-				print "MATCH"
 				heading_id = int(match.group(1))
 				try:
 					heading = db.query(m.ReviewHeading).filter_by(id=heading_id).one()
