@@ -129,7 +129,7 @@ end
 		% """Render the banner prompting the user to take part in a ballot"""
 		% if request.user:
 			% e_dict = request.user.active_ballot_events
-			% active_slots = [s for s in e_dict.values()]
+			% active_slots = [s for s in e_dict.values() if s]
 			% ballot = get('ballot')
 			% if e_dict:
 				% if not active_slots:
