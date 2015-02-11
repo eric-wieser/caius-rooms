@@ -117,16 +117,35 @@ def get_last_ballot(db):
 
 
 def get_ballot(db):
+	from sqlalchemy import func
 	if request.query.ballot:
+		if '-' in request.query.ballot:
+			parts = request.query.ballot.split('-', 1)
+			byear = parts[0]
+			btype = parts[1].lower()
+		else:
+			byear = request.query.ballot
+			btype = None
+
 		try:
-			byear = int(request.query.ballot)
+			byear = int(byear)
 		except ValueError:
 			raise HTTPError(400, "Invalid ballot year {!r}".format(request.query.ballot))
 
-		try:
-			return db.query(m.BallotSeason).filter(m.BallotSeason.year == byear).one()
-		except NoResultFound:
-			raise HTTPError(404, "Could not find a ballot for the year {}".format(byear))
+		if btype:
+			try:
+				return (db.query(m.BallotEvent)
+					.join(m.BallotType).filter(func.lower(m.BallotType.name) == btype.lower())
+					.join(m.BallotSeason).filter(m.BallotSeason.year == byear)
+					.one()
+				)
+			except NoResultFound:
+				raise HTTPError(404, "Could not find a {!r} ballot for the year {}".format(btype, byear))
+		else:
+			try:
+				return db.query(m.BallotSeason).filter(m.BallotSeason.year == byear).one()
+			except NoResultFound:
+				raise HTTPError(404, "Could not find a ballot for the year {}".format(byear))
 
 	else:
 		res = get_last_ballot(db)

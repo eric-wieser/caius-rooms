@@ -121,7 +121,6 @@ def needs_auth(reason_or_callback, reason='privacy'):
 
 	return wrapper
 
-def url_for(x):
 def url_for(x, extra_path=None, qs={}):
 	import database.orm as m
 	from urllib import urlencode

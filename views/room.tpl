@@ -3,6 +3,7 @@ from utils import format_ts_html, restricted
 from bottle import request
 import json
 from datetime import datetime
+import database.orm as m
 
 rebase('layout')
 
@@ -43,44 +44,39 @@ def layout_extra_nav(): %>
 	});
 	</script>
 <% end
+
+if isinstance(ballot, m.BallotEvent):
+	ballot_event = ballot
+	ballot_season = ballot.season
+else:
+	ballot_event = None
+	ballot_season = ballot
+end
+
 %>
 
 <div style="margin-bottom: 6em" itemscope itemtype="http://schema.org/Product">
 <div class="container">
 	<%
-	active_listing = None
+	active_listing = room.listing_for.get(ballot_season)
+	last_listing = active_listing
 
 	%>
 	% if not request.user:
 		% pass
+	% elif not ballot_event:
+		% pass
 	% else:
-		% slot_dict = request.user.active_ballot_events
-		% ballot_count = sum(x is not None for x in slot_dict.values())
-		% if ballot_count > 1:
-			<div class="alert alert-info">
-				<strong>
-					<span class="glyphicon glyphicon glyphicon-fire text-danger"></span>
-					Experimental
-				</strong>
-				You're entered into multiple ballots which are happening right now. Rents and other info could be incorrect. Stuff will go wrong. You should probably contact efw27.
-			</div>
-		% end
-		% for e, slot in slot_dict.items():
-			% if not slot:
-				% continue
-			% end
-			% active_listing = room.listing_for.get(e.season)
+		% slot = request.user.slot_for.get(ballot_event)
+		% if slot:
 			% active_occ = active_listing and next(iter(active_listing.occupancies), None)
-			% if not active_listing or e.type not in active_listing.audience_types:
+			% if not active_listing or ballot_event.type not in active_listing.audience_types:
 				<div class="alert alert-warning lead">
 					<strong>
 						<span class="glyphicon glyphicon-warning-sign"></span>
 						Heads up:
 					</strong>
-					This room isn't and won't be available in the {{ e.type.name }} ballot
-					% if ballot_count == 2:
-						<small class="text-muted" style="display: block">{{ e.type.name }}, {{ e.season }}</small>
-					% end
+					This room isn't and won't be available in the {{ ballot_event.type.name }} ballot
 				</div>
 			% elif not active_occ:
 				% if slot.time >= datetime.now():
@@ -90,9 +86,6 @@ def layout_extra_nav(): %>
 							You can't choose this room yet.
 						</strong>
 						You'll have to wait till your slot time comes up
-						% if ballot_count == 2:
-							<small class="text-muted" style="display: block">{{ e.type.name }}, {{ e.season }}</small>
-						% end
 					</div>
 				% else:
 					<div class="alert alert-success lead">
@@ -102,9 +95,6 @@ def layout_extra_nav(): %>
 						</strong>
 						This room is available
 						<a href="#" class="btn btn-md btn-success pull-right">Reserve this room</a>
-						% if ballot_count == 2:
-							<small class="text-muted" style="display: block">{{ e.type.name }}, {{ e.season }}</small>
-						% end
 					</div>
 				% end
 			% elif active_occ.resident != request.user:
@@ -138,19 +128,7 @@ def layout_extra_nav(): %>
 				</div>
 			% end
 		% end
-		% if slot_dict and ballot_count == 0:
-			<div class="alert alert-warning lead">
-				<strong>
-					<span class="glyphicon glyphicon-warning-sign"></span>
-					You're not in any ballot
-				</strong>
-				There are ballots in progress ({{ ', '.join(e.type.name for e in slot_dict) }}), but you're not entered in any of them. If you think this is a mistake, please contact someone ASAP!
-			</div>
-		% end
 	% end
-
-
-	% last_listing = active_listing or room.listing_for.get(ballot)
 
 	<div id="info" class="row anchor">
 		<div class="col-md-6">

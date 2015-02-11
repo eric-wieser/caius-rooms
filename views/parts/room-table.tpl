@@ -4,6 +4,13 @@ from bottle import request
 from utils import restricted
 from sqlalchemy.orm.session import object_session
 
+if isinstance(ballot, m.BallotEvent):
+	ballot_event = ballot
+	ballot = ballot.season
+else:
+	ballot_event = None
+end
+
 n = roomsq.count()
 for f in filters:
 	roomsq = roomsq.filter(f)
@@ -23,7 +30,6 @@ rooms.sort(
 	),
 	reverse=True
 )
-
 %>
 <div class="dropdown pull-right">
 	<button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
@@ -88,15 +94,28 @@ rooms.sort(
 	</thead>
 	<tbody>
 		% for room in rooms:
-			% containing_place = room.parent
-			% if containing_place.type == 'staircase' and containing_place != relative_to:
-				% containing_place = containing_place.parent
-			% end
+			<%
+			containing_place = room.parent
+			if containing_place.type == 'staircase' and containing_place != relative_to:
+				containing_place = containing_place.parent
+			end
 
-			% last_listing = last_listings[room]
-			% is_in_ballot = bool(last_listing and not last_listing.bad_listing)
+			last_listing = last_listings[room]
+			is_listed = bool(last_listing)
+			if ballot_event:
+				is_in_ballot = is_listed and ballot_event.type in last_listing.audience_types
+			else:
+				is_in_ballot = is_listed and not last_listing.bad_listing
+			end
+			lookup = {
+				# listed, b
+				(True, True): '',
+				(True, False): 'warning',
+				(False, False): 'danger'
+			}
+			%>
 
-			<tr class="room{{ ' danger' if not last_listing else ' warning' if last_listing.bad_listing else ''}}" data-roomid="{{ room.id }}">
+			<tr class="room {{ lookup[is_listed, is_in_ballot]}}" data-roomid="{{ room.id }}">
 				<td class="shrink{{ ' rule-right' if skip_place else '' }}" style="text-align: right">
 					% if room.is_suite:
 						<span class="glyphicon glyphicon-th-large text-muted" title="Suite"></span>
