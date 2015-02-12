@@ -82,6 +82,9 @@ class Person(Base):
 
 	@property
 	def active_ballot_events(self):
+		if not object_session(self):
+			return {}
+
 		all_events = object_session(self).query(BallotEvent).filter(BallotEvent.is_active).all()
 
 		return { e: self.slot_for.get(e) for e in all_events }
