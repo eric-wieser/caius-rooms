@@ -621,6 +621,10 @@ with base_route(app, '/ballots'):
 		).order_by(m.BallotSeason.year.desc())
 		return template('ballots', ballots=ballots)
 
+	@app.route('/explanation')
+	def show_explanation(db):
+		return template('ballots-explanation')
+
 	@app.route('/<ballot_id>', name="show-ballot")
 	@needs_auth
 	def show_ballot(ballot_id, db):
