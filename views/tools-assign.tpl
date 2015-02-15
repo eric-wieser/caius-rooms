@@ -36,7 +36,7 @@
 			<div class="col-md-4">
 				<div class="form-group">
 					<label for="room-input">Rental period</label>
-					<select name="year" class="form-control">
+					<select name="year" class="form-control" {{ 'readonly' if done else ''}} >
 						% for s in reversed(seasons):
 							<option value="{{ s.year }}"{{ ' selected' if s == season else ''}}>{{ s }}</option>
 						% end
