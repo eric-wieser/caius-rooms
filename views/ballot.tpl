@@ -37,7 +37,22 @@ show_edit = request.user and request.user.is_admin
 				<table class="table table-condensed">
 					<tbody>
 						<%
-						include('parts/slot-list-rows', slot_tuples=(
+						pred = None
+
+						from datetime import datetime, timedelta
+						if request.user.is_admin:
+							pass
+						elif max(s.time for s in event.slots) < datetime.now():
+							pass
+
+						elif event in request.user.slot_for:
+							st = request.user.slot_for[event].time
+							width = timedelta(minutes=45)
+							pred = lambda _1, _2, ts: st - width <= ts <= st + width
+						else:
+							pred = lambda *args: False
+						end
+						include('parts/slot-list-rows', pred=pred, slot_tuples=(
 							(s.id, s.person, s.time)
 							for s in event.slots
 						))
