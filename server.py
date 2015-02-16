@@ -77,6 +77,9 @@ sqlalchemy_log.setLevel(logging.INFO)
 def log_sql(callback):
 	""" A plugin to log all sql statements executed by a route to a file of a matching name` """
 	def wrapper(*args, **kwargs):
+		if not request.query.do_log:
+			return callback(*args, **kwargs)
+
 		import os
 
 		fname = 'logs/{}.html'.format(request.path
