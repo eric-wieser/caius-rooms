@@ -227,7 +227,8 @@ class Room(Base):
 	name      = Column(Unicode(255),                    nullable=False)
 	parent_id = Column(Integer, ForeignKey(Cluster.id), nullable=False)
 
-	is_suite  = Column(Boolean)
+	is_set     = Column(Boolean)
+	is_ensuite = Column(Boolean)
 
 	bedroom_x = Column(Integer)
 	bedroom_y = Column(Integer)

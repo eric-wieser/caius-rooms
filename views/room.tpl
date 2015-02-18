@@ -145,7 +145,7 @@ end
 				% end
 			</h1>
 			<table class="table">
-				% two_columns = room.is_suite or room.living_room_view or room.living_room_x
+				% two_columns = room.is_set or room.living_room_view or room.living_room_x
 				% if two_columns:
 					<thead>
 						<tr>
