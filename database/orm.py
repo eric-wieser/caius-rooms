@@ -372,7 +372,7 @@ class RoomListing(Base):
 
 	id               = Column(Integer, primary_key=True)
 	ballot_season_id = Column(Integer, ForeignKey(BallotSeason.year), index=True)
-	room_id          = Column(Integer, ForeignKey(Room.id), index=True)
+	room_id          = Column(Integer, ForeignKey(Room.id, onupdate="cascade"), index=True)
 
 	rent          = Column(Numeric(6, 2))
 
@@ -540,7 +540,7 @@ class ReviewRoomReference(Base):
 
 	review_id = Column(Integer, nullable=False)
 	review_heading_id = Column(Integer, nullable=False)
-	room_id = Column(Integer, ForeignKey(Room.id), nullable=False)
+	room_id = Column(Integer, ForeignKey(Room.id, onupdate="cascade"), nullable=False)
 
 	start_idx = Column(Integer)
 	end_idx = Column(Integer)
