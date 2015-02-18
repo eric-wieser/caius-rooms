@@ -46,6 +46,8 @@ def upgrade_live():
 
 
     conn = op.get_bind()
+
+    # this is a terrible idea, because the ORM is not synced with the db!
     import database.orm as m
     for b in old_bools:
         setattr(m.RoomListing, b, sa.Column(sa.Boolean()))
