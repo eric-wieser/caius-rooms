@@ -35,6 +35,9 @@ rebase('layout')
 			We're moving over to <a href="http://roompicks.caiusjcr.co.uk">the Caius JCR website</a>, so you might want to update your bookmarks to point there before this disappears!
 		</div>
 	% end
+	<div class="alert alert-info" role="alert">
+		<a href="/places/48">R staircase Tree Court</a> will be the subject of the next phase of the Tree Court refurbishment, expected to run from July through November 2015. When the work is complete the Tutors will determine the amount of an appropriate compensatory payment to residents. However, students who expect to spend a significant amount of time in their rooms during the working day should think carefully before choosing a room on this staircase.
+	</div>
 	<div class="row">
 		<div class="col-md-6">
 			<h2>Recent reviews</h2>
