@@ -675,15 +675,10 @@ with base_route(app, '/tools'):
 
 			listing = room.listing_for.get(season)
 			if not listing:
-				last_listing = max(room.listings, key=lambda l: l.ballot_season_id)
-
-				# detach it
-				db.expunge(last_listing)
-				make_transient(last_listing)
-				listing = last_listing
-
-				listing.ballot_season = season
-				listing.id = None
+				listing = m.RoomListing(
+					room=room,
+					ballot_season=season
+				)
 
 			occs = listing.occupancies
 			assert not any(occ.resident == user for occ in occs)
