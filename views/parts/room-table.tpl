@@ -113,6 +113,9 @@ rooms.sort(
 				(True, False): 'warning',
 				(False, False): 'danger'
 			}
+			if ballot_event and not is_listed and not request.query.show_all:
+				continue
+			end
 			%>
 
 			<tr class="room {{ lookup[is_listed, is_in_ballot]}}" data-roomid="{{ room.id }}">
