@@ -113,7 +113,7 @@ rooms.sort(
 				(True, False): 'warning',
 				(False, False): 'danger'
 			}
-			if ballot_event and not is_listed and not request.query.show_all:
+			if ballot_event and not is_in_ballot and not request.query.show_all:
 				continue
 			end
 			%>
