@@ -82,7 +82,7 @@ rooms.sort(
 			<th>Area</th>
 			<th class="rule-right">Rating</th>
 			<th data-defaultsort='disabled' colspan="4" class="rule-right" style="text-align: center">Feedback</th>
-			<th data-defaultsort='disabled' colspan="2" style="text-align: center" class="rule-right">Features</th>
+			<th data-defaultsort='disabled' colspan="3" style="text-align: center" class="rule-right">Features</th>
 			<th>
 				% if request.user:
 					Owner
@@ -200,6 +200,14 @@ rooms.sort(
 							<span class="hidden-xs" style="display: inline-block; width: 2ex; text-align: right">{{ n if n != 1 else '' }}</span>
 							<span class="glyphicon glyphicon-link" title="{{m}}"></span>
 						</a>
+					% end
+				</td>
+				<td class="shrink center">
+					% e = room.is_set
+					% if e == True:
+						<span class="glyphicon glyphicon-th-large text-success" title="Set"></span>
+					% elif e is None:
+						<span class="glyphicon glyphicon-th-large text-muted" title="Possibly a set"></span>
 					% end
 				</td>
 				<td class="shrink center">
