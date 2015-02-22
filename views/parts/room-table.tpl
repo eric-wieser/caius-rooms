@@ -203,22 +203,18 @@ rooms.sort(
 					% end
 				</td>
 				<td class="shrink center">
-					% n = room.has_ethernet
-					% if n == True:
-						<span class="glyphicon glyphicon-cloud text-success" title="Ethernet"></span>
-					% elif n == False:
-						<span class="glyphicon glyphicon-cloud text-danger" title="No Ethernet"></span>
-					% else:
-						<span class="glyphicon glyphicon-cloud text-muted" title="Possible Ethernet"></span>
+					% e = room.is_ensuite
+					% if e == True:
+						<span class="glyphicon glyphicon-certificate text-success" title="Ensuite"></span>
+					% elif e is None:
+						<span class="glyphicon glyphicon-certificate text-muted" title="Possible ensuite"></span>
 					% end
 				</td>
 				<td class="shrink center rule-right">
 					% w = room.has_washbasin
 					% if w == True:
 						<span class="glyphicon glyphicon-tint text-success" title="Washbasin"></span>
-					% elif w == False:
-						<span class="glyphicon glyphicon-tint text-danger" title="No Washbasin"></span>
-					% else:
+					% elif w is None:
 						<span class="glyphicon glyphicon-tint text-muted" title="Possible Washbasin"></span>
 					% end
 				</td>
