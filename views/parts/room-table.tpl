@@ -82,7 +82,7 @@ rooms.sort(
 			<th>Area</th>
 			<th class="rule-right">Rating</th>
 			<th data-defaultsort='disabled' colspan="4" class="rule-right" style="text-align: center">Feedback</th>
-			<th data-defaultsort='disabled' colspan="3" style="text-align: center" class="rule-right">Features</th>
+			<th data-defaultsort='disabled' colspan="2" style="text-align: center" class="rule-right">Features</th>
 			<th>
 				% if request.user:
 					Owner
@@ -212,7 +212,7 @@ rooms.sort(
 						<span class="glyphicon glyphicon-cloud text-muted" title="Possible Ethernet"></span>
 					% end
 				</td>
-				<td class="shrink center">
+				<td class="shrink center rule-right">
 					% w = room.has_washbasin
 					% if w == True:
 						<span class="glyphicon glyphicon-tint text-success" title="Washbasin"></span>
@@ -220,16 +220,6 @@ rooms.sort(
 						<span class="glyphicon glyphicon-tint text-danger" title="No Washbasin"></span>
 					% else:
 						<span class="glyphicon glyphicon-tint text-muted" title="Possible Washbasin"></span>
-					% end
-				</td>
-				<td class="shrink center  rule-right">
-					% p = room.has_piano
-					% if p == True:
-						<span class="glyphicon glyphicon-music text-success" title="Piano"></span>
-					% elif p == False:
-						<span class="glyphicon glyphicon-music text-danger" title="No Piano"></span>
-					% else:
-						<span class="glyphicon glyphicon-music text-muted" title="Possible Piano"></span>
 					% end
 				</td>
 				% if request.user and last_listing and last_listing.occupancies:
