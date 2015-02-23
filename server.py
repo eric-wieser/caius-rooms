@@ -235,6 +235,10 @@ with base_route(app, '/rooms'):
 			joinedload(m.Room.listing_for)
 				.joinedload(m.RoomListing.occupancies)
 				.load_only(m.Occupancy.resident_id),
+			joinedload(m.Room.listing_for)
+				.subqueryload(m.RoomListing.audience_types),
+			joinedload(m.Room.listing_for)
+				.undefer(m.RoomListing.bad_listing),
 			subqueryload(m.Room.stats)
 		)
 
@@ -275,15 +279,19 @@ with base_route(app, '/rooms'):
 with base_route(app, '/places'):
 	@app.route('', name="place-list")
 	def show_places(db):
-		from sqlalchemy.orm import joinedload_all
+		from sqlalchemy.orm.strategy_options import Load
 
 		# load the entire heirarchy in one query
-		root = db.query(m.Cluster).options(
-			joinedload_all('children.rooms').subqueryload('stats'),
-			joinedload_all('children.children.rooms').subqueryload('stats'),
-			joinedload_all('children.children.children.rooms').subqueryload('stats'),
-			joinedload_all('children.children.children.children.rooms').subqueryload('stats')
-		).filter(m.Cluster.parent == None).one()
+		opts = (
+			Load(m.Room)
+				.subqueryload(m.Room.stats),
+
+			Load(m.Cluster)
+				.joinedload(m.Cluster.children),
+			Load(m.Cluster)
+				.joinedload(m.Cluster.rooms)
+		)
+		root = db.query(m.Cluster).options(*opts).filter(m.Cluster.parent == None).one()
 
 		return template('places', location=root)
 

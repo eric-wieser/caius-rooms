@@ -193,12 +193,29 @@ class Cluster(Base):
 
 	@property
 	def all_rooms_q(self):
+		from sqlalchemy.orm.strategy_options import Load
 		l1 = aliased(Cluster)
 		l2 = aliased(Cluster)
 		l3 = aliased(Cluster)
 		l4 = aliased(Cluster)
 
-		rooms = object_session(self).query(Room)
+		# make this not ridiculously slow
+		opts = (
+			Load(Room)
+				.joinedload(Room.listing_for)
+				.joinedload(RoomListing.occupancies)
+				.load_only(Occupancy.resident_id),
+			Load(Room)
+				.joinedload(Room.listing_for)
+				.subqueryload(RoomListing.audience_types),
+			Load(Room)
+				.joinedload(Room.listing_for)
+				.undefer(RoomListing.bad_listing),
+			Load(Room)
+				.subqueryload(Room.stats)
+		)
+
+		rooms = object_session(self).query(Room).options(*opts)
 
 		j1 = rooms.join(l1)
 		j2 = j1.join(l2, l1.parent_id == l2.id)
@@ -651,7 +668,7 @@ sqlalchemy.event.listen(Photo, 'after_insert', Photo._inserted)
 
 
 RoomListing.bad_listing = column_property(
-	~RoomListing.audience_types.any() & ~RoomListing.occupancies.any()
+	~RoomListing.audience_types.any() & ~RoomListing.occupancies.any(), deferred=True
 )
 r = aliased(Review)
 Review.is_newest = column_property(
