@@ -143,6 +143,36 @@ end
 						<meta itemprop="reviewCount" content="{{ room.stats.review_count }}" />
 					</small>
 				% end
+
+
+				<div style="float: right">
+					% s = room.is_set
+					% if s == True:
+						<span class="glyphicon glyphicon-th-large text-success" title="Set"></span>
+					% elif s == False:
+						<span class="glyphicon glyphicon-th-large text-danger" title="Not a set"></span>
+					% else:
+						<span class="glyphicon glyphicon-th-large text-muted" title="Possibly a set"></span>
+					% end
+
+					% s = room.is_ensuite
+					% if s == True:
+						<span class="glyphicon glyphicon-certificate text-success" title="Ensuite"></span>
+					% elif s == False:
+						<span class="glyphicon glyphicon-certificate text-danger" title="No Ensuite"></span>
+					% else:
+						<span class="glyphicon glyphicon-certificate text-muted" title="Possible Ensuite"></span>
+					% end
+
+					% w = room.has_washbasin
+					% if w == True:
+						<span class="glyphicon glyphicon-tint text-success" title="Washbasin"></span>
+					% elif w == False:
+						<span class="glyphicon glyphicon-tint text-danger" title="No Washbasin"></span>
+					% else:
+						<span class="glyphicon glyphicon-tint text-muted" title="Possible Washbasin"></span>
+					% end
+				</div>
 			</h1>
 			<table class="table">
 				% two_columns = room.is_set or room.living_room_view or room.living_room_x
@@ -212,35 +242,6 @@ end
 			</table>
 		</div>
 		<div class="col-md-6" style="padding-top: 20px; padding-bottom: 20px">
-
-			<div style="position: absolute; top: 25px; right: 20px; z-index: 1; text-shadow: 0px 0px 15px white; font-size: 36px">
-				% n = room.has_ethernet
-				% if n == True:
-					<span class="glyphicon glyphicon-cloud text-success" title="Ethernet"></span>
-				% elif n == False:
-					<span class="glyphicon glyphicon-cloud text-danger" title="No Ethernet"></span>
-				% else:
-					<span class="glyphicon glyphicon-cloud text-muted" title="Possible Ethernet"></span>
-				% end
-
-				% w = room.has_washbasin
-				% if w == True:
-					<span class="glyphicon glyphicon-tint text-success" title="Washbasin"></span>
-				% elif w == False:
-					<span class="glyphicon glyphicon-tint text-danger" title="No Washbasin"></span>
-				% else:
-					<span class="glyphicon glyphicon-tint text-muted" title="Possible Washbasin"></span>
-				% end
-
-				% p = room.has_piano
-				% if p == True:
-					<span class="glyphicon glyphicon-music text-success" title="Piano"></span>
-				% elif p == False:
-					<span class="glyphicon glyphicon-music text-danger" title="No Piano"></span>
-				% else:
-					<span class="glyphicon glyphicon-music text-muted" title="Possible Piano"></span>
-				% end
-			</div>
 			<div id="map"></div>
 			% lat_lon = room.geocoords
 			% if lat_lon:
