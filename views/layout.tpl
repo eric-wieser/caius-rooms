@@ -55,7 +55,7 @@ end
 								<ul class="dropdown-menu" role="menu">
 									% for url, name, icon in nav:
 										<li {{! 'class="active"' if main_route == url else '' }} >
-											<a href="/{{ url }}">
+											<a href="{{ url_for('/' + url) }}">
 												<span class="glyphicon {{ icon }}"></span> {{ name }}
 											</a>
 										</li>
@@ -78,7 +78,7 @@ end
 						% else:
 							% for url, name, icon in nav:
 								<li {{! 'class="active"' if main_route == url else '' }} >
-									<a href="/{{ url }}">
+									<a href="{{ url_for('/' + url) }}">
 										<span class="glyphicon {{ icon }}"></span> {{ name }}
 									</a>
 								</li>
