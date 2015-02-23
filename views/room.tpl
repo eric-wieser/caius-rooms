@@ -259,8 +259,8 @@ end
 						mapElem.css('height', mapElem.parent().parent().find('div').first().height() - 20);
 
 					    map = new google.maps.Map(mapElem[0], {
-							zoom: 14,
-							center: new google.maps.LatLng(52.20675, 0.1223485),
+							zoom: 15,
+							center: loc,
 							disableDefaultUI: true,
 							draggable: true,
 							zoomControl: false,
