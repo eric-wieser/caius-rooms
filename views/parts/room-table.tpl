@@ -120,9 +120,6 @@ rooms.sort(
 
 			<tr class="room {{ lookup[is_listed, is_in_ballot]}}" data-roomid="{{ room.id }}">
 				<td class="shrink{{ ' rule-right' if skip_place else '' }}" style="text-align: right">
-					% if room.is_set:
-						<span class="glyphicon glyphicon-th-large text-muted" title="Suite"></span>
-					% end
 					<a href="{{ url_for(room) }}">{{room.pretty_name(containing_place) }}</a>
 				</td>
 				% if not skip_place:
