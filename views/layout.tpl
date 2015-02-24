@@ -225,9 +225,10 @@ end
 		})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
 		ga('create', 'UA-57228683-1', 'auto');
-		ga('send', 'pageview');
 		% if request.user:
-			ga('set', '&uid', '{{ request.user.crsid }}');
+			ga('send', 'pageview', {dimension5: '{{ request.user.crsid }}'});
+		% else:
+			ga('send', 'pageview');
 		% end
 		</script>
 	</body>
