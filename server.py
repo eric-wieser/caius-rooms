@@ -261,8 +261,23 @@ with base_route(app, '/rooms'):
 
 	@app.route('/<room_id>')
 	def show_room(room_id, db):
+		from sqlalchemy.orm.strategy_options import Load
+
+		opts = (
+			Load(m.Room)
+				.subqueryload(m.Room.listings)
+				.joinedload(m.RoomListing.occupancies),
+
+			Load(m.Occupancy)
+				.joinedload(m.Occupancy.review)
+				.subqueryload(m.Review.sections)
+				.joinedload(m.ReviewSection.refers_to),
+
+			Load(m.Occupancy)
+				.joinedload(m.Occupancy.photos)
+		)
 		try:
-			room = db.query(m.Room).filter(m.Room.id == room_id).one()
+			room = db.query(m.Room).options(*opts).filter(m.Room.id == room_id).one()
 		except NoResultFound:
 			raise HTTPError(404, "No matching room")
 
