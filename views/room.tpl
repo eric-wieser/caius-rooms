@@ -235,6 +235,10 @@ end
 					<td colspan="2">
 						% if last_listing and last_listing.rent:
 							£{{ "{:.2f}".format(last_listing.rent) }} / term
+
+							% if not ballot_event:
+								<br /><small class="text-danger">Rent is shown as paid by the current occupants. If you are choosing a room in a ballot, please login to see the prices you'd pay.</small>
+							% end
 						% end
 					</td>
 				</tr>
