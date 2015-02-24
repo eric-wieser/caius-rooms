@@ -55,6 +55,8 @@ end
 
 %>
 
+% include('parts/reserve-modal')
+
 <div style="margin-bottom: 6em" itemscope itemtype="http://schema.org/Product">
 <div class="container">
 	<%
@@ -94,7 +96,10 @@ end
 							All systems go!
 						</strong>
 						This room is available
-						<a href="#" class="btn btn-md btn-success pull-right">Reserve this room</a>
+						<button type="button" data-toggle="modal"
+								data-target="#reserve-modal"
+								class="btn btn-md btn-success pull-right">
+							Reserve this room</a>
 					</div>
 				% end
 			% elif active_occ.resident != request.user:
