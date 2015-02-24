@@ -69,6 +69,14 @@ rooms.sort(
 		% end
 	</span><br />
 	<small class="text-muted">Owners and prices show are for the year {{ ballot}}</small>
+	% if not ballot_event:
+		<div class="text-muted small">
+			Row colors indicate
+			<span style="display: inline-block; padding: 2px; border-style: solid; border-width: 1px" class="alert-success">your favorites</span>;
+			<span style="display: inline-block; padding: 2px; border-style: solid; border-width: 1px" class="alert-warning">not ballotable yet, but may be in a future ballot</span>; and
+			<span style="display: inline-block; padding: 2px; border-style: solid; border-width: 1px" class="alert-danger">no information for this year</span>.
+		</div>
+	% end
 </p>
 <div class="table-responsive">
 <table class="table table-condensed table-hover sortable">
