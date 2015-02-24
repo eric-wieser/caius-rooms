@@ -230,17 +230,24 @@ with base_route(app, '/rooms'):
 	def show_rooms(db):
 		from sqlalchemy.orm import joinedload, subqueryload
 
-		filters = []
-		roomsq = db.query(m.Room).options(
+		ballot = get_ballot(db)
+
+		opts = (
 			joinedload(m.Room.listing_for)
 				.joinedload(m.RoomListing.occupancies)
 				.load_only(m.Occupancy.resident_id),
 			joinedload(m.Room.listing_for)
 				.subqueryload(m.RoomListing.audience_types),
-			joinedload(m.Room.listing_for)
-				.undefer(m.RoomListing.bad_listing),
 			subqueryload(m.Room.stats)
 		)
+		if not isinstance(ballot, m.BallotEvent):
+			opts = opts + (
+				joinedload(m.Room.listing_for)
+					.undefer(m.RoomListing.bad_listing)
+			,)
+
+		roomsq = db.query(m.Room).options(*opts)
+		filters = []
 
 		if request.query.filter_id:
 			try:

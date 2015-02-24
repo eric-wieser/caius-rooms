@@ -16,14 +16,28 @@ for f in filters:
 	roomsq = roomsq.filter(f)
 end
 rooms = roomsq.all()
+
+# try and categorize listings
 last_listings = {
 	room: room.listing_for.get(ballot)
 	for room in rooms
 }
+listing_state = {}
+for room in rooms:
+	last_listing = last_listings[room]
+	is_listed = bool(last_listing)
+	if ballot_event:
+		is_in_ballot = is_listed and (ballot_event.type in last_listing.audience_types or bool(last_listing.occupancies))
+	else:
+		is_in_ballot = is_listed and not last_listing.bad_listing
+	end
+
+	listing_state[room] = is_listed, is_in_ballot
+end
+
 rooms.sort(
 	key=lambda r: (
-		bool(last_listings[r]),
-		bool(last_listings[r] and not last_listings[r].bad_listing),
+		listing_state[room],
 		r.stats.adjusted_rating,
 		r.stats.photo_count,
 		-r.id
@@ -101,12 +115,7 @@ rooms.sort(
 			end
 
 			last_listing = last_listings[room]
-			is_listed = bool(last_listing)
-			if ballot_event:
-				is_in_ballot = is_listed and ballot_event.type in last_listing.audience_types
-			else:
-				is_in_ballot = is_listed and not last_listing.bad_listing
-			end
+			is_listed, is_in_ballot = listing_state[room]
 			lookup = {
 				# listed, b
 				(True, True): '',
