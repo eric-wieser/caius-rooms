@@ -105,7 +105,7 @@ def log_sql(callback):
 				profiler.stop()
 				sqltap.report(statistics, fname)
 			except Exception:
-				pass
+				raise
 
 	return wrapper
 
