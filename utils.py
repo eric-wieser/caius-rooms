@@ -133,6 +133,8 @@ def url_for(x, extra_path=None, qs={}):
 		base = '/ballots/{}'.format(x.year)
 	elif isinstance(x, m.Cluster):
 		base = '/places/{}'.format(x.id)
+	elif isinstance(x, str):
+		base = x
 	else:
 		raise ValueError
 	if extra_path:
