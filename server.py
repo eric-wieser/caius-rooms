@@ -150,12 +150,18 @@ def get_ballot(db):
 			except NoResultFound:
 				raise HTTPError(404, "Could not find a ballot for the year {}".format(byear))
 
+	elif request.user:
+		active_events = request.user.active_ballot_events
+		active_slots = [s for s in active_events.values() if s]
+
+		if any(active_slots):
+			return active_slots[0].event
+
+	res = get_last_ballot(db)
+	if res:
+		return res
 	else:
-		res = get_last_ballot(db)
-		if res:
-			return res
-		else:
-			raise HTTPError(500, "Could not get current ballot")
+		raise HTTPError(500, "Could not get current ballot")
 
 
 # declare basic routes - index, static files, and error page
