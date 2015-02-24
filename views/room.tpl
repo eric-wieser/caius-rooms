@@ -116,9 +116,6 @@ end
 						someone else
 					% end
 					has already taken this room
-					% if ballot_count == 2:
-						<small class="text-muted" style="display: block">{{ e.type.name }}, {{ e.season }}</small>
-					% end
 				</div>
 			% else:
 				<div class="alert alert-success lead">
@@ -127,9 +124,6 @@ end
 						That's it.
 					</strong>
 					You've chosen this room, and are done with balloting for the season
-					% if ballot_count == 2:
-						<small class="text-muted" style="display: block">{{ e.type.name }}, {{ e.season }}</small>
-					% end
 				</div>
 			% end
 		% end
