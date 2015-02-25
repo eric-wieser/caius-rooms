@@ -283,7 +283,13 @@ with base_route(app, '/rooms'):
 				.joinedload(m.Occupancy.photos)
 		)
 		try:
-			room = db.query(m.Room).options(*opts).filter(m.Room.id == room_id).one()
+			room = (db
+				.query(m.Room)
+				.options(*opts)
+				.join(m.Room.listings)
+				.join(m.Occupancy)
+				.filter(m.Room.id == room_id)
+			).one()
 		except NoResultFound:
 			raise HTTPError(404, "No matching room")
 
