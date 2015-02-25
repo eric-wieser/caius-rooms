@@ -74,15 +74,43 @@ rebase('layout')
 			</table>
 		</div>
 		<div class="col-md-6">
-			% ballot_event = db.query(m.BallotEvent).order_by(m.BallotEvent.closes_at.desc()).first()
-			<h2>Recent bookings <small> for {{ballot_event.season.year}}-{{ballot_event.season.year+1}}</small></h2>
+			% ballot_season = db.query(m.BallotSeason).order_by(m.BallotSeason.year.desc()).first()
+			% if request.user:
+				<h2>Currently balloting</h2>
+				<table class="table">
+					<%
+					slots = (db
+						.query(m.BallotSlot)
+						.join(m.BallotEvent)
+						.filter(m.BallotEvent.season == ballot_season)
+						.filter(m.BallotSlot.time <= func.now())
+						.filter(m.BallotSlot.choice == None)
+						.order_by(m.BallotSlot.time)
+					)
+					%>
+					% for slot in slots:
+						<tr>
+							<td>
+								<a href="{{ url_for(slot.person) }}" style="display: block; padding-left: 25px;">
+									<img src="{{ slot.person.gravatar(size=20) }}" width="20" height="20" style="margin-left: -25px; float: left" />
+									{{ slot.person.name }}
+								</a>
+							</td>
+							<td>
+								{{! format_ts_html(slot.time) }}
+							</td>
+						</tr>
+					% end
+				</table>
+			% end
+			<h2>Recent bookings <small> for {{ballot_season}}</small></h2>
 			<table class="table">
 				<%
 				ballot_occupancies = (db
 					.query(m.Occupancy)
 					.join(m.RoomListing)
 					.join(m.BallotSeason)
-					.filter(m.BallotSeason.year == ballot_event.season.year)
+					.filter(m.BallotSeason.year == ballot_season.year)
 					.order_by(m.Occupancy.chosen_at.desc())
 				)
 
