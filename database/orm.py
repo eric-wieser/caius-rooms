@@ -397,7 +397,7 @@ class RoomListing(Base):
 	rent          = Column(Numeric(6, 2))
 
 	room           = relationship(lambda: Room, backref=backref("listings", lazy='subquery', order_by=ballot_season_id.desc()))
-	ballot_season  = relationship(lambda: BallotSeason, backref="room_listings")
+	ballot_season  = relationship(lambda: BallotSeason, backref="room_listings", lazy="joined")
 	audience_types = relationship(lambda: BallotType,
 		secondary=lambda: room_listing_audiences_assoc,
 		backref="all_time_listings",
