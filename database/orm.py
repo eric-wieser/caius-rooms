@@ -351,7 +351,7 @@ class BallotEvent(Base):
 	is_active = column_property((opens_at < func.now()) & (func.now() < closes_at))
 
 	type      = relationship(lambda: BallotType,   backref="events")
-	season    = relationship(lambda: BallotSeason, backref="events")
+	season    = relationship(lambda: BallotSeason, backref="events", lazy="joined")
 
 	__table_args__ = (UniqueConstraint(type_id, season_id, name='_season_type_uc'),)
 
@@ -490,7 +490,7 @@ class ReviewSection(Base):
 	heading_id = Column(Integer, ForeignKey(ReviewHeading.id), primary_key=True, nullable=False)
 	content    = Column(UnicodeText)
 
-	heading = relationship(lambda: ReviewHeading)
+	heading = relationship(lambda: ReviewHeading, lazy='joined')
 
 	_order = column_property(
 		select([ReviewHeading.position]).where(ReviewHeading.id == heading_id)
