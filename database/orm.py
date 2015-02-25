@@ -572,7 +572,12 @@ class ReviewRoomReference(Base):
 
 	review_section = relationship(
 		lambda: ReviewSection,
-		backref=backref('refers_to', order_by=start_idx, cascade='all, delete-orphan'),
+		backref=backref(
+			'refers_to',
+			lazy="joined",
+			order_by=start_idx,
+			cascade='all, delete-orphan'
+		),
 	)
 	room = relationship(lambda: Room, backref='references')
 
