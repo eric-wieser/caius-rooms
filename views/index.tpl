@@ -39,69 +39,37 @@ rebase('layout')
 		<a href="/places/48">R staircase Tree Court</a> will be the subject of the next phase of the Tree Court refurbishment, expected to run from July through November 2015. When the work is complete the Tutors will determine the amount of an appropriate compensatory payment to residents. However, students who expect to spend a significant amount of time in their rooms during the working day should think carefully before choosing a room on this staircase.
 	</div>
 	<div class="row">
-		<div class="col-md-6">
-			<h2>Recent reviews</h2>
-			<table class="table">
-				<% reviews = (db
-					.query(m.Review)
-					.order_by(m.Review.published_at.desc())
-					.filter(m.Review.is_newest)
-				) %>
-				% for review in reviews.limit(10):
-					% room = review.occupancy.listing.room
-					% author = review.occupancy.resident
-					<tr>
-						<td class="text-right">
-							<a href="{{ url_for(room) }}#occupancy-{{review.occupancy.id}}">{{ room.pretty_name() }}</a>
-						</td>
-						% if request.user:
-							<td>
-								% if author:
-									<a href="{{ url_for(author) }}" style="display: block; padding-left: 25px;">
-										<img src="{{ author.gravatar(size=20) }}" width="20" height="20" style="margin-left: -25px; float: left" />
-										{{ author.name }}
-									</a>
-								% else:
-									<span class="text-muted">unknown</span>
-								% end
-							</td>
-						% end
-						<td>
-							{{! format_ts_html(review.published_at) }}
-						</td>
-					</tr>
-				%end
-			</table>
-		</div>
-		<div class="col-md-6">
+		<div class="col-md-6 col-md-push-6">
 			% ballot_season = db.query(m.BallotSeason).order_by(m.BallotSeason.year.desc()).first()
 			% if request.user:
-				<h2>Currently balloting</h2>
-				<table class="table">
-					<%
-					slots = (db
-						.query(m.BallotSlot)
-						.join(m.BallotEvent)
-						.filter(m.BallotEvent.season == ballot_season)
-						.filter(m.BallotSlot.time <= func.now())
-						.filter(m.BallotSlot.choice == None)
-						.order_by(m.BallotSlot.time)
-					)
-					%>
-					% for slot in slots:
-						<tr>
-							<td>
-								<a href="{{ url_for(slot.person) }}" style="display: block; padding-left: 25px;">
-									<img src="{{ slot.person.gravatar(size=20) }}" width="20" height="20" style="margin-left: -25px; float: left" />
-									{{ slot.person.name }}
-								</a>
-							</td>
-							<td>
-								{{! format_ts_html(slot.time) }}
-							</td>
-						</tr>
-					% end
-				</table>
+				<%
+				slots = (db
+					.query(m.BallotSlot)
+					.join(m.BallotEvent)
+					.filter(m.BallotEvent.season == ballot_season)
+					.filter(m.BallotSlot.time <= func.now())
+					.filter(m.BallotSlot.choice == None)
+					.order_by(m.BallotSlot.time)
+				).all()
+				%>
+				% if slots:
+					<h2>Currently balloting</h2>
+					<table class="table">
+						% for slot in slots:
+							<tr>
+								<td>
+									<a href="{{ url_for(slot.person) }}" style="display: block; padding-left: 25px;">
+										<img src="{{ slot.person.gravatar(size=20) }}" width="20" height="20" style="margin-left: -25px; float: left" />
+										{{ slot.person.name }}
+									</a>
+								</td>
+								<td>
+									{{! format_ts_html(slot.time) }}
+								</td>
+							</tr>
+						% end
+					</table>
+				% end
 			% end
 			<h2>Recent bookings <small> for {{ballot_season}}</small></h2>
 			<table class="table">
@@ -139,6 +107,40 @@ rebase('layout')
 						% end
 						<td>
 							{{! format_ts_html(occupancy.chosen_at) }}
+						</td>
+					</tr>
+				%end
+			</table>
+		</div>
+		<div class="col-md-6 col-md-pull-6">
+			<h2>Recent reviews</h2>
+			<table class="table">
+				<% reviews = (db
+					.query(m.Review)
+					.order_by(m.Review.published_at.desc())
+					.filter(m.Review.is_newest)
+				) %>
+				% for review in reviews.limit(10):
+					% room = review.occupancy.listing.room
+					% author = review.occupancy.resident
+					<tr>
+						<td class="text-right">
+							<a href="{{ url_for(room) }}#occupancy-{{review.occupancy.id}}">{{ room.pretty_name() }}</a>
+						</td>
+						% if request.user:
+							<td>
+								% if author:
+									<a href="{{ url_for(author) }}" style="display: block; padding-left: 25px;">
+										<img src="{{ author.gravatar(size=20) }}" width="20" height="20" style="margin-left: -25px; float: left" />
+										{{ author.name }}
+									</a>
+								% else:
+									<span class="text-muted">unknown</span>
+								% end
+							</td>
+						% end
+						<td>
+							{{! format_ts_html(review.published_at) }}
 						</td>
 					</tr>
 				%end
