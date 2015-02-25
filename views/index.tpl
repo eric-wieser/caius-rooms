@@ -2,6 +2,7 @@
 import database.orm as m
 from utils import format_ts_html
 from sqlalchemy.sql import func
+from sqlalchemy.orm import joinedload, subqueryload
 from bottle import request
 
 rebase('layout')
@@ -76,6 +77,10 @@ rebase('layout')
 				<%
 				ballot_occupancies = (db
 					.query(m.Occupancy)
+					.options(
+						joinedload(m.Occupancy.listing)
+							.joinedload(m.RoomListing.room)
+					)
 					.join(m.RoomListing)
 					.join(m.BallotSeason)
 					.filter(m.BallotSeason.year == ballot_season.year)
@@ -117,6 +122,11 @@ rebase('layout')
 			<table class="table">
 				<% reviews = (db
 					.query(m.Review)
+					.options(
+						joinedload(m.Review.occupancy)
+							.joinedload(m.Occupancy.listing)
+							.joinedload(m.RoomListing.room)
+					)
 					.order_by(m.Review.published_at.desc())
 					.filter(m.Review.is_newest)
 				) %>
