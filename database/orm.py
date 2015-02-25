@@ -255,6 +255,8 @@ class Room(Base):
 	living_room_y = Column(Integer)
 	living_room_view = Column(RoomView)
 
+	size_imported = Column(Boolean)
+
 	has_piano     = Column(Boolean)
 	has_washbasin = Column(Boolean)
 	has_eduroam   = Column(Boolean)
@@ -389,8 +391,8 @@ class RoomListing(Base):
 	__tablename__ = 'room_listings'
 
 	id               = Column(Integer, primary_key=True)
-	ballot_season_id = Column(Integer, ForeignKey(BallotSeason.year), index=True)
-	room_id          = Column(Integer, ForeignKey(Room.id, onupdate="cascade"), index=True)
+	ballot_season_id = Column(Integer, ForeignKey(BallotSeason.year), nullable=False, index=True)
+	room_id          = Column(Integer, ForeignKey(Room.id, onupdate="cascade"), nullable=False, index=True)
 
 	rent          = Column(Numeric(6, 2))
 
@@ -410,8 +412,8 @@ class RoomListing(Base):
 
 room_listing_audiences_assoc = Table('room_listing_audiences',	Base.metadata,
 	Column('id',              Integer, primary_key=True),
-	Column('room_listing_id', Integer, ForeignKey(RoomListing.id)),
-	Column('ballot_type_id',  Integer, ForeignKey(BallotType.id)),
+	Column('room_listing_id', Integer, ForeignKey(RoomListing.id), nullable=False),
+	Column('ballot_type_id',  Integer, ForeignKey(BallotType.id), nullable=False),
 	UniqueConstraint('room_listing_id', 'ballot_type_id', name='_listing_type_uc')
 )
 
