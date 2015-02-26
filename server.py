@@ -286,8 +286,8 @@ with base_route(app, '/rooms'):
 			room = (db
 				.query(m.Room)
 				.options(*opts)
-				.join(m.Room.listings)
-				.join(m.Occupancy)
+				.outerjoin(m.Room.listings)
+				.outerjoin(m.Occupancy)
 				.filter(m.Room.id == room_id)
 			).one()
 		except NoResultFound:
