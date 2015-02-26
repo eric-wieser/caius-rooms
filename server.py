@@ -313,19 +313,15 @@ with base_route(app, '/rooms'):
 with base_route(app, '/places'):
 	@app.route('', name="place-list")
 	def show_places(db):
-		from sqlalchemy.orm.strategy_options import Load
+		from sqlalchemy.orm import joinedload_all
 
 		# load the entire heirarchy in one query
-		opts = (
-			Load(m.Room)
-				.subqueryload(m.Room.stats),
-
-			Load(m.Cluster)
-				.joinedload(m.Cluster.children),
-			Load(m.Cluster)
-				.joinedload(m.Cluster.rooms)
-		)
-		root = db.query(m.Cluster).options(*opts).filter(m.Cluster.parent == None).one()
+		root = db.query(m.Cluster).options(
+			joinedload_all('children.rooms').subqueryload(m.Room.stats),
+			joinedload_all('children.children.rooms').subqueryload(m.Room.stats),
+			joinedload_all('children.children.children.rooms').subqueryload(m.Room.stats),
+			joinedload_all('children.children.children.children.rooms').subqueryload(m.Room.stats),
+		).filter(m.Cluster.parent == None).one()
 
 		return template('places', location=root)
 
