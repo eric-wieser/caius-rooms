@@ -84,10 +84,9 @@ rebase('layout')
 					.join(m.RoomListing)
 					.join(m.BallotSeason)
 					.filter(m.BallotSeason.year == ballot_season.year)
+					.filter(m.Occupancy.ballot_slot != None)
 					.order_by(m.Occupancy.chosen_at.desc())
 				)
-
-				ballot_occupancies = (b for b in ballot_occupancies if b.ballot_slot)
 
 				import itertools
 				%>
