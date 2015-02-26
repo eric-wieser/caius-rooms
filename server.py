@@ -572,7 +572,7 @@ with base_route(app, '/users'):
 			joinedload(m.Person.occupancies).load_only(),
 			joinedload(m.Person.occupancies).subqueryload(m.Occupancy.reviews).load_only(m.Review.id),
 			joinedload(m.Person.occupancies).subqueryload(m.Occupancy.photos).load_only(m.Photo.id)
-		).order_by(m.Person.last_seen.desc(), m.Person.crsid)
+		).order_by(m.Person.last_seen.desc().nullslast(), m.Person.crsid)
 		return template('users', users=users)
 
 	@app.route('/update')
