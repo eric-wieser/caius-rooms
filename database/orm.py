@@ -520,6 +520,7 @@ class ReviewSection(Base):
 
 	def html_content(self, current_room=None):
 		from bottle import html_escape
+		from utils import url_for
 
 		html = ""
 
@@ -531,15 +532,17 @@ class ReviewSection(Base):
 
 			# link non-self single refs
 			if len(refs) == 1 and refs[0].room_id != current_room.id:
-				text = '<a href="/rooms/{id}">{text}</a>'.format(
-					id=refs[0].room_id,
+				text = '<a href="{url}">{text}</a>'.format(
+					url=url_for(refs[0].room),
 					text=text
 				)
 
 			# link all multirefs
 			elif len(refs) > 1:
-				text = '<a href="/rooms?filter_id={id}">{text}</a>'.format(
-					id=','.join(str(ref.room_id) for ref in refs),
+				text = '<a href="{url}">{text}</a>'.format(
+					url=url_for('/rooms', qs={
+						'filter_id': ','.join(str(ref.room_id) for ref in refs)
+					}),
 					text=text
 				)
 
