@@ -248,7 +248,7 @@ end
 			<div id="map"></div>
 			% lat_lon = room.geocoords
 			% if lat_lon:
-				<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&amp;sensor=false"></script>
+				<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&amp;sensor=false&signed_in=true"></script>
 				<script>
 					google.maps.visualRefresh = true;
 
@@ -264,14 +264,14 @@ end
 					    map = new google.maps.Map(mapElem[0], {
 							zoom: 15,
 							center: loc,
-							disableDefaultUI: true,
+							disableDefaultUI: false,
 							draggable: true,
 							zoomControl: false,
 							scaleControl: false,
 							scrollwheel: true,
 							mapTypeId: google.maps.MapTypeId.ROADMAP,
 							styles: [
-								{
+								/*{
 									featureType: "poi",
 									elementType: "labels",
 									stylers: [
@@ -283,7 +283,7 @@ end
 									stylers: [
 										{visibility: "off" }
 									]
-								}
+								}*/
 							]
 						});
 						new google.maps.Marker({position: loc}).setMap(map)
