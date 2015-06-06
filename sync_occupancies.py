@@ -48,4 +48,4 @@ while True:
 		update()
 	except Exception as e:
 		print "EE: {}".format(e)
-	time.sleep(1)
+	time.sleep(30)
