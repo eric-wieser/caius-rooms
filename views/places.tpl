@@ -29,7 +29,7 @@ end
 					</td>
 					% if sub_loc.rooms:
 						% if False:
-							% n = sum(room['owner'] is None for room in place['rooms'])
+							% n = sum(room.listing_for[ballot] is None for room in place['rooms'])
 							<td data-value="{{n}}">
 								{{ n }} / {{ len(place['rooms']) }}
 							</td>

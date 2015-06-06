@@ -237,7 +237,7 @@ end
 							£{{ "{:.2f}".format(last_listing.rent) }} / term
 
 							% if not ballot_event:
-								<br /><small class="text-danger">Rent is shown as paid by the current occupants. If you are choosing a room in a ballot, please login to see the prices you'd pay.</small>
+								<br /><small class="text-danger">Rent is shown as paid by the current occupants. If you are choosing a room in a ballot, please login or switch to that ballot to see the prices you'd pay.</small>
 							% end
 						% end
 					</td>
@@ -261,7 +261,7 @@ end
 					function initialize() {
 						mapElem.css('height', mapElem.parent().parent().find('div').first().height() - 20);
 
-					    map = new google.maps.Map(mapElem[0], {
+						map = new google.maps.Map(mapElem[0], {
 							zoom: 15,
 							center: loc,
 							disableDefaultUI: false,

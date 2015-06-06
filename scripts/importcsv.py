@@ -7,7 +7,7 @@ import csv
 from decimal import Decimal
 import regex as re
 from sqlalchemy.orm.exc import NoResultFound
-from sqlalchemy import func 
+from sqlalchemy import func
 
 from database.db import Session
 import database.orm as m

@@ -24,7 +24,7 @@
 
 	% for r in db.query(m.Room):
 		<url>
-			<loc>http://roompicks.caiusjcr.co.uk/rooms/{{ r.id }}</loc>
+			<loc>http://roompicks.caiusjcr.co.uk{{ url_for(r) }}</loc>
 			<priority>0.8</priority>
 
 			% for l in r.listings:
