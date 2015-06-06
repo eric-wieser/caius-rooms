@@ -10,6 +10,8 @@ def copy(old_engine, new_engine):
 	print "creating..."
 	m.Base.metadata.create_all(new_engine)
 
+	class Temp(m.Base):
+		__table__ = m.room_listing_audiences_assoc
 
 	classes = [
 		m.Person,
@@ -25,7 +27,8 @@ def copy(old_engine, new_engine):
 		m.ReviewHeading,
 		m.ReviewSection,
 		m.ReviewRoomReference,
-		m.Photo
+		m.Photo,
+		Temp
 	]
 
 	os = OldSession()
