@@ -444,9 +444,11 @@ class Review(Base):
 	published_at = Column(DateTime, nullable=False)
 	rating       = Column(SmallInteger)
 	occupancy_id = Column(Integer, ForeignKey(Occupancy.id), nullable=False, index=True)
+	editor_id    = Column(CRSID, ForeignKey(Person.crsid), nullable=True)
+	hidden       = Column(Boolean, nullable=False, default=False)
 
 	sections     = relationship(lambda: ReviewSection, cascade='all, delete-orphan', backref='review', order_by=lambda: ReviewSection._order)
-
+	editor       = relationship(lambda: Person, backref="edited_reviews")
 
 	def contents_eq(self, other):
 		"""
@@ -708,7 +710,9 @@ class RoomStats(Base):
 	]).select_from(
 		outerjoin(Room, RoomListing).outerjoin(Occupancy)
 			.outerjoin(Review)
-	).where((Review.id == None) | Review.is_newest).group_by(Room.id).alias(name='room_stats')
+	).where(
+		(Review.id == None) | (Review.is_newest & ~Review.hidden)
+	).group_by(Room.id).alias(name='room_stats')
 
 Room.stats = relationship(
 	RoomStats,
@@ -735,7 +739,7 @@ RoomStats.reference_count = column_property(
 			.join(RoomListing)
 	)
 	.where(RoomStats.room_id == ReviewRoomReference.room_id)
-	.where(Review.is_newest)
+	.where(Review.is_newest & ~Review.hidden)
 	.where(RoomStats.room_id != RoomListing.room_id)  # filter self-references
 )
 

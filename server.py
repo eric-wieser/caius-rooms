@@ -180,6 +180,7 @@ def show_index(db):
 
 @app.error(404)
 @app.error(403)
+@app.error(400)
 @get_authed_user
 def error_handler(res):
 	return template('messages/error', e=res)
@@ -362,34 +363,31 @@ with base_route(app, '/reviews'):
 
 		return template('new-review-choice', occupancies=occupancies)
 
-	@app.route('/new/<occ_id>', name="new-review")
-	@needs_auth('ownership')
-	def show_new_review_form(occ_id, db):
+	def get_occupancy_to_review(db, occ_id):
 		try:
 			occupancy = db.query(m.Occupancy).filter(m.Occupancy.id == occ_id).one()
 		except NoResultFound:
 			raise HTTPError(404, "No such occupancy to review")
 
-		if occupancy.resident != request.user:
+
+		is_own_review = occupancy.resident == request.user
+		if not is_own_review and not request.user.is_admin:
 			raise HTTPError(403, "You must have been a resident of a room to review it")
 
-		review = db.query(m.Review).filter_by(occupancy_id=occ_id).order_by(m.Review.published_at.desc()).first()
+		return occupancy
 
+	@app.route('/new/<occ_id>', name="new-review")
+	@needs_auth('ownership')
+	def show_new_review_form(occ_id, db):
+		occupancy = get_occupancy_to_review(db, occ_id)
+		review = occupancy.review
 		return template('new-review', occupancy=occupancy, review=review)
-
 
 	@app.post('/new/<occ_id>', name="new-review")
 	@needs_auth('ownership')
 	def handle_new_review_form(occ_id, db):
-		try:
-			occupancy = db.query(m.Occupancy).filter(m.Occupancy.id == occ_id).one()
-		except NoResultFound:
-			raise HTTPError(404, "No such occupancy to review")
-
-		if occupancy.resident != request.user:
-			raise HTTPError(403, "You must have been a resident of a room to review it")
-
-		review = db.query(m.Review).filter_by(occupancy_id=occ_id).order_by(m.Review.published_at.desc()).first()
+		occupancy = get_occupancy_to_review(db, occ_id)
+		review = occupancy.review
 
 		# Rating was submitted initially - save that right now
 		rating = request.forms.get('rating')
@@ -406,55 +404,60 @@ with base_route(app, '/reviews'):
 	@needs_auth('ownership')
 	def save_new_review_form(db):
 		occ_id = request.forms.occupancy_id
-
 		if occ_id is None:
 			raise HTTPError(400)
+		occupancy = get_occupancy_to_review(db, occ_id)
 
-		try:
-			occupancy = db.query(m.Occupancy).filter(m.Occupancy.id == occ_id).one()
-		except NoResultFound:
-			raise HTTPError(404, "No such occupancy to review")
+		last_review = occupancy.review
 
+		if 'delete' in request.forms:
+			review = m.Review(
+				occupancy=occupancy,
+				published_at=datetime.now(),
+				hidden=True
+			)
+		else:
+			sections = []
+
+			for key, value in request.forms.iteritems():
+				match = re.match(r'^section-(\d+)$', key)
+				if match:
+					heading_id = int(match.group(1))
+					try:
+						heading = db.query(m.ReviewHeading).filter_by(id=heading_id).one()
+					except NoResultFound:
+						raise HTTPError(400)
+
+					if value.strip():
+						sections += [
+							m.ReviewSection(
+								heading=heading,
+								content=value
+							)
+						]
+					elif heading.is_summary:
+						raise HTTPError(400, "{!r} section cannot be left blank".format(heading.name))
+
+			# validate the rating
+			try:
+				rating = int(request.forms.rating)
+			except ValueError:
+				raise HTTPError(404, "Rating must be an integer")
+			if rating < 0 or rating > 10:
+				raise HTTPError(404, "Rating must be between 0 and 10")
+
+
+			review = m.Review(
+				sections=sections,
+				occupancy=occupancy,
+				published_at=datetime.now(),
+				rating=rating
+			)
+
+		# if an edit occurred, record the editor
 		if occupancy.resident != request.user:
-			raise HTTPError(403, "You must have been a resident of a room to review it")
+			review.editor = request.user
 
-		sections = []
-
-		for key, value in request.forms.iteritems():
-			match = re.match(r'^section-(\d+)$', key)
-			if match:
-				heading_id = int(match.group(1))
-				try:
-					heading = db.query(m.ReviewHeading).filter_by(id=heading_id).one()
-				except NoResultFound:
-					raise HTTPError(400)
-
-				if value.strip():
-					sections += [
-						m.ReviewSection(
-							heading=heading,
-							content=value
-						)
-					]
-				elif heading.is_summary:
-					raise HTTPError(400, "{!r} section cannot be left blank".format(heading.name))
-
-		# validate the rating
-		try:
-			rating = int(request.forms.rating)
-		except ValueError:
-			raise HTTPError(404, "Rating must be an integer")
-		if rating < 0 or rating > 10:
-			raise HTTPError(404, "Rating must be between 0 and 10")
-
-		last_review = db.query(m.Review).filter_by(occupancy_id=occ_id).order_by(m.Review.published_at.desc()).first()
-
-		review = m.Review(
-			sections=sections,
-			occupancy=occupancy,
-			published_at=datetime.now(),
-			rating=rating
-		)
 		db.add(review)
 
 		# check we haven't hit a double-post situation

@@ -3,6 +3,7 @@ rebase('layout')
 from sqlalchemy.orm.session import object_session
 import database.orm as m
 from datetime import datetime
+from bottle import request
 
 from utils import format_ballot_html
 
@@ -18,6 +19,9 @@ def last_content_for(heading):
 end
 %>
 <div class="container">
+	% if request.user != occupancy.resident:
+		<div class="alert alert-warning"><strong>With great power comes great responsibility.</strong> Don't forget this is someone else's review you're editing, and other people will be able to see what you've changed. Use this only to correct room links and typos, and remove offensive or privacy-violating content.</div>
+	% end
 	<form action="/reviews" method="POST">
 		<input type="hidden" name="occupancy_id" value="{{ occupancy.id }}" />
 		<div itemprop="review" itemscope itemtype="http://schema.org/Review">
@@ -68,7 +72,6 @@ end
 								{{ heading.name }}
 							</h3>
 							<textarea class="form-control"
-							          required
 							          name="section-{{heading.id}}" rows="4" style="resize: vertical"
 							          placeholder="{{heading.prompt or ''}}">{{ last_content_for(heading) }}</textarea>
 						% end
@@ -92,6 +95,8 @@ end
 				</div>
 			</div>
 		</div>
+		<button type="submit" name="delete" class="pull-left btn btn-danger btn-lg">Delete review</button>
+
 		<div class="text-right">
 			<a href="{{ url_for(occupancy.listing.room) }}#occupancy-{{ occupancy.id }}" class="btn btn-default btn-lg">Cancel</a>
 			<button type="submit" class="btn btn-success btn-lg">Submit</button>

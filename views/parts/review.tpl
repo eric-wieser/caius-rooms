@@ -4,6 +4,7 @@
 % show_room = get('show_room') or False
 % review = occupancy.review
 % user_is_author = occupancy.resident == request.user != None
+% user_is_admin = request.user and request.user.is_admin
 <div itemprop="review" itemscope itemtype="http://schema.org/Review">
 	<div style="position: relative; top: -50px" id="occupancy-{{occupancy.id}}"></div>
 
@@ -55,7 +56,7 @@
 				% end
 				% # we pull this button up in small windows
 				<span class="review-edit-md-lg">
-					% if user_is_author and review.sections:
+					% if (user_is_author or user_is_admin) and review.sections:
 						<a class="btn btn-success btn-lg" href="/reviews/new/{{ occupancy.id }}">
 							<span class="glyphicon glyphicon-pencil"></span> Edit
 						</a>
@@ -71,7 +72,7 @@
 					</div>
 				% end
 			% else:
-				% if user_is_author:
+				% if (user_is_author or user_is_admin):
 					<div class="review-edit-xs-sm">
 						<a class="btn btn-success btn-lg" href="/reviews/new/{{ occupancy.id }}">
 							<span class="glyphicon glyphicon-pencil"></span> Edit
