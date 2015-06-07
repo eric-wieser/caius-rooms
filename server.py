@@ -380,8 +380,14 @@ with base_route(app, '/reviews'):
 	@needs_auth('ownership')
 	def show_new_review_form(occ_id, db):
 		occupancy = get_occupancy_to_review(db, occ_id)
-		review = occupancy.review
+		if request.query.revision:
+			review = next(r for r in occupancy.reviews if r.id == int(request.query.revision))
+			if not review:
+				raise HTTPError(400, "Revision refers to a different room!")
+		else:
+			review = occupancy.review
 		return template('new-review', occupancy=occupancy, review=review)
+
 
 	@app.post('/new/<occ_id>', name="new-review")
 	@needs_auth('ownership')
