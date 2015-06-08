@@ -127,7 +127,7 @@ rebase('layout')
 							.joinedload(m.RoomListing.room)
 					)
 					.order_by(m.Review.published_at.desc())
-					.filter(m.Review.is_newest & ~m.Review.editor)
+					.filter(m.Review.is_newest & (m.Review.editor == None))
 				) %>
 				% for review in reviews.limit(10):
 					% room = review.occupancy.listing.room
