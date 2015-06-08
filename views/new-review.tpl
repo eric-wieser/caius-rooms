@@ -33,9 +33,11 @@ end
 					<strong>{{! format_ballot_html(occupancy.listing.ballot_season) }}</strong>
 				</div>
 				<div class="col-xs-6">
-					<a itemprop="author" href="{{ url_for(occupancy.resident) }}">
-						{{ occupancy.resident.name }}
-					</a>
+					% if occupancy.resident:
+						<a itemprop="author" href="{{ url_for(occupancy.resident) }}">
+							{{ occupancy.resident.name }}
+						</a>
+					% END
 				</div>
 				<div class="col-xs-4 text-right">
 					% sl = occupancy.ballot_slot
@@ -75,7 +77,7 @@ end
 								{{ heading.name }}
 							</h3>
 							<textarea class="form-control"
-							          name="section-{{heading.id}}" rows="4" style="resize: vertical"
+							          name="section-{{heading.id}}" rows="5" style="resize: vertical"
 							          placeholder="{{heading.prompt or ''}}">{{ last_content_for(heading) }}</textarea>
 						% end
 					% end
@@ -89,7 +91,7 @@ end
 								<dd>
 									<textarea name="section-{{heading.id}}"
 									          class="form-control"
-									          rows="3"
+									          rows="4"
 									          style="resize: vertical; margin-bottom: 5px"
 									          placeholder="{{heading.prompt or ''}}">{{ last_content_for(heading) }}</textarea></dd>
 							% end
