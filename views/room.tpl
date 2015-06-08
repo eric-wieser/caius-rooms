@@ -319,7 +319,7 @@ photos = [
 				<div><a class="btn btn-lg btn-success" href="/photos/new/{{occ.id}}">Upload photos</a></div>
 			% end
 			% for photo in photos:
-				<p style="display: inline-block; text-align: left; margin: 10px; overflow: hidden">
+				<p style="display: inline-block; text-align: left; margin: 0 10px 20px; overflow: hidden">
 					<img src="{{photo.href}}" class="img-rounded img-responsive"
 					     width="{{ photo.width }}" />
 					{{ photo.caption }}

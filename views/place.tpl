@@ -25,9 +25,9 @@ import itertools
 
 	% include('parts/room-table', roomsq=roomsq, ballot=ballot, relative_to=location)
 
-	<div id="map" style="height: 400px"></div>
 	% lat_lon = location.geocoords
 	% if lat_lon:
+		<div id="map" style="height: 400px"></div>
 		<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&amp;sensor=false"></script>
 		<script>
 			google.maps.visualRefresh = true;
