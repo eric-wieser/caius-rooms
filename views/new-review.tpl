@@ -37,7 +37,7 @@ end
 						<a itemprop="author" href="{{ url_for(occupancy.resident) }}">
 							{{ occupancy.resident.name }}
 						</a>
-					% END
+					% end
 				</div>
 				<div class="col-xs-4 text-right">
 					% sl = occupancy.ballot_slot
