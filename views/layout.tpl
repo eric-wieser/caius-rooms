@@ -211,6 +211,21 @@ end
 		$(function() {
 			$('.glyphicon[title]').add('*[data-tooltip]').tooltip();
 		});
+		function fixWrappedNav() {
+			var nav = $('#page-specific-nav .nav').get(0);
+			if(nav.offsetTop == 50) {
+				$('body').css('margin-top', '100px');
+			}
+			else {
+				$('body').css('margin-top', '');
+			}
+		}
+		var timeout;
+		$(window).resize(function() {
+			clearTimeout(timeout);
+			timeout = setTimeout(fixWrappedNav, 100);
+		});
+		fixWrappedNav();
 		</script>
 
 		<div id="footer">
