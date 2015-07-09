@@ -264,7 +264,7 @@ def parse_csv(f):
 
 	headers = next(reader)
 
-	if headers != ["date", "time", "crsid", "name (ignored)"]:
+	if headers[:3] != ["date", "time", "crsid"]:
 		errors += [('bad-header',)]
 		return [], errors
 
