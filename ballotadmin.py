@@ -265,7 +265,7 @@ def parse_csv(f):
 	headers = next(reader)
 
 	if headers != ["date", "time", "crsid", "name (ignored)"]:
-		errors += ['bad-header']
+		errors += [('bad-header',)]
 		return [], errors
 
 	last_date = None
@@ -288,7 +288,7 @@ def parse_csv(f):
 		elif last_date:
 			date = last_date
 		else:
-			errors += [('no-date')]
+			errors += [('no-date',)]
 			continue
 
 		# either parse the time, or reuse the last one + 3 minutes
@@ -303,7 +303,7 @@ def parse_csv(f):
 			time = last_time + timedelta(minutes=3)
 			last_time = time
 		else:
-			errors += [('no-time')]
+			errors += [('no-time',)]
 			continue
 
 		# save the (ts, crsid) tuple
