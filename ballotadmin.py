@@ -152,6 +152,7 @@ def add_routes(app):
 			r = db.query(m.Room).get(i)
 			if r:
 				r.listing_for[ballot_season] = m.RoomListing(
+					room=r,
 					ballot_season=ballot_season,
 					audience_types={ballot_type}
 				)
