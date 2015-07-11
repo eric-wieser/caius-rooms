@@ -6,15 +6,21 @@ from sqlalchemy.orm import aliased
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 
 sys.path.append('..')
-import db
-import orm
+import database.db as db
+import database.orm as orm
 
 class NewLocation(Exception):
 	pass
 
 def get_location(new_session, loc_name):
-	loc_name = loc_name.replace("Rd", "Road")
-	loc_name = loc_name.replace("35/37", "35-37")
+	loc_name = re.sub(r"\bRd\b", "Road", loc_name)
+	loc_name = re.sub(r"\bSt$", "Street", loc_name)
+	loc_name = re.sub(r"\bCt\b", "Court", loc_name)
+	loc_name = re.sub(r"\bCres\b", "Crescent", loc_name)
+	loc_name = re.sub(r"\bBldg\b", "Building", loc_name)
+	loc_name = re.sub(r"\bMarys\b", "Mary's", loc_name)
+	loc_name = re.sub(r"\bMichaels\b", "Michael's", loc_name)
+	loc_name = re.sub("35/37", "35-37", loc_name)
 	try:
 		return new_session.query(orm.Cluster).filter(orm.Cluster.name == loc_name).one()
 	except NoResultFound:
@@ -33,7 +39,7 @@ def get_location(new_session, loc_name):
 	except NoResultFound:
 		root = new_session.query(orm.Cluster).filter(orm.Cluster.parent == None).one()
 
-		raise NewLocation("New location #{}, {}.format(number, place)", orm.Cluster(
+		raise NewLocation("New location #{}, {}".format(number, place), orm.Cluster(
 			name=number,
 			type="building",
 			parent=orm.Cluster(
@@ -45,7 +51,7 @@ def get_location(new_session, loc_name):
 
 def get_location_with_stair(new_session, loc_name, staircase):
 	# fix K stair / K block confusion / random A staircase
-	if staircase == 'K' and loc_name == 'Harvey Court' or loc_name == 'K Block':
+	if staircase == 'K' and loc_name.startswith('Harvey C') or loc_name == 'K Block':
 		staircase = None
 		loc_name = 'K Block'
 	elif loc_name == '4 Rose Crescent':
@@ -81,6 +87,8 @@ def try_recover_room(new_session, location, name):
 		return rooms.filter(orm.Room.name == name).one()
 	except NoResultFound:
 		pass
+	except MultipleResultsFound:
+		raise ValueError("Oops", rooms.filter(orm.Room.name == name).all())
 
 	# look for joint rooms that share a number
 	numeric_room = name.rstrip('*')
