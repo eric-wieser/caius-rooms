@@ -22,7 +22,7 @@ end
 	% if request.user != occupancy.resident:
 		<div class="alert alert-info"><strong>With great power comes great responsibility.</strong> Don't forget this is someone else's review you're editing, and other people will be able to see what you've changed. Use this only to correct room links and typos, and remove offensive or privacy-violating content.</div>
 	% end
-	% if review.occupancy != occupancy.review:
+	% if review and review.occupancy != occupancy.review:
 		<div class="alert alert-warning"><strong>Warning!</strong> You're editing an old revision. If you save it, you will effectively roll back to this old version of the post.</div>
 	% end
 	<form action="/reviews" method="POST">

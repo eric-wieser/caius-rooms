@@ -104,7 +104,7 @@ textarea {
 					<div class="alert alert-danger">
 						% cat, args = error[0], error[1:]
 						% if cat == 'bad-header':
-							Header row has been changed or removed
+							Header row has been changed or removed - it should match the one in the file you downloaded
 						% elif cat == 'no-date':
 							First data row must contain a date
 						% elif cat == 'no-time':
