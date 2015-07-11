@@ -28,7 +28,7 @@ end
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<link rel="icon"       href="http://cdn.dustball.com/house.png" type="image/png" >
 		<link rel="stylesheet" href="/static/style.min.css">
-		<link rel="canonical"  href="{{ request.urlparts._replace(netloc='roompicks.caiusjcr.co.uk').geturl() }}" />
+		<link rel="canonical"  href="{{ request.urlparts._replace(netloc='roompicks.caiusjcr.co.uk', query="").geturl() }}" />
 		<script src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
 		<title>{{' | '.join([name for url, name in reversed(layout_breadcrumb)] + ['RoomPicks']) }}</title>
 	</head>
