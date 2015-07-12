@@ -430,6 +430,8 @@ class Occupancy(Base):
 	listing_id  = Column(Integer, ForeignKey(RoomListing.id), nullable=False, index=True)
 	chosen_at   = Column(DateTime)
 
+	cancelled   = Column(Boolean, nullable=False, default=False)
+
 	listing     = relationship(
 		lambda: RoomListing,
 		backref=backref("occupancies", cascade="all, delete-orphan", lazy='subquery', order_by=chosen_at.desc())

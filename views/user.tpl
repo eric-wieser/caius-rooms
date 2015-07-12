@@ -45,7 +45,14 @@ end
 
 				<table class="table">
 					% for o in occs:
-						<tr>
+						<%
+						if o.cancelled:
+							s = ' style="text-decoration: line-through"'
+						else:
+							s = ''
+						end
+						%>
+						<tr{{!s}}>
 							<th>
 								{{ o.listing.ballot_season }}
 							</th>

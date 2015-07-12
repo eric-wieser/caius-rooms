@@ -753,6 +753,7 @@ with base_route(app, '/tools'):
 		if request.query.year:
 			season = db.query(m.BallotSeason).get(request.query.year)
 
+
 		# incomplete form - get
 		if request.method == 'GET':
 			return template('tools-assign', user=user, room=room, season=season, seasons=db.query(m.BallotSeason).all())
@@ -762,8 +763,16 @@ with base_route(app, '/tools'):
 			raise HTTPError(400)
 
 		else:
+			cancel_src = request.forms.cancel_src == "1"
+			cancel_dest = request.forms.cancel_dest == "1"
+
 			from sqlalchemy.orm.session import make_transient
 			from datetime import datetime
+
+			import roombooking
+
+			# better lock the table now, just to be sure
+			roombooking.lock_occupancies(db)
 
 			listing = room.listing_for.get(season)
 			if not listing:
@@ -774,6 +783,15 @@ with base_route(app, '/tools'):
 
 			occs = listing.occupancies
 			assert not any(occ.resident == user for occ in occs)
+
+			if cancel_src:
+				for occ in user.occupancies:
+					if occ.listing.ballot_season == season:
+						occ.cancelled = True
+
+			if cancel_dest:
+				for occ in listing.occupancies:
+					occ.cancelled = True
 
 			new_occ = m.Occupancy(resident=user, listing=listing, chosen_at=datetime.now())
 			db.add(new_occ)

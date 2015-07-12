@@ -8,11 +8,12 @@
 <div itemprop="review" itemscope itemtype="http://schema.org/Review">
 	<div style="position: relative; top: -50px" id="occupancy-{{occupancy.id}}"></div>
 
+	% st = 'style="text-decoration: line-through"' if occupancy.cancelled else ''
 	<div class="review-header">
-		<div class="review-header-season">
+		<div class="review-header-season" {{!st}}>
 			{{! format_ballot_html(occupancy.listing.ballot_season) }}
 		</div>
-		<div class="review-header-thing">
+		<div class="review-header-thing" {{!st}}>
 			% if show_room:
 				<a href="{{ url_for(occupancy.listing.room) }}">
 					{{ occupancy.listing.room.pretty_name() }}
@@ -29,7 +30,7 @@
 				<span class="text-muted">Resident not recorded</span>
 			% end
 		</div>
-		<div class="review-header-rank">
+		<div class="review-header-rank" {{!st}}>
 			% if occupancy.resident:
 				% sl = occupancy.ballot_slot
 				% if sl:

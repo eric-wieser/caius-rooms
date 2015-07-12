@@ -66,7 +66,7 @@ def check_occupant_unique(user, listing):
 		occ
 		for occ in user.occupancies
 		if occ.listing.ballot_season == listing.ballot_season
-		# if not occ.cancelled
+		if not occ.cancelled
 	]
 	if any(user_booked):
 		raise UserAlreadyBooked(max(user_booked, key=lambda o: o.chosen_at))
@@ -74,7 +74,7 @@ def check_occupant_unique(user, listing):
 	room_bookings = [
 		occ
 		for occ in listing.occupancies
-		# if not occ.cancelled
+		if not occ.cancelled
 	]
 	if any(room_bookings):
 		raise RoomAlreadyBooked(max(room_bookings, key=lambda o: o.chosen_at))
@@ -88,7 +88,7 @@ def check_then_book(db, user, room, ballot_event):
 	listing = check_listing_adequate(user, room, ballot_event)
 
 	# start locking, to prevent concurrency errors. We need to reload our data to match the lock
-	db.execute('LOCK TABLE {} IN EXCLUSIVE MODE'.format(m.Occupancy.__table__.name))
+	lock_occupancies(db)
 	at = datetime.now() # locking time is choice time
 	db.refresh(user)
 	db.refresh(listing)
@@ -105,3 +105,6 @@ def check_then_book(db, user, room, ballot_event):
 			chosen_at=at,
 		)
 	)
+
+def lock_occupancies(db):
+	db.execute('LOCK TABLE {} IN EXCLUSIVE MODE'.format(m.Occupancy.__table__.name))
