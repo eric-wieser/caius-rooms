@@ -190,6 +190,9 @@ def error_handler(res):
 
 @app.route('/login')
 def do_login(db):
+	# already logged in - return to the home page
+	if request.user:
+		return redirect(request.query.return_to)
 
 	if 'authenticating' not in request.session:
 		request.session['authenticating'] = True
@@ -214,21 +217,34 @@ def do_login(db):
 		if not -15 < issue_delta < 75:
 			abort(403, "Login failed: you took too long to log in - please try again")
 
-		if r.success:
-			# a no-op here, but important if you set iact or aauth
-			if not r.check_iact_aauth(None, None):
-				abort(403, "Something went wrong when logging in: check_iact_aauth failed")
-
-			request.session["user"] = r.principal
-			print "Successfully logged in as {0}".format(r.principal)
-			return redirect(request.query.return_to)
-		else:
+		if not r.success:
 			abort(403, "Login failed: reason unknown")
 			return redirect(request.query.return_to)
 
+		# a no-op here, but important if you set iact or aauth
+		if not r.check_iact_aauth(None, None):
+			abort(403, "Something went wrong when logging in: check_iact_aauth failed")
+
+		request.session["user"] = r.principal
+
+		print "Successfully logged in as {0}".format(r.principal)
+		return redirect(request.query.return_to)
+
+@app.route('/login-as')
+@needs_auth('admin')
+def login_as(db):
+	if request.user.is_admin:
+		request.session["last_user"] = request.session["user"]
+		request.session["user"] = request.params.user
+	redirect('/')
+
 @app.route('/logout')
 def do_logout(db):
-	del request.session['user']
+	if "last_user" in request.session:
+		request.session["user"] = request.session["last_user"]
+		del request.session["last_user"]
+	else:
+		del request.session['user']
 	redirect(request.query.return_to)
 
 
