@@ -226,6 +226,7 @@ def do_login(db):
 			abort(403, "Something went wrong when logging in: check_iact_aauth failed")
 
 		request.session["user"] = r.principal
+		utils.update_csrf_token()
 
 		print "Successfully logged in as {0}".format(r.principal)
 		return redirect(request.query.return_to)
@@ -311,6 +312,65 @@ with base_route(app, '/rooms'):
 			raise HTTPError(404, "No matching room")
 
 		return template('room', room=room, ballot=get_ballot(db), version=request.query.v)
+
+	@app.post('/<room_id>/book')
+	@needs_auth('personalized')
+	def book_room(room_id, db):
+		from sqlalchemy.sql import exists
+
+		token = request.forms.crsf_token
+		if not token or token != request.session.get('crsf_token'):
+			raise HTTPError(403, "Bad CSRF token")
+
+		if not db.query(exists().where(m.Room.id == room_id)).scalar():
+			raise HTTPError(404, "No matching room")
+
+		ballot_event = get_ballot(db)
+		if not isinstance(ballot_event, m.BallotEvent):
+			raise HTTPError(404, "No ballot event found...")
+
+		slot = request.user.slot_for[ballot_event]
+		if not slot:
+			raise HTTPError(404, "No slot found in the ballot")
+
+		at = datetime.now()
+		if at < slot.time:
+			raise HTTPError(404, "Slot not yet open")
+
+		try:
+			listing = (db
+				.query(m.RoomListing)
+				.filter(m.RoomListing.room_id == room_id)
+				.filter(m.RoomListing.ballot_season == ballot_event.season)
+			).one()
+		except NoResultFound:
+			raise HTTPError(400, "Room not listed in this ballot")
+
+		if ballot_event.type not in listing.audience_types:
+			raise HTTPError(400, "Room is available this year, but only in the ballots: {}".format(
+				', '.join(t.name for t in listing.audience_types)
+			))
+
+		# start locking, to prevent concurrency errors. We need to reload our data to match the lock
+		db.execute('LOCK TABLE {} IN EXCLUSIVE MODE'.format(m.Occupancy.__table__.name))
+		at = datetime.now()
+		db.refresh(listing)
+
+		# TODO: filter out cancelled occupancies
+		active_occs = listing.occupancies
+
+		if active_occs:
+			raise HTTPError(400, "Someone else got there first")
+
+		listing.occupancies.append(
+			m.Occupancy(
+				resident=request.user,
+				chosen_at=at,
+			)
+		)
+
+		redirect(utils.url_for(listing.room))
+
 
 	@app.route('/mine')
 	@needs_auth('personalized')

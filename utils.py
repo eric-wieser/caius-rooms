@@ -152,3 +152,7 @@ def url_for(x, extra_path=None, qs={}):
 	else:
 		return base
 
+def update_csrf_token():
+	import binascii
+	import os
+	request.session['crsf_token'] = binascii.hexlify(os.urandom(32))

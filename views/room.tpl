@@ -54,9 +54,6 @@ else:
 end
 
 %>
-
-% include('parts/reserve-modal')
-
 <div style="margin-bottom: 6em" itemscope itemtype="http://schema.org/Product">
 <div class="container">
 	<%
@@ -96,10 +93,14 @@ end
 							All systems go!
 						</strong>
 						This room is available
-						<button type="button" data-toggle="modal"
-								data-target="#reserve-modal"
-								class="btn btn-md btn-success pull-right">
-							Reserve this room</a>
+						<form action="{{ url_for(room, extra_path="book") }}" method="POST" class="pull-right">
+							<input type="hidden" name="crsf_token" value="{{ request.session.get('crsf_token', '') }}" />
+							<button type="submit"
+									class="btn btn-md btn-success">
+								Reserve this room
+							</button>
+						</form>
+
 					</div>
 				% end
 			% elif active_occ.resident != request.user:
