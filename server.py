@@ -322,57 +322,23 @@ with base_route(app, '/rooms'):
 		if not token or token != request.session.get('crsf_token'):
 			raise HTTPError(403, "Bad CSRF token")
 
-		if not db.query(exists().where(m.Room.id == room_id)).scalar():
+		try:
+			room = db.query(m.Room).filter(m.Room.id == room_id).one()
+		except NoResultFound:
 			raise HTTPError(404, "No matching room")
 
 		ballot_event = get_ballot(db)
-		if not isinstance(ballot_event, m.BallotEvent):
-			raise HTTPError(404, "No ballot event found...")
 
-		slot = request.user.slot_for[ballot_event]
-		if not slot:
-			raise HTTPError(404, "No slot found in the ballot")
-
-		at = datetime.now()
-		if at < slot.time:
-			raise HTTPError(400, "Slot not yet open")
-
-		if ballot_event.closes_at < at.date():
-			raise HTTPError(400, "Too late - ballot is already over")
-
+		import roombooking
 		try:
-			listing = (db
-				.query(m.RoomListing)
-				.filter(m.RoomListing.room_id == room_id)
-				.filter(m.RoomListing.ballot_season == ballot_event.season)
-			).one()
-		except NoResultFound:
-			raise HTTPError(400, "Room not listed in this ballot")
+			roombooking.check_then_book(db, request.user, room, ballot_event)
+		except roombooking.BookingError:
+			pass
 
-		if ballot_event.type not in listing.audience_types:
-			raise HTTPError(400, "Room is available this year, but only in the ballots: {}".format(
-				', '.join(t.name for t in listing.audience_types)
-			))
-
-		# start locking, to prevent concurrency errors. We need to reload our data to match the lock
-		db.execute('LOCK TABLE {} IN EXCLUSIVE MODE'.format(m.Occupancy.__table__.name))
-		at = datetime.now()
-		db.refresh(listing)
-
-		# TODO: filter out cancelled occupancies
-		active_occs = listing.occupancies
-
-		if active_occs:
-			raise HTTPError(400, "Someone else got there first")
-
-		listing.occupancies.append(
-			m.Occupancy(
-				resident=request.user,
-				chosen_at=at,
-			)
-		)
-
-		redirect(utils.url_for(listing.room))
+		# whatever happens, we redirect back to the room page, which
+		# reevaluates the check and gives the error message to the user about
+		# what went wrong
+		return redirect(utils.url_for(room))
 
 
 	@app.route('/mine')

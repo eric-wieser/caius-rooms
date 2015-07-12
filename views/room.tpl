@@ -60,74 +60,97 @@ end
 	active_listing = room.listing_for.get(ballot_season)
 	last_listing = active_listing
 
+	import roombooking
+	try:
+		roombooking.check_all(request.user, room, ballot_event)
+	except (roombooking.NoUser, roombooking.NoSlot, roombooking.NoBallotEvent):
+		pass
 	%>
-	% if not request.user:
-		% pass
-	% elif not ballot_event:
-		% pass
-	% else:
-		% slot = request.user.slot_for.get(ballot_event)
-		% if slot:
-			% active_occ = active_listing and next(iter(active_listing.occupancies), None)
-			% if not active_listing or ballot_event.type not in active_listing.audience_types:
-				<div class="alert alert-warning lead">
-					<strong>
-						<span class="glyphicon glyphicon-warning-sign"></span>
-						Heads up:
-					</strong>
-					This room isn't and won't be available in the {{ ballot_event.type.name }} ballot
-				</div>
-			% elif not active_occ:
-				% if slot.time >= datetime.now():
-					<div class="alert alert-info lead">
-						<strong>
-							<span class="glyphicon glyphicon-time"></span>
-							You can't choose this room yet.
-						</strong>
-						You'll have to wait till your slot time comes up
-					</div>
-				% else:
-					<div class="alert alert-success lead">
-						<strong>
-							<span class="glyphicon glyphicon-ok"></span>
-							All systems go!
-						</strong>
-						This room is available
-						<form action="{{ url_for(room, extra_path="book") }}" method="POST" class="pull-right">
-							<input type="hidden" name="crsf_token" value="{{ request.session.get('crsf_token', '') }}" />
-							<button type="submit"
-									class="btn btn-md btn-success">
-								Reserve this room
-							</button>
-						</form>
 
-					</div>
-				% end
-			% elif active_occ.resident != request.user:
-				<div class="alert alert-danger lead">
-					<strong>
-						<span class="glyphicon glyphicon-remove"></span>
-						Darn!
-					</strong>
-					You're {{! format_tdelta_html(datetime.now() - active_occ.chosen_at) }} too late - 
-					% if active_occ.resident:
-						<a href="{{ url_for(active_occ.resident) }}">
-							{{active_occ.resident.name}}</a>
-					% else:
-						someone else
-					% end
-					has already taken this room
-				</div>
+	% except roombooking.SlotUnopened:
+		<div class="alert alert-info lead">
+			<strong>
+				<span class="glyphicon glyphicon-time"></span>
+				You can't choose this room yet.
+			</strong>
+			You'll have to wait till your slot time comes up
+		</div>
+	% except roombooking.SlotClosed:
+		<div class="alert alert-info lead">
+			<strong>
+				<span class="glyphicon glyphicon-time"></span>
+				You can't choose this room yet.
+			</strong>
+			You'll have to wait till your slot time comes up
+		</div>
+
+	% except roombooking.NotListed:
+		<div class="alert alert-warning lead">
+			<strong>
+				<span class="glyphicon glyphicon-warning-sign"></span>
+				Heads up:
+			</strong>
+			This room isn't yet available in any {{ ballot_event.season }} ballot
+		</div>
+	% except roombooking.ListedForOthers as e:
+		<div class="alert alert-warning lead">
+			<strong>
+				<span class="glyphicon glyphicon-warning-sign"></span>
+				Heads up:
+			</strong>
+			This room isn't available in the {{ ballot_event.type.name }} ballot, but is available in
+			<span title="{{ ', '.join(t.name for t in e.others) }}">other ballots</span>
+		</div>
+
+	% except roombooking.RoomAlreadyBooked as e:
+		% occ = e.occupancy
+		<div class="alert alert-danger lead">
+			<strong>
+				<span class="glyphicon glyphicon-remove"></span>
+				Darn!
+			</strong>
+			You're {{! format_tdelta_html(datetime.now() - occ.chosen_at) }} too late - 
+			% if occ.resident:
+				<a href="{{ url_for(occ.resident) }}">
+					{{occ.resident.name}}</a>
 			% else:
-				<div class="alert alert-success lead">
-					<strong>
-						<span class="glyphicon glyphicon glyphicon-home"></span>
-						That's it.
-					</strong>
-					You've chosen this room, and are done with balloting for the season
-				</div>
+				someone else
 			% end
-		% end
+			has already taken this room
+		</div>
+
+	% except roombooking.UserAlreadyBooked as e:
+		% occ = e.occupancy
+		<div class="alert alert-success lead">
+			<strong>
+				<span class="glyphicon glyphicon glyphicon-home"></span>
+				That's it.
+			</strong>
+			You've chosen
+			% if occ.listing.room == room:
+				this room,
+			% else:
+				<a href="{{ url_for(occ.listing.room) }}">
+					{{occ.listing.room.pretty_name()}}</a>,
+			% end
+			and are done with balloting for the season
+		</div>
+	% else:
+		<div class="alert alert-success lead">
+			<strong>
+				<span class="glyphicon glyphicon-ok"></span>
+				All systems go!
+			</strong>
+			This room is available
+			<form action="{{ url_for(room, extra_path="book") }}" method="POST" class="pull-right">
+				<input type="hidden" name="crsf_token" value="{{ request.session.get('crsf_token', '') }}" />
+				<button type="submit"
+						class="btn btn-md btn-success">
+					Reserve this room
+				</button>
+			</form>
+
+		</div>
 	% end
 
 	<div id="info" class="row anchor">
