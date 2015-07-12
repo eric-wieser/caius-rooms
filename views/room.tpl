@@ -54,6 +54,9 @@ else:
 end
 
 %>
+% reserve_parts = include('parts/reserve-modal.tpl')
+% reserve_parts['booking_modal']()
+
 <div style="margin-bottom: 6em" itemscope itemtype="http://schema.org/Product">
 <div class="container">
 	<%
@@ -136,20 +139,30 @@ end
 			and are done with balloting for the season
 		</div>
 	% else:
-		<div class="alert alert-success lead">
-			<strong>
-				<span class="glyphicon glyphicon-ok"></span>
-				All systems go!
-			</strong>
-			This room is available
-			<form action="{{ url_for(room, extra_path="book") }}" method="POST" class="pull-right">
-				<input type="hidden" name="crsf_token" value="{{ request.session.get('crsf_token', '') }}" />
-				<button type="submit"
-						class="btn btn-md btn-success">
+		<div class="alert alert-success clearfix">
+			<div id="jsReserveButton" style="display: none">
+				<button
+					class="btn pull-right btn-success"
+					data-toggle="modal"
+					data-target="#reserve-modal">
 					Reserve this room
 				</button>
-			</form>
+				<script>
+					$('#jsReserveButton').show()
+				</script>
+			</div>
+			<span class="lead">
+				<strong>
+					<span class="glyphicon glyphicon-ok"></span>
+					All systems go!
+				</strong>
+				This room is available
+			</span>
 
+			<noscript>
+			% reserve_parts['booking_agreement']()
+			% reserve_parts['booking_button'](confirm=False)
+			</noscript>
 		</div>
 	% end
 
