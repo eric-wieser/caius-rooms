@@ -1,5 +1,5 @@
 <%
-from utils import format_ts_html, restricted
+from utils import format_ts_html, restricted, format_tdelta_html
 from bottle import request
 import json
 from datetime import datetime
@@ -109,7 +109,7 @@ end
 						<span class="glyphicon glyphicon-remove"></span>
 						Darn!
 					</strong>
-					You're {{ datetime.now() - active_occ.chosen_at }} too late - 
+					You're {{! format_tdelta_html(datetime.now() - active_occ.chosen_at) }} too late - 
 					% if active_occ.resident:
 						<a href="{{ url_for(active_occ.resident) }}">
 							{{active_occ.resident.name}}</a>

@@ -1,4 +1,5 @@
-from datetime import datetime
+from __future__ import division
+from datetime import datetime, timedelta
 import random
 import string
 import itertools
@@ -18,6 +19,50 @@ def format_ts(ts):
 def format_ts_html(ts):
 	return '<time title="{}">{}</time>'.format(
 		ts.isoformat(), format_ts(ts)
+	)
+
+def format_tdelta(td):
+	def s(n):
+		return 's' if n != 1 else ''
+
+	seconds = td.total_seconds()
+
+	one_week = timedelta(weeks=1).total_seconds()
+	one_day = timedelta(days=1).total_seconds()
+	one_hour = timedelta(hours=1).total_seconds()
+	one_minute = timedelta(minutes=1).total_seconds()
+	one_second = timedelta(seconds=1).total_seconds()
+
+	td_seconds = seconds % one_minute
+	td_minutes = int((seconds % one_hour) // one_minute)
+	td_hours   = int((seconds % one_day) // one_hour)
+	td_days    = int((seconds % one_week) // one_day)
+	td_weeks   = int(seconds // one_week)
+
+	if td_weeks >= 2:
+		return '{} weeks'.format(td_weeks)
+	elif td_weeks >= 1:
+		return '{} week{} and {} day{}'.format(td_weeks, s(td_weeks), td_days, s(td_days))
+
+	elif td_days >= 3:
+		return '{} days'.format(td_days)
+	elif td_days >= 1:
+		return '{} day{} and {} hour{}'.format(td_days, s(td_days), td_hours, s(td_hours))
+
+	elif td_hours >= 12:
+		return '{} hours'.format(td_hours)
+	elif td_hours >= 1:
+		return '{} hour{} and {} minute{}'.format(td_hours, s(td_hours), td_minutes, s(td_minutes))
+
+	elif td_minutes >= 1:
+		return '{} minute{} and {} second{}'.format(td_minutes, s(td_minutes), int(td_seconds), s(int(td_seconds)))
+
+	else:
+		return '{:.4f} seconds'.format(td_seconds)
+
+def format_tdelta_html(td):
+	return '<span title="Or more precisely, {}, as of loading this page">{}</span>'.format(
+		str(td), format_tdelta(td)
 	)
 
 def format_ballot_html(ballot_season):
