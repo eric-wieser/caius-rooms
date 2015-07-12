@@ -335,7 +335,10 @@ with base_route(app, '/rooms'):
 
 		at = datetime.now()
 		if at < slot.time:
-			raise HTTPError(404, "Slot not yet open")
+			raise HTTPError(400, "Slot not yet open")
+
+		if ballot_event.closes_at < at.date():
+			raise HTTPError(400, "Too late - ballot is already over")
 
 		try:
 			listing = (db
