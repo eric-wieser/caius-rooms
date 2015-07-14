@@ -242,7 +242,7 @@ was_included = find_inclusions(root, last_ballot_event) if last_ballot_event els
 					<span class="show-hide-shown glyphicon glyphicon-chevron-down"></span>
 					<span class="show-hide-hidden glyphicon glyphicon-chevron-right"></span>
 				</label>
-				<a href="{{ url_for(cl) }}" target="_blank"><b>{{ subcl.pretty_name(cl) }}</b></a>
+				<a href="{{ url_for(subcl) }}" target="_blank"><b>{{ subcl.pretty_name(subcl) }}</b></a>
 				<div class="audience-cbs">
 					<%
 					if is_included[subcl].all:
@@ -254,7 +254,7 @@ was_included = find_inclusions(root, last_ballot_event) if last_ballot_event els
 					end
 					%>
 					<div class="audience-cb">
-						<input type="checkbox" data-cl="{{ cl.id }}" {{ state }} />
+						<input type="checkbox" data-cl="{{ subcl.id }}" {{ state }} />
 					</div>
 				</div>
 			</div>
