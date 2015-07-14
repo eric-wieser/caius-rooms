@@ -176,6 +176,10 @@ def static_logs(db, path):
 
 @app.route('/')
 def show_index(db):
+	# load all the group names
+	clusters = db.query(m.Cluster).options(
+		joinedload(m.Cluster.children)
+	).all()
 	return template('index', db=db)
 
 @app.error(404)
@@ -273,6 +277,11 @@ with base_route(app, '/rooms'):
 		roomsq = db.query(m.Room).options(*opts)
 		filters = []
 
+		# load all the group names
+		clusters = db.query(m.Cluster).options(
+			joinedload(m.Cluster.children)
+		).all()
+
 		if request.query.filter_id:
 			try:
 				ids = [int(i) for i in request.query.filter_id.split(',')]
@@ -359,17 +368,14 @@ with base_route(app, '/rooms'):
 with base_route(app, '/places'):
 	@app.route('', name="place-list")
 	def show_places(db):
-		from sqlalchemy.orm import joinedload_all
+		from sqlalchemy.orm import joinedload
 
-		# load the entire heirarchy in one query
-		root = db.query(m.Cluster).options(
-			joinedload_all('children.rooms').subqueryload(m.Room.stats),
-			joinedload_all('children.children.rooms').subqueryload(m.Room.stats),
-			joinedload_all('children.children.children.rooms').subqueryload(m.Room.stats),
-			joinedload_all('children.children.children.children.rooms').subqueryload(m.Room.stats),
-		).filter(m.Cluster.parent == None).one()
-
-		return template('places', location=root)
+		clusters = db.query(m.Cluster).options(
+			joinedload(m.Cluster.children),
+			joinedload(m.Cluster.rooms).subqueryload(m.Room.stats)
+		).all()
+		root = next(c for c in clusters if c.id == 1)
+		return template('places', location=root, ballot=get_ballot(db))
 
 	@app.route('/<place_id>', name="place")
 	def show_place(place_id, db):

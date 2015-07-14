@@ -121,9 +121,7 @@ class Cluster(Base):
 
 	parent = relationship(lambda: Cluster,
 		backref="children",
-		remote_side=[id],
-		lazy="joined",
-		join_depth=4)
+		remote_side=[id])
 
 	__table_args__ = (UniqueConstraint(parent_id, name, name='_child_name_uc'),)
 
@@ -193,11 +191,18 @@ class Cluster(Base):
 
 	@property
 	def all_rooms_q(self):
+		from sqlalchemy.orm import joinedload
 		from sqlalchemy.orm.strategy_options import Load
-		l1 = aliased(Cluster)
-		l2 = aliased(Cluster)
-		l3 = aliased(Cluster)
-		l4 = aliased(Cluster)
+
+		# this should autoload all the subclusters of this cluster
+		descendant_clusters = (object_session(self)
+			.query(Cluster)
+			.filter(Cluster.id == self.id)
+			.cte(name='descendant_clusters', recursive=True)
+		)
+		descendant_clusters = descendant_clusters.union_all(
+			object_session(self).query(Cluster).filter(Cluster.parent_id == descendant_clusters.c.id)
+		)
 
 		# make this not ridiculously slow
 		opts = (
@@ -215,20 +220,7 @@ class Cluster(Base):
 				.subqueryload(Room.stats)
 		)
 
-		rooms = object_session(self).query(Room).options(*opts)
-
-		j1 = rooms.join(l1)
-		j2 = j1.join(l2, l1.parent_id == l2.id)
-		j3 = j2.join(l3, l2.parent_id == l3.id)
-		j4 = j3.join(l4, l3.parent_id == l4.id)
-
-		return (
-			j1.filter(l1.id == self.id)
-		).union(
-			j2.filter(l2.id == self.id),
-			j3.filter(l3.id == self.id),
-			j4.filter(l4.id == self.id)
-		)
+		return object_session(self).query(Room).join(descendant_clusters).options(*opts)
 
 RoomView = Enum(
 	"Overlooking a street",
