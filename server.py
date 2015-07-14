@@ -372,9 +372,22 @@ with base_route(app, '/places'):
 
 		clusters = db.query(m.Cluster).options(
 			joinedload(m.Cluster.children),
-			joinedload(m.Cluster.rooms).subqueryload(m.Room.stats)
+			joinedload(m.Cluster.rooms)
+				.load_only(m.Room.id)
+				.subqueryload(m.Room.stats)
+				.load_only(m.RoomStats.adjusted_rating),
+
+			joinedload(m.Cluster.rooms)
+				.subqueryload(m.Room.listing_for)
+				.joinedload(m.RoomListing.occupancies)
+				.load_only(m.Occupancy.cancelled),
+
+			joinedload(m.Cluster.rooms)
+				.subqueryload(m.Room.listing_for)
+				.subqueryload(m.RoomListing.audience_types)
 		).all()
-		root = next(c for c in clusters if c.id == 1)
+		root = db.query(m.Cluster).get(1)
+
 		return template('places', location=root, ballot=get_ballot(db))
 
 	@app.route('/<place_id>', name="place")

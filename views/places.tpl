@@ -18,6 +18,7 @@ if isinstance(ballot, m.BallotEvent):
 	ballot_season = ballot.season
 else:
 	ballot_event = None
+	ballot_season = ballot
 end
 %>
 <div class="container">
@@ -47,23 +48,19 @@ end
 						   href="{{ url_for(sub_loc) }}">{{ sub_loc.pretty_name(sub_loc.parent) }}</a>
 					</td>
 					% if sub_loc.rooms:
-						% if False:
-							<%
-							n_rooms = len(sub_loc.rooms)
-							n_free = sum(
-								1
-								for room in sub_loc.rooms
-								if ballot_season in room.listing_for
-								if ballot_event is None or ballot_event.type in room.listing_for[ballot_season].audience_types
-								if all(occ.cancelled for occ in room.listing_for[ballot_season].occupancies)
-							)
-							%>
-							<td data-value="{{n_free}}">
-								{{ n_free }} / {{ n_rooms }}
-							</td>
-						% else:
-							<td></td>
-						% end
+						<%
+						n_rooms = len(sub_loc.rooms)
+						n_free = sum(
+							1
+							for room in sub_loc.rooms
+							if ballot_season in room.listing_for
+							if ballot_event is None or ballot_event.type in room.listing_for[ballot_season].audience_types
+							if all(occ.cancelled for occ in room.listing_for[ballot_season].occupancies)
+						)
+						%>
+						<td data-value="{{n_free}}">
+							{{ n_free }} / {{ n_rooms }}
+						</td>
 						% ratings = [r.stats.adjusted_rating for r in sub_loc.rooms if r.stats.adjusted_rating is not None]
 						<td>
 							% if ratings:
