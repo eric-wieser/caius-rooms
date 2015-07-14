@@ -176,6 +176,7 @@ def static_logs(db, path):
 
 @app.route('/')
 def show_index(db):
+	from sqlalchemy.orm import joinedload
 	# load all the group names
 	clusters = db.query(m.Cluster).options(
 		joinedload(m.Cluster.children)
