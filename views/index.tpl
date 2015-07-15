@@ -4,6 +4,7 @@ from utils import format_ts_html
 from sqlalchemy.sql import func
 from sqlalchemy.orm import joinedload, subqueryload
 from bottle import request
+from datetime import date
 
 rebase('layout')
 %>
@@ -48,7 +49,7 @@ rebase('layout')
 					.query(m.BallotSlot)
 					.join(m.BallotEvent)
 					.filter(m.BallotEvent.season == ballot_season)
-					.filter(func.current_date() <= m.BallotEvent.closes_at)
+					.filter(date.today() <= m.BallotEvent.closes_at)
 					.filter(m.BallotSlot.time <= func.now())
 					.filter(m.BallotSlot.choice == None)
 					.order_by(m.BallotSlot.time)
