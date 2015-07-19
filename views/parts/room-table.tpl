@@ -245,7 +245,7 @@ rooms.sort(
 					% residents = [occ.resident for occ in occupancies if occ.resident]
 				% else:
 					% occupancies = []
-					% resident = None
+					% residents = None
 				% end
 				% if residents:
 					<td style="vertical-align: middle" class="small" data-value="{{ ', '.join(resident.crsid) for resident in residents }}">
