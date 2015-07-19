@@ -40,24 +40,23 @@ def find_room(room, path_str):
 		return None
 
 def scan(room, section):
-	for path, span in reference_helper.references_in(section.content):
+	for path, (start_idx, end_idx) in reference_helper.references_in(section.content):
 		ref_room = find_room(room, path)
 		if ref_room is PartRoom:
 			print room, path, '=>', 'PartRoom'
-			print section.content[max(0, span[0]-10):span[1] + 10]
+			print section.content[max(0, start_idx-10):end_idx + 10]
 			continue
 
 		if ref_room is MultiRoom:
 			print room, path, '=>', 'MultiRoom'
-			print section.content[max(0, span[0]-10):span[1] + 10]
+			print section.content[max(0, start_idx-10):end_idx + 10]
 			continue
 
 		if ref_room is None:
 			print room, path, '=>', ref_room
-			print section.content[max(0, span[0]-10):span[1] + 10]
+			print section.content[max(0, start_idx-10):end_idx + 10]
 			continue
 
-		start_idx, end_idx = span
 		ref = m.ReviewRoomReference(
 			review_section=section,
 			start_idx=start_idx,
