@@ -51,7 +51,7 @@ from sqlalchemy.orm import relationship, backref, column_property, aliased, join
 from sqlalchemy.orm.session import object_session
 from sqlalchemy.orm.collections import attribute_mapped_collection
 from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy.sql.expression import select, extract, case
+from sqlalchemy.sql.expression import select, extract, case, exists
 from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
@@ -761,18 +761,37 @@ Occupancy.review = relationship(
 	primaryjoin=(Review.occupancy_id == Occupancy.id) & Review.is_newest
 )
 
-o = aliased(Occupancy)
+# a mapping of (Person, BallotSeason) -> datetime, used to detect balloted slots
+resident_year_to_first_occ_ts_s = select([
+	Person.crsid.label('person'),
+	BallotSeason.year.label('season'),
+	func.min(Occupancy.chosen_at).label('ts')
+]).select_from(
+	join(Occupancy, RoomListing).join(BallotSeason).join(Person)
+).group_by(BallotSeason.year, Person.crsid).correlate(None).alias()
+
+# this occupancy was the first one
 Occupancy.is_first = column_property(
 	select([
-		Occupancy.chosen_at == func.min(o.chosen_at)
+		Occupancy.chosen_at == resident_year_to_first_occ_ts_s.c.ts
 	])
-	.select_from(o)
-	.where(o.listing_id == Occupancy.listing_id)
+	.where(
+		(resident_year_to_first_occ_ts_s.c.person == Occupancy.resident_id) &
+		(resident_year_to_first_occ_ts_s.c.season == RoomListing.ballot_season_id) &
+		(Occupancy.listing_id == RoomListing.id)
+	)
 )
 
-occ_to_slot_q = select([Occupancy.id.label('occupancy_id'), BallotSlot.id.label('ballotslot_id')]).select_from(
+# a mapping of Occupancy to BallotSlot in which it was booked
+occ_to_slot_s = select([
+	Occupancy.id.label('occupancy_id'),
+	BallotSlot.id.label('ballotslot_id')
+]).select_from(
 	join(Occupancy, RoomListing).join(BallotSeason).join(BallotEvent).join(BallotSlot)
-).where((Occupancy.resident_id == BallotSlot.person_id) & Occupancy.is_first).correlate(None).alias()
+).where(
+	(Occupancy.resident_id == BallotSlot.person_id) &
+	Occupancy.is_first
+).correlate(None).alias()
 
 Occupancy.ballot_slot = relationship(
 	BallotSlot,
@@ -780,9 +799,7 @@ Occupancy.ballot_slot = relationship(
 	backref=backref('choice', uselist=False),
 	uselist=False,
 
-	secondary=occ_to_slot_q,
-	# if we're not the first occupant of this room, then we didn't ballot
-	# TODO: add a flag for edited balloters
-	primaryjoin=Occupancy.id == occ_to_slot_q.c.occupancy_id,
-	secondaryjoin=BallotSlot.id == occ_to_slot_q.c.ballotslot_id
+	secondary=occ_to_slot_s,
+	primaryjoin=Occupancy.id == occ_to_slot_s.c.occupancy_id,
+	secondaryjoin=BallotSlot.id == occ_to_slot_s.c.ballotslot_id
 )
