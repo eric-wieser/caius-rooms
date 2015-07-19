@@ -342,7 +342,7 @@ class BallotEvent(Base):
 
 	is_active = column_property((opens_at < func.now()) & (func.now() < closes_at))
 
-	type      = relationship(lambda: BallotType,   backref="events")
+	type      = relationship(lambda: BallotType,   backref="events", lazy="joined")
 	season    = relationship(lambda: BallotSeason, backref="events", lazy="joined")
 
 	__table_args__ = (UniqueConstraint(type_id, season_id, name='_season_type_uc'),)
@@ -770,18 +770,19 @@ Occupancy.is_first = column_property(
 	.where(o.listing_id == Occupancy.listing_id)
 )
 
-_se = aliased(BallotSeason)
-_oc = aliased(Occupancy)
-_sl = aliased(BallotSlot)
+occ_to_slot_q = select([Occupancy.id.label('occupancy_id'), BallotSlot.id.label('ballotslot_id')]).select_from(
+	join(Occupancy, RoomListing).join(BallotSeason).join(BallotEvent).join(BallotSlot)
+).where((Occupancy.resident_id == BallotSlot.person_id) & Occupancy.is_first).correlate(None).alias()
+
 Occupancy.ballot_slot = relationship(
 	BallotSlot,
 	viewonly=True,
 	backref=backref('choice', uselist=False),
 	uselist=False,
 
-	secondary=join(_oc, RoomListing).join(BallotSeason).outerjoin(BallotEvent).outerjoin(_sl),
+	secondary=occ_to_slot_q,
 	# if we're not the first occupant of this room, then we didn't ballot
 	# TODO: add a flag for edited balloters
-	primaryjoin=(Occupancy.id == _oc.id) & _oc.is_first,
-	secondaryjoin=(BallotSlot.id == _sl.id) & (_sl.person_id == _oc.resident_id)
+	primaryjoin=Occupancy.id == occ_to_slot_q.c.occupancy_id,
+	secondaryjoin=BallotSlot.id == occ_to_slot_q.c.ballotslot_id
 )
