@@ -240,20 +240,21 @@ rooms.sort(
 						<span class="glyphicon glyphicon-tint text-muted" title="Possible Washbasin"></span>
 					% end
 				</td>
-				% 
 				% if request.user and last_listing:
 					% occupancies = [occ for occ in last_listing.occupancies if not occ.cancelled]
-					% resident = occupancies and occupancies[0].resident
+					% residents = [occ.resident for occ in occupancies if occ.resident]
 				% else:
 					% occupancies = []
 					% resident = None
 				% end
-				% if resident:
-					<td style="vertical-align: middle" class="small" data-value="{{ resident.crsid }}">
-						<a href="{{ url_for(resident) }}" style="display: inline-block; padding-left: 20px;">
-							<img src="{{ resident.gravatar(size=15) }}" width="15" height="15" style="margin-left: -20px; float: left" />
-							{{resident.name}}
-						</a>
+				% if residents:
+					<td style="vertical-align: middle" class="small" data-value="{{ ', '.join(resident.crsid) for resident in residents }}">
+						% for resident in residents:
+							<a href="{{ url_for(resident) }}" style="display: inline-block; padding-left: 20px;">
+								<img src="{{ resident.gravatar(size=15) }}" width="15" height="15" style="margin-left: -20px; float: left" />
+								{{resident.name}}
+							</a>
+						% end
 					</td>
 				% elif occupancies:
 					<td style="vertical-align: middle" class="small" data-value="!">
