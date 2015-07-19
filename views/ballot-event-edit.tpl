@@ -52,11 +52,11 @@ textarea {
 			</form>
 		</div>
 		<div class="col-md-3">
-			<h2>Rooms</h2>
+			<h2>Rooms <small>{{ sum(ballot_event.type in l.audience_types for l in ballot_event.season.room_listings) }}</small></h2>
 			<a class="btn btn-block btn-default" href="edit-rooms">edit</a>
 		</div>
 		<div class="col-md-3">
-			<h2>Slots</h2>
+			<h2>Students <small>{{ len(ballot_event.slots) }}</small></h2>
 			<a class="btn btn-block btn-default" href="edit-slots">edit</a>
 		</div>
 		<div class="col-md-3">

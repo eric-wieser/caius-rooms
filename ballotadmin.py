@@ -6,6 +6,7 @@ import json
 from bottle import *
 from sqlalchemy import func
 from sqlalchemy.orm import joinedload, joinedload_all
+from sqlalchemy.orm.strategy_options import Load
 
 from utils import needs_auth, lookup_ldap
 import database.orm as m
@@ -59,6 +60,12 @@ def add_routes(app):
 			.join(m.BallotSeason)
 			.filter(m.BallotEvent.type == ballot_type)
 			.filter(m.BallotSeason.year == ballot_id)
+			.options(
+				Load(m.BallotEvent)
+					.joinedload(m.BallotEvent.season)
+					.joinedload(m.BallotSeason.room_listings)
+					.joinedload(m.RoomListing.audience_types)
+			)
 		).one()
 
 		return template('ballot-event-edit', ballot_event=ballot_event)
