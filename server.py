@@ -254,6 +254,11 @@ def do_logout(db):
 	redirect(request.query.return_to)
 
 
+@app.route('/help')
+def show_help(db):
+	return template('help')
+
+
 with base_route(app, '/rooms'):
 	@app.route('')
 	def show_rooms(db):
