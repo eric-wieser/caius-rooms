@@ -751,7 +751,7 @@ with base_route(app, '/ballots'):
 	def show_explanation(db):
 		return template('ballots-explanation')
 
-	@app.route('/<ballot_id>', name="show-ballot")
+	@app.route('/<ballot_id:int>', name="show-ballot")
 	@needs_auth
 	def show_ballot(ballot_id, db):
 		from sqlalchemy.orm import joinedload
