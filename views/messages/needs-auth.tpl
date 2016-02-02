@@ -26,7 +26,12 @@
 			% end
 
 			% if not request.user:
-				<a class="btn btn-lg btn-primary" href="/login?return_to={{ urllib.quote_plus(request.url) }}">Login with Raven</a>
+				<a class="btn btn-lg btn-primary" href="/login?return_to={{ urllib.quote_plus(request.url) }}" id="login-prompted">Login with Raven</a>
+				<script>
+				$('#login-prompted').attr('href', function(_, old) {
+					return old + location.hash;
+				})
+				</script>
 			% end
 		% else:
 			% if reason == 'admin':
