@@ -622,6 +622,7 @@ with base_route(app, '/occupancies'):
 		)
 
 	@app.route('/<occ_id:int>')
+	@needs_auth('privacy')
 	def show_occupancy(occ_id, db):
 		try:
 			occupancy = db.query(m.Occupancy).filter(m.Occupancy.id == occ_id).one()
