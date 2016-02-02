@@ -12,7 +12,7 @@ from utils import needs_auth, lookup_ldap
 import database.orm as m
 
 def add_routes(app):
-	@app.route('/<ballot_id>/add-event')
+	@app.route('/<ballot_id:int>/add-event')
 	@needs_auth('admin')
 	def show_ballot_event_add(ballot_id, db):
 		ballot = db.query(m.BallotSeason).options(
@@ -26,7 +26,7 @@ def add_routes(app):
 
 		return template('ballot-add-event', ballot_season=ballot, event_types=event_types)
 
-	@app.post('/<ballot_id>/add-event')
+	@app.post('/<ballot_id:int>/add-event')
 	@needs_auth('admin')
 	def process_ballot_event_add(ballot_id, db):
 		ballot = db.query(m.BallotSeason).filter(m.BallotSeason.year == ballot_id).one()
@@ -40,7 +40,7 @@ def add_routes(app):
 		)
 
 		db.add(e)
-		return redirect(request.url + '/..')
+		return redirect(app.get_url('show-ballot', ballot_id=ballot_id))
 
 
 
