@@ -40,7 +40,7 @@ def add_routes(app):
 		)
 
 		db.add(e)
-		return redirect(request.url)
+		return redirect(request.url + '/..')
 
 
 
