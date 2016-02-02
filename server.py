@@ -46,6 +46,7 @@ app.install(SQLAlchemyPlugin(
 	use_kwargs=True
 ))
 
+hide_from_public = needs_auth('publicity') # lambda f: f
 
 @app.install
 def get_authed_user(callback):
@@ -261,6 +262,7 @@ def show_help(db):
 
 with base_route(app, '/rooms'):
 	@app.route('')
+	@hide_from_public
 	def show_rooms(db):
 		from sqlalchemy.orm import joinedload, subqueryload
 
@@ -299,6 +301,7 @@ with base_route(app, '/rooms'):
 		return template('rooms', roomsq=roomsq, ballot=get_ballot(db), filters=filters)
 
 	@app.route('/<room_id>')
+	@hide_from_public
 	def show_room(room_id, db):
 		from sqlalchemy.orm.strategy_options import Load
 
@@ -397,6 +400,7 @@ with base_route(app, '/places'):
 		return template('places', location=root, ballot=get_ballot(db))
 
 	@app.route('/<place_id>', name="place")
+	@hide_from_public
 	def show_place(place_id, db):
 		try:
 			location = db.query(m.Cluster).filter(m.Cluster.id == place_id).one()
@@ -406,6 +410,7 @@ with base_route(app, '/places'):
 		return template('place', location=location, ballot=get_ballot(db), filters=[])
 
 	@app.route('/<place_id>/photos', name="place-photos")
+	@hide_from_public
 	def show_place_photos(place_id, db):
 		try:
 			location = db.query(m.Cluster).filter(m.Cluster.id == place_id).one()

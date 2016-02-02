@@ -5,9 +5,12 @@
 <div class="container">
 	<div class="jumbotron">
 		% if not request.user:
-			% if reason == 'privacy':
+			% if reason == 'publicity':
 				<h1>You'll need to login first</h1>
-				<p>For our privacy, some information is not visible to the public. Member of the college?</p>
+				<p>The college would prefer that this information is not visible to the general public. Member of the university?</p>
+			% elif reason == 'privacy':
+				<h1>You'll need to login first</h1>
+				<p>For our privacy, some information is not visible to the public. Member of the university?</p>
 			% elif reason == 'ownership':
 				<h1>Sorry, who's posting this?</h1>
 				<p>It looks like you've been logged out while trying to add some content.</p>
