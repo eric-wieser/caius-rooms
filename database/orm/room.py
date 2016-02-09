@@ -22,9 +22,7 @@ from sqlalchemy.orm.collections import attribute_mapped_collection
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.sql.expression import select, extract, case, exists
 
-from . import Base, Person, CRSID
-
-from .others import Cluster
+from . import Base, Person, CRSID, Cluster
 
 RoomView = Enum(
 	"Overlooking a street",

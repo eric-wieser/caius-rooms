@@ -22,12 +22,7 @@ from sqlalchemy.orm.collections import attribute_mapped_collection
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.sql.expression import select, extract, case, exists
 
-from . import Base, Person, CRSID
-
-from .cluster import Cluster
-from .room import Room
-from .ballot import BallotEvent, BallotSeason, BallotType, BallotSlot
-from .roomlisting import RoomListing
+from . import Base, Person, CRSID, Cluster, Room, BallotEvent, BallotSeason, BallotType, BallotSlot, RoomListing
 
 class Occupancy(Base):
 	__tablename__ = 'occupancies'

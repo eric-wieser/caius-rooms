@@ -19,9 +19,7 @@ from sqlalchemy.orm.collections import attribute_mapped_collection
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.sql.expression import select, extract, case, exists
 
-from . import Base, Person, CRSID
-
-from .others import Room, BallotSeason, BallotType
+from . import Base, Person, CRSID, Room, BallotSeason, BallotType
 
 class RoomListing(Base):
     """ A listing of a room within a ballot, with time-variant properties """

@@ -43,18 +43,19 @@ Relationships:
   Cluster >- Cluster
 """
 
-# these files are not circular at import time
+# these files rely on each other sequentially
 from .base import Base, CRSID
 from .person import Person
 from .ballot import BallotSeason, BallotEvent, BallotType, BallotSlot
+from .cluster import Cluster
+from .room import Room
+from .roomlisting import RoomListing
 
 # this uses the modules above
-from .others import Cluster, RoomListing, Occupancy, Review
+from .others import RoomListing, Occupancy, Review
 
 # These files interact circularly with others. They are already imported within
 # .others by the time we get here though, so their order below is not important
-from .roomlisting import RoomListing
-from .roomlisting import Room
 from .reviewcontent import ReviewHeading, ReviewSection, ReviewRoomReference
 from .photo import Photo
 from .roomstats import RoomStats
