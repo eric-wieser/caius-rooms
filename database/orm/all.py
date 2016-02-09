@@ -398,40 +398,6 @@ class Review(Base):
 
 		return True
 
-# These must be imported for the various lambda functions above
-# However, these files also make use of the above delcarations, so to allow
-# circular imports, must appear last
-from reviewcontent import ReviewSection
-from photo import Photo
-
-RoomListing.bad_listing = column_property(
-	~RoomListing.audience_types.any() & ~RoomListing.occupancies.any(), deferred=True
-)
-r = aliased(Review)
-Review.is_newest = column_property(
-	select([
-		Review.published_at == func.max(r.published_at)
-	])
-	.select_from(r)
-	.where(r.occupancy_id == Review.occupancy_id)
-)
-
-bs = aliased(BallotSlot)
-BallotSlot.ranking = column_property(
-	select([func.count()])
-		.select_from(bs)
-		.where(bs.event_id == BallotSlot.event_id)
-		.where(bs.time <= BallotSlot.time)
-)
-
-
-Occupancy.review = relationship(
-	lambda: Review,
-	viewonly=True,
-	uselist=False,
-	primaryjoin=(Review.occupancy_id == Occupancy.id) & Review.is_newest
-)
-
 # a mapping of (Person, BallotSeason) -> datetime, used to detect balloted slots
 resident_year_to_first_occ_ts_s = select([
 	Person.crsid.label('person'),
@@ -453,6 +419,7 @@ Occupancy.is_first = column_property(
 	)
 )
 
+
 # a mapping of Occupancy to BallotSlot in which it was booked
 occ_to_slot_s = select([
 	Occupancy.id.label('occupancy_id'),
@@ -464,6 +431,7 @@ occ_to_slot_s = select([
 	Occupancy.is_first
 ).correlate(None).alias()
 
+
 Occupancy.ballot_slot = relationship(
 	BallotSlot,
 	viewonly=True,
@@ -474,3 +442,44 @@ Occupancy.ballot_slot = relationship(
 	primaryjoin=Occupancy.id == occ_to_slot_s.c.occupancy_id,
 	secondaryjoin=BallotSlot.id == occ_to_slot_s.c.ballotslot_id
 )
+
+
+# These must be imported for the various lambda functions above
+# However, these files also make use of the above delcarations, so to allow
+# circular imports, must appear last
+from reviewcontent import ReviewSection
+from photo import Photo
+
+# Furthermore, all of the below declarations appear to invoke the mapper. This
+# causes all the lambdas above to be invoked
+# So everything has to be imported first!
+
+r = aliased(Review)
+Review.is_newest = column_property(
+	select([
+		Review.published_at == func.max(r.published_at)
+	])
+	.select_from(r)
+	.where(r.occupancy_id == Review.occupancy_id)
+)
+
+bs = aliased(BallotSlot)
+BallotSlot.ranking = column_property(
+	select([func.count()])
+		.select_from(bs)
+		.where(bs.event_id == BallotSlot.event_id)
+		.where(bs.time <= BallotSlot.time)
+)
+
+RoomListing.bad_listing = column_property(
+	~RoomListing.audience_types.any() & ~RoomListing.occupancies.any(), deferred=True
+)
+
+Occupancy.review = relationship(
+	lambda: Review,
+	viewonly=True,
+	uselist=False,
+	primaryjoin=(Review.occupancy_id == Occupancy.id) & Review.is_newest
+)
+
+
