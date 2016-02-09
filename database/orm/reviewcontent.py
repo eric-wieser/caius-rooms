@@ -20,7 +20,7 @@ from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.sql.expression import select, extract, case, exists
 
 from . import Base
-from .all import Review, Room  # circular import
+from .others import Review, Room  # circular import
 
 class ReviewHeading(Base):
 	""" A heading within a review """

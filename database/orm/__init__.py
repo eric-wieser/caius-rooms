@@ -33,7 +33,7 @@ Relationships:
 from .base import Base, CRSID
 from .person import Person
 from .ballot import BallotSeason, BallotEvent, BallotType
-from .all import (
+from .others import (
 	Person, Cluster, Room, BallotSlot,
 	RoomListing, Occupancy,
 	Review

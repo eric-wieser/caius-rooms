@@ -21,7 +21,7 @@ from sqlalchemy.sql.expression import select, extract, case, exists
 
 from . import Base, Person, CRSID
 
-from .all import Room, BallotSeason, BallotType
+from .others import Room, BallotSeason, BallotType
 
 class RoomListing(Base):
     """ A listing of a room within a ballot, with time-variant properties """

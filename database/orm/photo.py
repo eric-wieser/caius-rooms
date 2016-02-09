@@ -25,7 +25,7 @@ from sqlalchemy.sql.expression import select, extract, case, exists
 from . import Base
 
 # this import is circular, so cannot import directly from .
-from .all import Occupancy
+from .others import Occupancy
 
 uploaded_files_path = os.path.abspath(
 	os.path.join(
