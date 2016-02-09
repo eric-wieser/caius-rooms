@@ -36,6 +36,6 @@ from .all import (
 	Person, Cluster, Room, BallotSlot,
 	RoomListing, Occupancy,
 	Review, ReviewHeading, ReviewSection, ReviewRoomReference,
-	Photo,
-	RoomStats
+	Photo
 )
+from .roomstats import RoomStats
