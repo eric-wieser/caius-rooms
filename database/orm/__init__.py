@@ -51,11 +51,10 @@ from .cluster import Cluster
 from .room import Room
 from .roomlisting import RoomListing
 
-# this uses the modules above
+# These files interact circularly
 from .others import RoomListing, Occupancy, Review
-
-# These files interact circularly with others. They are already imported within
-# .others by the time we get here though, so their order below is not important
 from .reviewcontent import ReviewHeading, ReviewSection, ReviewRoomReference
+
+# sequential again
 from .photo import Photo
 from .roomstats import RoomStats

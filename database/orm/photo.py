@@ -45,8 +45,10 @@ class Photo(Base):
 	width        = Column(Integer,    nullable=False)
 	height       = Column(Integer,    nullable=False)
 	mime_type    = Column(String(32), nullable=False)
-	# TODO: store image somewhere
+
 	occupancy_id = Column(Integer, ForeignKey(Occupancy.id), nullable=False, index=True)
+
+	occupancy    = relationship(lambda: Occupancy, backref=backref("photos", order_by=lambda: Photo.published_at.desc()))
 
 	@hybrid_property
 	def is_panorama(self):

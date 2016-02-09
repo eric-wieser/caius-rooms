@@ -39,8 +39,6 @@ class Occupancy(Base):
 		backref=backref("occupancies", cascade="all, delete-orphan", lazy='subquery', order_by=chosen_at.desc())
 	)
 	resident    = relationship(lambda: Person, backref="occupancies", lazy='joined')
-	reviews     = relationship(lambda: Review, cascade='all, delete-orphan', backref="occupancy", order_by=lambda: Review.published_at.desc())
-	photos      = relationship(lambda: Photo,  backref="occupancy", order_by=lambda: Photo.published_at.desc())
 
 	__table_args__ = (UniqueConstraint(resident_id, listing_id, name='_resident_listing_uc'),)
 
@@ -61,6 +59,12 @@ class Review(Base):
 
 	sections     = relationship(lambda: ReviewSection, cascade='all, delete-orphan', backref='review', order_by=lambda: ReviewSection._order)
 	editor       = relationship(lambda: Person, backref="edited_reviews")
+
+	occupancy    = relationship(lambda: Occupancy, backref=backref(
+		"reviews",
+		cascade='all, delete-orphan',
+		order_by=lambda: Review.published_at.desc()
+	))
 
 	def contents_eq(self, other):
 		"""
@@ -134,7 +138,6 @@ Occupancy.ballot_slot = relationship(
 # However, these files also make use of the above delcarations, so to allow
 # circular imports, must appear last
 from reviewcontent import ReviewSection
-from photo import Photo
 
 # Furthermore, all of the below declarations appear to invoke the mapper. This
 # causes all the lambdas above to be invoked
