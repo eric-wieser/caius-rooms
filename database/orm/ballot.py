@@ -13,8 +13,9 @@ from sqlalchemy.types import (
 	UnicodeText,
 )
 from sqlalchemy import func
-from sqlalchemy.orm import relationship, column_property, backref
+from sqlalchemy.orm import relationship, backref, column_property, aliased, join, outerjoin
 from sqlalchemy.orm.collections import attribute_mapped_collection
+from sqlalchemy.sql.expression import select, extract, case, exists
 
 from . import Base, Person, CRSID
 
@@ -86,3 +87,12 @@ class BallotSlot(Base):
 		return "<BallotSlot(person_id={!r}, event={!r}, time={!r})>".format(
 			self.person_id, self.event, self.time
 		)
+
+
+bs = aliased(BallotSlot)
+BallotSlot.ranking = column_property(
+	select([func.count()])
+		.select_from(bs)
+		.where(bs.event_id == BallotSlot.event_id)
+		.where(bs.time <= BallotSlot.time)
+)

@@ -2,15 +2,10 @@
 This module contains the SQLAlchemy mapping definitions, which builds python
 classes out of database rows
 
-Due to the heavy interlinking of the different objects, the import order here
-is complex and fragile. SQLAlchemy tries to help this by using lambda functions
-in some places to delay name evaluations, ie `lambda: ClassName`.
-
-Unfortunately, this makes the behaviour even more complex, as one wrong
-function call can invoke all the lambdas before all the modules are declined
-
-Objects left in the `others` module were found to be too entangled to separate
-
+When adding relationships, care should be taken that it is still possible to
+find a non-circular import order - this can be done by flipping which class
+declares the relationship using `backref`. In general, the class defining the
+foreign key should also declare the relationship.
 
 Notation:
 
@@ -43,15 +38,15 @@ Relationships:
   Cluster >- Cluster
 """
 
-# these files rely on each other sequentially
+# these files rely on each other sequentially at import time
 from .base import Base, CRSID
 from .person import Person
 from .ballot import BallotSeason, BallotEvent, BallotType, BallotSlot
 from .cluster import Cluster
 from .room import Room
 from .roomlisting import RoomListing
-from .others import RoomListing, Occupancy, Review
+from .occupancy import Occupancy
+from .review import Review
 from .reviewcontent import ReviewHeading, ReviewSection, ReviewRoomReference
-# sequential again
 from .photo import Photo
 from .roomstats import RoomStats

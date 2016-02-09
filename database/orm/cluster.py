@@ -110,7 +110,7 @@ class Cluster(Base):
 		from sqlalchemy.orm.strategy_options import Load
 
 		# circular import is guarded by function
-		from . import Room, RoomListing
+		from . import Room, RoomListing, Occupancy
 
 		# this should autoload all the subclusters of this cluster
 		descendant_clusters = (object_session(self)

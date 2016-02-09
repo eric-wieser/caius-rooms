@@ -47,46 +47,6 @@ class Occupancy(Base):
 			self.resident_id, self.listing
 		)
 
-class Review(Base):
-	__tablename__ = 'reviews'
-
-	id           = Column(Integer,  primary_key=True)
-	published_at = Column(DateTime, nullable=False)
-	rating       = Column(SmallInteger)
-	occupancy_id = Column(Integer, ForeignKey(Occupancy.id), nullable=False, index=True)
-	editor_id    = Column(CRSID, ForeignKey(Person.crsid), nullable=True)
-	hidden       = Column(Boolean, nullable=False, default=False)
-
-	editor       = relationship(lambda: Person, backref="edited_reviews")
-
-	occupancy    = relationship(lambda: Occupancy, backref=backref(
-		"reviews",
-		cascade='all, delete-orphan',
-		order_by=lambda: Review.published_at.desc()
-	))
-
-	def contents_eq(self, other):
-		"""
-		Returns true if the textual contents of two reviews are the same. Does
-		not care about reviewer, date, or room
-		"""
-		if self.rating != other.rating:
-			return False
-
-		if len(self.sections) != len(other.sections):
-			return False
-
-		self_sections = sorted(self.sections, key=lambda s: s.heading.position)
-		other_sections = sorted(other.sections, key=lambda s: s.heading.position)
-
-		for ss, so in zip(self_sections, other_sections):
-			if ss.heading != so.heading:
-				return False
-			if ss.content != so.content:
-				return False
-
-		return True
-
 # a mapping of (Person, BallotSeason) -> datetime, used to detect balloted slots
 resident_year_to_first_occ_ts_s = select([
 	Person.crsid.label('person'),
@@ -132,32 +92,7 @@ Occupancy.ballot_slot = relationship(
 	secondaryjoin=BallotSlot.id == occ_to_slot_s.c.ballotslot_id
 )
 
-r = aliased(Review)
-Review.is_newest = column_property(
-	select([
-		Review.published_at == func.max(r.published_at)
-	])
-	.select_from(r)
-	.where(r.occupancy_id == Review.occupancy_id)
-)
-
-bs = aliased(BallotSlot)
-BallotSlot.ranking = column_property(
-	select([func.count()])
-		.select_from(bs)
-		.where(bs.event_id == BallotSlot.event_id)
-		.where(bs.time <= BallotSlot.time)
-)
 
 RoomListing.bad_listing = column_property(
 	~RoomListing.audience_types.any() & ~RoomListing.occupancies.any(), deferred=True
 )
-
-Occupancy.review = relationship(
-	lambda: Review,
-	viewonly=True,
-	uselist=False,
-	primaryjoin=(Review.occupancy_id == Occupancy.id) & Review.is_newest
-)
-
-
