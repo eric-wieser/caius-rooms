@@ -30,7 +30,8 @@ Relationships:
   Cluster >- Cluster
 """
 
-from .base import Base
+from .base import Base, CRSID
+from .person import Person
 from .ballot import BallotSeason, BallotEvent, BallotType
 from .all import (
 	Person, Cluster, Room, BallotSlot,
