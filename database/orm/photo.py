@@ -16,6 +16,7 @@ uploaded_files_path = os.path.abspath(
 	os.path.join(
 		os.path.dirname(__file__),
 		'..',
+		'..',
 		'uploaded_files'
 	)
 )
@@ -96,6 +97,7 @@ class Photo(Base):
 	def _inserted(cls, mapper, connection, target):
 		if target.raw_im:
 			if target.mime_type == 'image/jpeg' and 'exif' in target.raw_im.info:
+				print "Preserved exif!"
 				target.raw_im.save(target.storage_path, exif=target.raw_im.info['exif'])
 			else:
 				target.raw_im.save(target.storage_path)
