@@ -569,10 +569,19 @@ with base_route(app, '/photos'):
 		return static_file(photo.storage_path, root='/')
 
 	@app.route('/panoramas')
+	@hide_from_public
 	def show_panoramas(db):
 		photos = db.query(m.Photo).filter(m.Photo.is_panorama).order_by(m.Photo.published_at.desc()).limit(20)
 
 		return template('panoramas', photos=photos)
+
+	@app.route('')
+	@hide_from_public
+	def show_photos(db):
+		return template('recent-photos', photos=db
+			.query(m.Photo)
+			.order_by(m.Photo.published_at.desc())
+		)
 
 
 	@app.route('/new/<occ_id>', name="new-photos")

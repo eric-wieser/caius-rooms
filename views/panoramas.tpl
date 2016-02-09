@@ -3,7 +3,7 @@ rebase('layout')
 from utils import format_ts_html
 
 def layout_breadcrumb():
-	yield (None, 'Special pages')
+	yield ('/photos', 'Photos')
 	yield ("/photos/panoramas", 'Panoramas')
 end
 
