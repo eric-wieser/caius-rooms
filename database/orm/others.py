@@ -174,11 +174,6 @@ class Room(Base):
 
 	parent   = relationship(lambda: Cluster, backref="rooms", lazy='joined')
 
-	listing_for = relationship(
-		lambda: RoomListing,
-		collection_class=attribute_mapped_collection('ballot_season')
-	)
-
 	@property
 	def geocoords(self):
 		current = self.parent

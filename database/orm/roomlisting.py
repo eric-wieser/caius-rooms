@@ -45,6 +45,14 @@ class RoomListing(Base):
         backref="all_time_listings",
         collection_class=set)
 
+    # this property is only used for the side effects
+    _room = relationship(lambda: Room,
+        backref=backref(
+            "listing_for",
+            collection_class=attribute_mapped_collection('ballot_season')
+        )
+    )
+
     def __repr__(self):
         return "<RoomListing(ballot_season_id={!r}, room={!r})>".format(
             self.ballot_season_id, self.room
