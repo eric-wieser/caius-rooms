@@ -35,7 +35,7 @@ from .ballot import BallotSeason, BallotEvent, BallotType
 from .all import (
 	Person, Cluster, Room, BallotSlot,
 	RoomListing, Occupancy,
-	Review, ReviewHeading, ReviewSection, ReviewRoomReference,
-	Photo
+	Review, ReviewHeading, ReviewSection, ReviewRoomReference
 )
+from .photo import Photo
 from .roomstats import RoomStats
