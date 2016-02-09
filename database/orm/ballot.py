@@ -1,21 +1,14 @@
-from sqlalchemy import Table, Column, ForeignKey, UniqueConstraint, ForeignKeyConstraint
+from sqlalchemy import Column, ForeignKey, UniqueConstraint
 from sqlalchemy.types import (
-	Boolean,
 	Date,
 	DateTime,
-	Enum,
-	Float,
 	Integer,
-	Numeric,
-	SmallInteger,
-	String,
-	Unicode,
-	UnicodeText,
+	Unicode
 )
 from sqlalchemy import func
-from sqlalchemy.orm import relationship, backref, column_property, aliased, join, outerjoin
+from sqlalchemy.orm import relationship, backref, column_property, aliased
 from sqlalchemy.orm.collections import attribute_mapped_collection
-from sqlalchemy.sql.expression import select, extract, case, exists
+from sqlalchemy.sql.expression import select
 
 from . import Base, Person, CRSID
 

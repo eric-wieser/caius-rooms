@@ -1,28 +1,13 @@
-import datetime
-import os
-
-from sqlalchemy import Table, Column, ForeignKey, UniqueConstraint, ForeignKeyConstraint
-from sqlalchemy import (
+from sqlalchemy import Column, ForeignKey
+from sqlalchemy.types import (
 	Boolean,
-	Date,
-	DateTime,
 	Enum,
-	Float,
 	Integer,
-	Numeric,
-	SmallInteger,
-	String,
-	Unicode,
-	UnicodeText,
+	Unicode
 )
-from sqlalchemy import func
-from sqlalchemy.orm import relationship, backref, column_property, aliased, join, outerjoin
-from sqlalchemy.orm.session import object_session
-from sqlalchemy.orm.collections import attribute_mapped_collection
-from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy.sql.expression import select, extract, case, exists
+from sqlalchemy.orm import relationship
 
-from . import Base, Person, CRSID, Cluster
+from . import Base, Cluster
 
 RoomView = Enum(
 	"Overlooking a street",

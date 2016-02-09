@@ -1,25 +1,12 @@
-from sqlalchemy import Table, Column, ForeignKey, UniqueConstraint, ForeignKeyConstraint
-from sqlalchemy import (
-    Boolean,
-    Date,
-    DateTime,
-    Enum,
-    Float,
+from sqlalchemy import Table, Column, ForeignKey, UniqueConstraint
+from sqlalchemy.types import (
     Integer,
-    Numeric,
-    SmallInteger,
-    String,
-    Unicode,
-    UnicodeText,
+    Numeric
 )
-from sqlalchemy import func
-from sqlalchemy.orm import relationship, backref, column_property, aliased, join, outerjoin
-from sqlalchemy.orm.session import object_session
+from sqlalchemy.orm import relationship, backref
 from sqlalchemy.orm.collections import attribute_mapped_collection
-from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy.sql.expression import select, extract, case, exists
 
-from . import Base, Person, CRSID, Room, BallotSeason, BallotType
+from . import Base, Room, BallotSeason, BallotType
 
 class RoomListing(Base):
     """ A listing of a room within a ballot, with time-variant properties """
