@@ -224,33 +224,7 @@ class Room(Base):
 	def __repr__(self):
 		return "<Room: {}>".format(self.pretty_name())
 
-from .ballot import BallotEvent, BallotSeason, BallotType
-
-class BallotSlot(Base):
-	__tablename__ = 'ballot_slots'
-
-	id        = Column(Integer, primary_key=True)
-	time      = Column(DateTime)
-	person_id = Column(CRSID, ForeignKey(Person.crsid), nullable=False)
-	event_id  = Column(Integer, ForeignKey(BallotEvent.id), nullable=False)
-
-	person = relationship(
-		lambda: Person,
-		backref=backref(
-			"slot_for",
-			collection_class=attribute_mapped_collection('event'),
-			cascade='all, delete-orphan'
-		),
-		lazy='joined')
-	event = relationship(
-		lambda: BallotEvent,
-		backref=backref("slots", cascade='all, delete-orphan'),
-		lazy='joined')
-
-	def __repr__(self):
-		return "<BallotSlot(person_id={!r}, event={!r}, time={!r})>".format(
-			self.person_id, self.event, self.time
-		)
+from .ballot import BallotEvent, BallotSeason, BallotType, BallotSlot
 
 
 class RoomListing(Base):
