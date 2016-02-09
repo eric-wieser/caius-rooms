@@ -52,11 +52,8 @@ from sqlalchemy.orm.session import object_session
 from sqlalchemy.orm.collections import attribute_mapped_collection
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.sql.expression import select, extract, case, exists
-from sqlalchemy.ext.declarative import declarative_base
 
-Base = declarative_base()
-
-CRSID = String(10)
+from .base import Base, CRSID
 
 class Person(Base):
 	__tablename__ = 'people'
@@ -307,49 +304,7 @@ class Room(Base):
 	def __repr__(self):
 		return "<Room: {}>".format(self.pretty_name())
 
-class BallotType(Base):
-	""" A type of ballot """
-	__tablename__ = 'ballot_types'
-
-	id   = Column(Integer, primary_key=True)
-	name = Column(Unicode(255))
-
-	def __repr__(self):
-		return "BallotType(name={})".format(self.name)
-
-
-class BallotSeason(Base):
-	""" A year in which a ballot occurs """
-	__tablename__ = 'ballot_seasons'
-
-	year          = Column(Integer, primary_key=True)
-
-	def __repr__(self):
-		return "BallotSeason(year={})".format(self.year)
-
-	def __str__(self):
-		return u"{} \u2012 {}".format(self.year, self.year+1)
-
-
-class BallotEvent(Base):
-	__tablename__ = 'ballot_events'
-
-	id        = Column(Integer, primary_key=True)
-	type_id   = Column(Integer, ForeignKey(BallotType.id),     nullable=False)
-	season_id = Column(Integer, ForeignKey(BallotSeason.year), nullable=False)
-	opens_at  = Column(Date)
-	closes_at = Column(Date)
-
-	is_active = column_property((opens_at < func.now()) & (func.now() < closes_at))
-
-	type      = relationship(lambda: BallotType,   backref="events", lazy="joined")
-	season    = relationship(lambda: BallotSeason, backref="events", lazy="joined")
-
-	__table_args__ = (UniqueConstraint(type_id, season_id, name='_season_type_uc'),)
-
-	def __repr__(self):
-		return "<BallotEvent(year={!r}, type={!r}, ...)>".format(self.season.year, self.type.name)
-
+from .ballot import BallotEvent, BallotSeason, BallotType
 
 class BallotSlot(Base):
 	__tablename__ = 'ballot_slots'
