@@ -19,8 +19,7 @@ from sqlalchemy.orm.collections import attribute_mapped_collection
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.sql.expression import select, extract, case, exists
 
-from . import Base, Room
-from .others import Review  # circular import
+from . import Base, Room, Review
 
 class ReviewHeading(Base):
 	""" A heading within a review """
@@ -46,6 +45,12 @@ class ReviewSection(Base):
 	_order = column_property(
 		select([ReviewHeading.position]).where(ReviewHeading.id == heading_id)
 	)
+
+	review = relationship(lambda: Review, backref=backref(
+		'sections',
+		cascade='all, delete-orphan',
+		order_by=lambda: ReviewSection._order
+	))
 
 	@property
 	def tokens(self):

@@ -22,10 +22,7 @@ from sqlalchemy.orm.collections import attribute_mapped_collection
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.sql.expression import select, extract, case, exists
 
-from . import Base
-
-# this import is circular, so cannot import directly from .
-from .others import Occupancy
+from . import Base, Occupancy
 
 uploaded_files_path = os.path.abspath(
 	os.path.join(

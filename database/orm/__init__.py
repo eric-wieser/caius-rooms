@@ -50,11 +50,8 @@ from .ballot import BallotSeason, BallotEvent, BallotType, BallotSlot
 from .cluster import Cluster
 from .room import Room
 from .roomlisting import RoomListing
-
-# These files interact circularly
 from .others import RoomListing, Occupancy, Review
 from .reviewcontent import ReviewHeading, ReviewSection, ReviewRoomReference
-
 # sequential again
 from .photo import Photo
 from .roomstats import RoomStats

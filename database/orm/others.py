@@ -57,7 +57,6 @@ class Review(Base):
 	editor_id    = Column(CRSID, ForeignKey(Person.crsid), nullable=True)
 	hidden       = Column(Boolean, nullable=False, default=False)
 
-	sections     = relationship(lambda: ReviewSection, cascade='all, delete-orphan', backref='review', order_by=lambda: ReviewSection._order)
 	editor       = relationship(lambda: Person, backref="edited_reviews")
 
 	occupancy    = relationship(lambda: Occupancy, backref=backref(
@@ -132,16 +131,6 @@ Occupancy.ballot_slot = relationship(
 	primaryjoin=Occupancy.id == occ_to_slot_s.c.occupancy_id,
 	secondaryjoin=BallotSlot.id == occ_to_slot_s.c.ballotslot_id
 )
-
-
-# These must be imported for the various lambda functions above
-# However, these files also make use of the above delcarations, so to allow
-# circular imports, must appear last
-from reviewcontent import ReviewSection
-
-# Furthermore, all of the below declarations appear to invoke the mapper. This
-# causes all the lambdas above to be invoked
-# So everything has to be imported first!
 
 r = aliased(Review)
 Review.is_newest = column_property(
