@@ -24,13 +24,13 @@ import itertools
 
 	<h1>{{ location.pretty_name() }}</h1>
 
+	% include('parts/room-table', roomsq=roomsq, ballot=ballot, relative_to=location)
+
 	% if location.summary:
 		<div class='well'>
 			% include('parts/markdown', content=location.summary.markdown_content, columnize=True)
 		</div>
 	% end
-
-	% include('parts/room-table', roomsq=roomsq, ballot=ballot, relative_to=location)
 
 	% lat_lon = location.geocoords
 	% if lat_lon:
