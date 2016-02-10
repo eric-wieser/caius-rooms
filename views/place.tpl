@@ -42,7 +42,7 @@ import itertools
 			Contributed by
 			% for i, person in enumerate(editors):
 				% if i != 0:
-					,
+, 
 				% end
 <a href="{{url_for(person)}}">{{person.name}}</a>
 			% end
