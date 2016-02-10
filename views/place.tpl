@@ -30,11 +30,30 @@ import itertools
 		<div class='well'>
 			% include('parts/markdown', content=location.summary.markdown_content, columnize=True)
 		</div>
+		<%
+		editors = []
+		for s in location.summaries:
+			if s.editor not in editors:
+				editors.append(s.editor)
+			end
+		end
+		%>
+		<div class='text-right text-muted'>
+			Contributed by
+			% for i, person in enumerate(editors):
+				% if i != 0:
+					,
+				% end
+<a href="{{url_for(person)}}">{{person.name}}</a>
+			% end
+			&bullet;
+			Last modified: {{! utils.format_ts_html(location.summary.published_at) }}
+		</div>
 	% end
 
 	% lat_lon = location.geocoords
 	% if lat_lon:
-		<div id="map" style="height: 400px"></div>
+		<div id="map" style="height: 400px; margin-top: 10px"></div>
 		<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&amp;sensor=false"></script>
 		<script>
 			google.maps.visualRefresh = true;
