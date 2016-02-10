@@ -50,3 +50,4 @@ from .review import Review
 from .reviewcontent import ReviewHeading, ReviewSection, ReviewRoomReference
 from .photo import Photo
 from .roomstats import RoomStats
+from .placesummary import PlaceSummary

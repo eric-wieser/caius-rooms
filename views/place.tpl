@@ -1,5 +1,6 @@
 <%
 rebase('layout')
+import utils
 
 def layout_breadcrumb():
 	for part in location.path:
@@ -22,6 +23,12 @@ import itertools
 	% roomsq = location.all_rooms_q
 
 	<h1>{{ location.pretty_name() }}</h1>
+
+	% if location.summary:
+		<div class='well'>
+			{{! utils.safe_markdown(location.summary.markdown_content) }}
+		</div>
+	% end
 
 	% include('parts/room-table', roomsq=roomsq, ballot=ballot, relative_to=location)
 

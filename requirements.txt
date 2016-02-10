@@ -4,6 +4,7 @@ beaker==1.6.4
 regex==2014.12.15
 diff-match-patch==20110725.1
 Pillow==2.3.0
+CommonMark==0.6.3
 sqltap==0.3.6
 -e git://github.com/eric-wieser/bottle.git#egg=bottle-eric
 -e git+https://github.com/danielrichman/python-raven@6fbcf4e9bf21dddd83749f7a9075f553f3e436d5#egg=python_raven-master

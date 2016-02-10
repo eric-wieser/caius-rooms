@@ -409,6 +409,41 @@ with base_route(app, '/places'):
 
 		return template('place', location=location, ballot=get_ballot(db), filters=[])
 
+	@app.route('/<place_id>/edit', name="place-edit")
+	@needs_auth('admin')
+	def show_place_edit(place_id, db):
+		try:
+			location = db.query(m.Place).filter(m.Place.id == place_id).one()
+		except NoResultFound:
+			raise HTTPError(404, "No matching location")
+
+		return template('edit-place-summary', place=location)
+
+
+	@app.post('/<place_id>', name="place")
+	@needs_auth('admin')
+	def save_place_edit(place_id, db):
+		try:
+			place = db.query(m.Place).filter(m.Place.id == place_id).one()
+		except NoResultFound:
+			raise HTTPError(404, "No matching location")
+
+
+		last_summary = place.summary
+		summary = m.PlaceSummary(
+			place=place,
+			published_at=datetime.now(),
+			markdown_content=request.forms.content,
+			editor=request.user
+		)
+
+		if last_summary and summary.markdown_content == last_summary.markdown_content:
+			raise HTTPError(400, "Same as last edit")
+
+		db.add(summary)
+
+		redirect(utils.url_for(place))
+
 	@app.route('/<place_id>/photos', name="place-photos")
 	@hide_from_public
 	def show_place_photos(place_id, db):
