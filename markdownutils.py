@@ -3,6 +3,13 @@ from CommonMark.node import Node
 
 def parse(content): return Parser().parse(content)
 
+
+def children(ast):
+    node = ast.first_child
+    while node is not None:
+        yield node
+        node = node.nxt
+
 def remove_html(ast):
 	a = ast.walker()
 
@@ -14,7 +21,7 @@ def remove_html(ast):
 
 def section(ast):
 	sections = [ast]
-	for n in ast.children():
+	for n in children(ast):
 		if n.t == u'Heading':
 			doc = Node('Document', [[1, 1], [0, 0]])
 
