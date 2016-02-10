@@ -26,7 +26,7 @@ import itertools
 
 	% if location.summary:
 		<div class='well'>
-			{{! utils.safe_markdown(location.summary.markdown_content) }}
+			% include('parts/markdown', content=location.summary.markdown_content, columnize=True)
 		</div>
 	% end
 

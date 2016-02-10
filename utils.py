@@ -21,19 +21,6 @@ def format_ts_html(ts):
 		ts.isoformat(), format_ts(ts)
 	)
 
-def safe_markdown(content):
-	from CommonMark import Parser, HtmlRenderer
-	ast = Parser().parse(content)
-
-	a = ast.walker()
-
-	for data in iter(a.nxt, None):
-		n = data['node']
-		if n.t == u'HtmlBlock':
-			n.unlink()
-
-	return HtmlRenderer().render(ast)
-
 def format_tdelta(td):
 	def s(n):
 		return 's' if n != 1 else ''
