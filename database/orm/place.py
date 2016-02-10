@@ -11,7 +11,7 @@ from sqlalchemy.orm import relationship
 from . import Base
 
 
-class Cluster(Base):
+class Place(Base):
 	""" (nestable) Groups of nearby physical rooms """
 	__tablename__ = 'clusters'
 
@@ -23,7 +23,7 @@ class Cluster(Base):
 	latitude  = Column(Float)
 	longitude = Column(Float)
 
-	parent = relationship(lambda: Cluster,
+	parent = relationship(lambda: Place,
 		backref="children",
 		remote_side=[id])
 
@@ -38,11 +38,11 @@ class Cluster(Base):
 			return self.parent.path + [self]
 
 	def __repr__(self):
-		return "<Cluster {}>".format(' / '.join(c.name for c in self.path))
+		return "<Place {}>".format(' / '.join(c.name for c in self.path))
 
 	def pretty_name(self, relative_to=None):
 		"""
-		Produce a pretty name relative to a Cluster. Traversing down the tree
+		Produce a pretty name relative to a Place. Traversing down the tree
 		of Clusters, changing `relative_to` as we go gives:
 
 			1 Mortimer road
@@ -101,14 +101,14 @@ class Cluster(Base):
 		# circular import is guarded by function
 		from . import Room, RoomListing, Occupancy
 
-		# this should autoload all the subclusters of this cluster
-		descendant_clusters = (object_session(self)
-			.query(Cluster)
-			.filter(Cluster.id == self.id)
-			.cte(name='descendant_clusters', recursive=True)
+		# this should autoload all the subplaces of this place
+		descendant_places = (object_session(self)
+			.query(Place)
+			.filter(Place.id == self.id)
+			.cte(name='descendant_places', recursive=True)
 		)
-		descendant_clusters = descendant_clusters.union_all(
-			object_session(self).query(Cluster).filter(Cluster.parent_id == descendant_clusters.c.id)
+		descendant_places = descendant_places.union_all(
+			object_session(self).query(Place).filter(Place.parent_id == descendant_places.c.id)
 		)
 
 		# make this not ridiculously slow
@@ -127,4 +127,4 @@ class Cluster(Base):
 				.subqueryload(Room.stats)
 		)
 
-		return object_session(self).query(Room).join(descendant_clusters).options(*opts)
+		return object_session(self).query(Room).join(descendant_places).options(*opts)

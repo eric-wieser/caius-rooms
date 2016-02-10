@@ -13,12 +13,12 @@ def migrate(old_session, new_session):
 
 		if old_room.staircase != 'None':
 			try:
-				location = new_session.query(orm.Cluster).filter(
-					(orm.Cluster.parent == location) &
-					(orm.Cluster.name == old_room.staircase)
+				location = new_session.query(orm.Place).filter(
+					(orm.Place.parent == location) &
+					(orm.Place.name == old_room.staircase)
 				).one()
 			except NoResultFound:
-				location = orm.Cluster(name=old_room.staircase, type="staircase", parent=location)
+				location = orm.Place(name=old_room.staircase, type="staircase", parent=location)
 
 		if old_room.comment:
 			name = re.search(r'\d+/\d+', old_room.comment).group(0)

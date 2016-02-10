@@ -15,7 +15,7 @@
 		<priority>0.4</priority>
 	</url>
 
-	% for c in db.query(m.Cluster).filter(m.Cluster.id != 1):
+	% for c in db.query(m.Place).filter(m.Place.id != 1):
 		<url>
 			<loc>http://roompicks.caiusjcr.co.uk{{ url_for(c) }}</loc>
 			<priority>1</priority>

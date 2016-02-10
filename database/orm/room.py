@@ -7,7 +7,7 @@ from sqlalchemy.types import (
 )
 from sqlalchemy.orm import relationship
 
-from . import Base, Cluster
+from . import Base, Place
 
 RoomView = Enum(
 	"Overlooking a street",
@@ -21,7 +21,7 @@ class Room(Base):
 
 	id        = Column(Integer,                         primary_key=True)
 	name      = Column(Unicode(255),                    nullable=False)
-	parent_id = Column(Integer, ForeignKey(Cluster.id), nullable=False)
+	parent_id = Column(Integer, ForeignKey(Place.id), nullable=False)
 
 	is_set     = Column(Boolean)
 	is_ensuite = Column(Boolean)
@@ -42,7 +42,7 @@ class Room(Base):
 	has_uniofcam  = Column(Boolean)
 	has_ethernet  = Column(Boolean)
 
-	parent   = relationship(lambda: Cluster, backref="rooms", lazy='joined')
+	parent   = relationship(lambda: Place, backref="rooms", lazy='joined')
 
 	@property
 	def geocoords(self):
@@ -54,7 +54,7 @@ class Room(Base):
 
 	def pretty_name(self, relative_to=None):
 		"""
-		Produce a pretty name relative to a Cluster. Traversing down the tree
+		Produce a pretty name relative to a Place. Traversing down the tree
 		of Clusters, changing `relative_to` as we go gives:
 
 			1 Mortimer road, Room 5

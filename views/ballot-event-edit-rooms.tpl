@@ -183,14 +183,14 @@ $(function() {
 </script>
 <%
 
-# build up a dictionary of Cluster => (audiences that can see every room,
+# build up a dictionary of Place => (audiences that can see every room,
 #	                                   audiences that can see some rooms)
 Inclusion = namedtuple('Inclusion', 'all some')
 def find_inclusions(cl, evt):
 	"""
 	Return a dictionary of
 	    Room -> bool(room is included)
-	    Cluster -> Inclusion(all sub-things included, some sub-things included)
+	    Place -> Inclusion(all sub-things included, some sub-things included)
 	"""
 	is_included = {}
 

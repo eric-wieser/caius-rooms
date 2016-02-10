@@ -33,16 +33,16 @@ Relationships:
   Review -< ReviewSection...
   ReviewSection >- ReviewHeading
 
-  Room >- Cluster
+  Room >- Place
 
-  Cluster >- Cluster
+  Place >- Place
 """
 
 # these files rely on each other sequentially at import time
 from .base import Base, CRSID
 from .person import Person
 from .ballot import BallotSeason, BallotEvent, BallotType, BallotSlot
-from .cluster import Cluster
+from .place import Place
 from .room import Room
 from .roomlisting import RoomListing
 from .occupancy import Occupancy

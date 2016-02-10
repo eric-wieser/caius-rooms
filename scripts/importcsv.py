@@ -44,8 +44,8 @@ def get_room_by_name(name):
 	parts = name.split(' ')
 	for i in [-1, -2, -3]:
 		try:
-			base = s.query(m.Cluster).filter(
-				func.lower(m.Cluster.name) == ' '.join(parts[i:]).lower()
+			base = s.query(m.Place).filter(
+				func.lower(m.Place.name) == ' '.join(parts[i:]).lower()
 			).one()
 			parts = parts[:i]
 			break 
@@ -79,7 +79,7 @@ def get_room_by_name(name):
 			# deal with k block
 			if not stair:
 				if g['stair'] == 'K' and base.name == 'Harvey Court':
-					stair = s.query(m.Cluster).filter(m.Cluster.name == 'K Block').one()
+					stair = s.query(m.Place).filter(m.Place.name == 'K Block').one()
 				else:
 					raise ValueError
 			base = stair

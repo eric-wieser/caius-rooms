@@ -15,7 +15,7 @@ def copy(old_engine, new_engine):
 
 	classes = [
 		m.Person,
-		m.Cluster,
+		m.Place,
 		m.BallotSeason,
 		m.Room,
 		m.BallotType,

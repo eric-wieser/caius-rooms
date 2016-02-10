@@ -22,27 +22,27 @@ def get_location(new_session, loc_name):
 	loc_name = re.sub(r"\bMichaels\b", "Michael's", loc_name)
 	loc_name = re.sub("35/37", "35-37", loc_name)
 	try:
-		return new_session.query(orm.Cluster).filter(orm.Cluster.name == loc_name).one()
+		return new_session.query(orm.Place).filter(orm.Place.name == loc_name).one()
 	except NoResultFound:
 		pass
 
 	number, place = loc_name.split(" ", 1)
 
 	try:
-		clusteralias = aliased(orm.Cluster)
+		place2 = aliased(orm.Place)
 		return (
-			new_session.query(orm.Cluster)
-				.filter(orm.Cluster.name == number)
-				.join(clusteralias, orm.Cluster.parent)
-				.filter(clusteralias.name == place).one()
+			new_session.query(orm.Place)
+				.filter(orm.Place.name == number)
+				.join(place2, orm.Place.parent)
+				.filter(place2.name == place).one()
 		)
 	except NoResultFound:
-		root = new_session.query(orm.Cluster).filter(orm.Cluster.parent == None).one()
+		root = new_session.query(orm.Place).filter(orm.Place.parent == None).one()
 
-		raise NewLocation("New location #{}, {}".format(number, place), orm.Cluster(
+		raise NewLocation("New location #{}, {}".format(number, place), orm.Place(
 			name=number,
 			type="building",
-			parent=orm.Cluster(
+			parent=orm.Place(
 				name=place,
 				type="road",
 				parent=root
@@ -64,13 +64,13 @@ def get_location_with_stair(new_session, loc_name, staircase):
 
 	if staircase != 'None' and staircase:
 		try:
-			location = new_session.query(orm.Cluster).filter(
-				(orm.Cluster.parent == location) &
-				(orm.Cluster.name == staircase)
+			location = new_session.query(orm.Place).filter(
+				(orm.Place.parent == location) &
+				(orm.Place.name == staircase)
 			).one()
 		except NoResultFound:
 			print "New staircase {} in {}".format(staircase, location)
-			location = orm.Cluster(name=staircase, type="staircase", parent=location)
+			location = orm.Place(name=staircase, type="staircase", parent=location)
 
 
 	return location

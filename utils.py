@@ -176,7 +176,7 @@ def url_for(x, extra_path=None, qs={}):
 		base = '/users/{}'.format(x.crsid)
 	elif isinstance(x, m.BallotSeason):
 		base = '/ballots/{}'.format(x.year)
-	elif isinstance(x, m.Cluster):
+	elif isinstance(x, m.Place):
 		base = '/places/{}'.format(x.id)
 	elif isinstance(x, str):
 		base = x

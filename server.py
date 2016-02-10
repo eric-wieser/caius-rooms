@@ -179,8 +179,8 @@ def static_logs(db, path):
 def show_index(db):
 	from sqlalchemy.orm import joinedload
 	# load all the group names
-	clusters = db.query(m.Cluster).options(
-		joinedload(m.Cluster.children)
+	places = db.query(m.Place).options(
+		joinedload(m.Place.children)
 	).all()
 	return template('index', db=db)
 
@@ -286,8 +286,8 @@ with base_route(app, '/rooms'):
 		filters = []
 
 		# load all the group names
-		clusters = db.query(m.Cluster).options(
-			joinedload(m.Cluster.children)
+		places = db.query(m.Place).options(
+			joinedload(m.Place.children)
 		).all()
 
 		if request.query.filter_id:
@@ -379,23 +379,23 @@ with base_route(app, '/places'):
 	def show_places(db):
 		from sqlalchemy.orm import joinedload
 
-		clusters = db.query(m.Cluster).options(
-			joinedload(m.Cluster.children),
-			joinedload(m.Cluster.rooms)
+		places = db.query(m.Place).options(
+			joinedload(m.Place.children),
+			joinedload(m.Place.rooms)
 				.load_only(m.Room.id)
 				.subqueryload(m.Room.stats)
 				.load_only(m.RoomStats.adjusted_rating),
 
-			joinedload(m.Cluster.rooms)
+			joinedload(m.Place.rooms)
 				.subqueryload(m.Room.listing_for)
 				.joinedload(m.RoomListing.occupancies)
 				.load_only(m.Occupancy.cancelled),
 
-			joinedload(m.Cluster.rooms)
+			joinedload(m.Place.rooms)
 				.subqueryload(m.Room.listing_for)
 				.subqueryload(m.RoomListing.audience_types)
 		).all()
-		root = db.query(m.Cluster).get(1)
+		root = db.query(m.Place).get(1)
 
 		return template('places', location=root, ballot=get_ballot(db))
 
@@ -403,7 +403,7 @@ with base_route(app, '/places'):
 	@hide_from_public
 	def show_place(place_id, db):
 		try:
-			location = db.query(m.Cluster).filter(m.Cluster.id == place_id).one()
+			location = db.query(m.Place).filter(m.Place.id == place_id).one()
 		except NoResultFound:
 			raise HTTPError(404, "No matching location")
 
@@ -413,7 +413,7 @@ with base_route(app, '/places'):
 	@hide_from_public
 	def show_place_photos(place_id, db):
 		try:
-			location = db.query(m.Cluster).filter(m.Cluster.id == place_id).one()
+			location = db.query(m.Place).filter(m.Place.id == place_id).one()
 		except NoResultFound:
 			raise HTTPError(404, "No matching location")
 
@@ -421,12 +421,12 @@ with base_route(app, '/places'):
 
 	@app.route('/random')
 	def show_random_place(db):
-		locations = db.query(m.Cluster).filter_by(type='building')
+		locations = db.query(m.Place).filter_by(type='building')
 		redirect('/places/{}'.format(locations[random.randrange(locations.count())].id))
 
 	@app.route('/random/photos')
 	def show_random_place_photos(db):
-		locations = db.query(m.Cluster).filter_by(type='building')
+		locations = db.query(m.Place).filter_by(type='building')
 		redirect('/places/{}/photos'.format(locations[random.randrange(locations.count())].id))
 
 
@@ -650,7 +650,7 @@ with base_route(app, '/locations'):
 	@app.route('/<loc_id>', name="location-list")
 	def show_location_heirarchy(loc_id, db):
 		try:
-			location = db.query(m.Cluster).filter(m.Cluster.id == loc_id).one()
+			location = db.query(m.Place).filter(m.Place.id == loc_id).one()
 			return template('locations', location=location)
 		except NoResultFound:
 			raise HTTPError(404, "No matching location")

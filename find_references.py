@@ -18,7 +18,7 @@ def find_room(room, path_str):
 	# find the common base of the room and path
 	base = room.parent.path[-len(path_str)]
 
-	# iterate down clusters:
+	# iterate down places:
 	for item in path_str[:-1]:
 		for child in base.children:
 			if child.name == item:

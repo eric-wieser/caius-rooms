@@ -113,12 +113,12 @@ def add_routes(app):
 		else:
 			last_ballot = None
 
-		root = db.query(m.Cluster).options(
+		root = db.query(m.Place).options(
 			joinedload_all('children.rooms.listing_for'),
 			joinedload_all('children.children.rooms.listing_for'),
 			joinedload_all('children.children.children.rooms.listing_for'),
 			joinedload_all('children.children.children.children.rooms.listing_for'),
-		).filter(m.Cluster.parent == None).one()
+		).filter(m.Place.parent == None).one()
 
 		return template('ballot-event-edit-rooms',
 			ballot_event=ballot,
