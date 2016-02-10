@@ -13,12 +13,12 @@ from . import Base
 
 class Place(Base):
 	""" (nestable) Groups of nearby physical rooms """
-	__tablename__ = 'clusters'
+	__tablename__ = 'places'
 
 	id         = Column(Integer,                         primary_key=True)
 	name       = Column(Unicode(255),                    nullable=False)
 	parent_id  = Column(Integer, ForeignKey(id))
-	type       = Column(Enum("staircase", "building", "road", name='cluster_type'))
+	type       = Column(Enum("staircase", "building", "road", name='place_type'))
 
 	latitude  = Column(Float)
 	longitude = Column(Float)
