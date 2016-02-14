@@ -42,6 +42,7 @@ Relationships:
 from .base import Base, CRSID
 from .person import Person
 from .ballot import BallotSeason, BallotEvent, BallotType, BallotSlot
+from .roomband import RoomBand, RoomBandModifier, RoomBandPrice, RoomBandModifierPrice
 from .place import Place
 from .room import Room
 from .roomlisting import RoomListing
