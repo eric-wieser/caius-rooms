@@ -46,6 +46,9 @@ end
 						% end
 						<a style="margin-left: {{ 2 * level }}rem; "
 						   href="{{ url_for(sub_loc) }}">{{ sub_loc.pretty_name(sub_loc.parent) }}</a>
+						% if sub_loc.summary:
+							<span class="glyphicon glyphicon-info-sign text-success" title='Has place summary'></span>
+						% end
 					</td>
 					% if sub_loc.rooms:
 						<%
