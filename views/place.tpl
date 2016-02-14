@@ -58,7 +58,7 @@ import itertools
 				% end
 				-->
 				&bullet;
-				Last modified: {{! utils.format_ts_html(location.summary.published_at) }}
+				<a href="{{ url_for(location, extra_path='revisions') }}" class='text-muted'>{{! utils.format_ts_html(location.summary.published_at) }}</a>
 			</div>
 		</div>
 		<hr />
