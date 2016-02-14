@@ -1,6 +1,7 @@
 <%
 rebase('layout')
 import utils
+from bottle import request
 
 def layout_breadcrumb():
 	for part in location.path:
@@ -17,6 +18,8 @@ end
 
 layout_random = '/places/random'
 
+user_can_edit = request.user and request.user.is_admin
+
 import itertools
 %>
 <div class="container">
@@ -25,11 +28,10 @@ import itertools
 	<h1>{{ location.pretty_name() }}</h1>
 
 	% include('parts/room-table', roomsq=roomsq, ballot=ballot, relative_to=location)
+	<hr />
 
 	% if location.summary:
-		<div class='well'>
-			% include('parts/markdown', content=location.summary.markdown_content, columnize=True)
-		</div>
+		% include('parts/markdown', content=location.summary.markdown_content, columnize=True)
 		<%
 		editors = []
 		for s in location.summaries:
@@ -38,19 +40,35 @@ import itertools
 			end
 		end
 		%>
-		<div class='text-right text-muted'>
-			Contributed by
-			% for i, person in enumerate(editors):
-				% if i != 0:
-, 
+		<div class="row">
+			<div class="col-xs-6">
+				% if user_can_edit:
+					<a class="btn btn-primary btn-sm" href="{{url_for(location, extra_path='edit') }}">
+						Edit
+					</a>
 				% end
-<a href="{{url_for(person)}}">{{person.name}}</a>
-			% end
-			&bullet;
-			Last modified: {{! utils.format_ts_html(location.summary.published_at) }}
+			</div>
+			<div class="col-xs-6 text-right text-muted small">
+				Contributed by <!--
+				% for i, person in enumerate(editors):
+					% if i != 0:
+						-->, <!--
+					% end
+					--><a href="{{url_for(person)}}">{{person.name}}</a><!--
+				% end
+				-->
+				&bullet;
+				Last modified: {{! utils.format_ts_html(location.summary.published_at) }}
+			</div>
 		</div>
+		<hr />
+	% elif user_can_edit:
+		<div class='text-center'>
+			<p class="lead text-muted">No place summary yet</p>
+			<a class="btn btn-lg btn-success" href="{{url_for(location, extra_path='edit') }}">Write one</a>
+		</div>
+		<hr />
 	% end
-
 	% lat_lon = location.geocoords
 	% if lat_lon:
 		<div id="map" style="height: 400px; margin-top: 10px"></div>
