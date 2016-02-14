@@ -169,15 +169,17 @@ def make_diff_pane(prev, curr):
 					</div>
 				% end
 			</div>
-			<div class="col-md-4 text-right">
-				<a class="btn btn-primary btn-sm" href="/reviews/new/{{occupancy.id}}?revision={{review.id}}">
-					% if next_r and user_can_edit:
-						Restore this version
-					% else:
-						Edit
-					% end
-				</a>
-			</div>
+			% if user_can_edit:
+				<div class="col-md-4 text-right">
+					<a class="btn btn-primary btn-sm" href="/reviews/new/{{occupancy.id}}?revision={{review.id}}">
+						% if next_r:
+							Restore this version
+						% else:
+							Edit
+						% end
+					</a>
+				</div>
+			% end
 		</div>
 
 		% if last_r:
