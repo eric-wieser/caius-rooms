@@ -419,6 +419,17 @@ with base_route(app, '/places'):
 
 		return template('edit-place-summary', place=location)
 
+	@app.route('/<place_id>/revisions', name="place-revisions")
+	@hide_from_public
+	def show_place_edit(place_id, db):
+		try:
+			location = db.query(m.Place).filter(m.Place.id == place_id).one()
+		except NoResultFound:
+			raise HTTPError(404, "No matching location")
+
+		return template('place-history', place=location)
+
+
 
 	@app.post('/<place_id>', name="place")
 	@needs_auth('admin')
