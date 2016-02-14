@@ -145,8 +145,17 @@ rooms.sort(
 					</td>
 				% end
 				<td>
-					% if last_listing and last_listing.rent:
-						£{{ last_listing.rent }}
+					% if last_listing:
+						% if last_listing.band:
+							£{{ last_listing.rent }}
+							<span class='label label-default' title="{{last_listing.band.description}}">{{last_listing.band.name}}<!--
+								% if last_listing.modifiers:
+									--><span title="{{ ', '.join(m.name for m in last_listing.modifiers) }}"}}>-</span><!--
+								% end
+							--></span>
+						% elif last_listing.rent:
+							£{{ last_listing.rent }}
+						% end
 					% end
 				</td>
 				<%
