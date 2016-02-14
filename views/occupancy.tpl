@@ -142,7 +142,7 @@ def make_diff_pane(prev, curr):
 	% revision_slices = zip([None] + revisions, revisions, revisions[1:] + [None])
 	% for i, (last_r, review, next_r) in reversed(list(enumerate(revision_slices, 1))):
 		<div class="row" style="margin-bottom: 10px">
-			<div class="col-md-4">
+			<div class="col-sm-4">
 				<h2 style="margin-top: 0; margin-bottom: 0;">Revision {{i}} <small>{{! format_ts_html(review.published_at) }}</small></h2>
 				% author = review.editor or occupancy.resident
 				% if author:
@@ -153,7 +153,7 @@ def make_diff_pane(prev, curr):
 					% end
 				% end
 			</div>
-			<div class="col-md-4 text-center">
+			<div class="col-sm-4 text-center">
 				% if last_r:
 					<div class="btn-group btn-group-sm" data-toggle="buttons">
 						<label class="btn btn-default active" href="#diff-{{review.id}}" aria-controls="home" role="tab" data-toggle="tab">
@@ -170,7 +170,7 @@ def make_diff_pane(prev, curr):
 				% end
 			</div>
 			% if user_can_edit:
-				<div class="col-md-4 text-right">
+				<div class="col-sm-4 text-right">
 					<a class="btn btn-primary btn-sm" href="/reviews/new/{{occupancy.id}}?revision={{review.id}}">
 						% if next_r:
 							Restore this version
