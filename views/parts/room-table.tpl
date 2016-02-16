@@ -147,19 +147,23 @@ rooms.sort(
 				<td>
 					% if last_listing:
 						% band = last_listing.band
-						% if band or last_listing.rent:
-							£{{ last_listing.rent }}
-						% end
 						% if band:
+							% assert last_listing.rent2 is not None
+							&pound;{{last_listing.rent2}}
 							% desc = band.description
 							% if last_listing.modifiers:
 								% desc = '{}: with {}'.format(desc, ', '.join(m.name for m in last_listing.modifiers))
 							% end
-							<span class='label label-default' style='background-color: #{{ band.color }}' title="{{ desc }}">{{band.name}}<!--
-								% if last_listing.modifiers:
-									-->&minus;<!--
-								% end
-							--></span>
+							% if band:
+								% desc = band.description
+								<span class='label label-default' style='background-color: #{{ band.color }}' title="{{ desc }}">{{band.name}}<!--
+									% if last_listing.modifiers:
+										-->&minus;<!--
+									% end
+								--></span>
+							% end
+						% elif last_listing.rent:
+							&pound;{{last_listing.rent}}
 						% end
 					% end
 				</td>
