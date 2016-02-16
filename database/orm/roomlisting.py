@@ -48,6 +48,11 @@ class RoomListing(Base):
         )
     )
 
+    @property
+    def rent2(self):
+        if self._cost_obj:
+            return self._cost_obj.price
+
     def __repr__(self):
         return "<RoomListing(ballot_season_id={!r}, room={!r})>".format(
             self.ballot_season_id, self.room
@@ -69,3 +74,46 @@ room_listing_modifiers_assoc = Table('room_listing_modifiers',  Base.metadata,
     Column('band_modifier_id', Integer, ForeignKey(RoomBandModifier.id), nullable=False),
     UniqueConstraint('room_listing_id', 'band_modifier_id', name='_listing_modifier_uc')
 )
+
+from sqlalchemy import func
+from sqlalchemy.orm import relationship, column_property, aliased, join, outerjoin
+from sqlalchemy.sql.expression import select
+
+class ListingRent(Base):
+    __table__ = select([
+        RoomListing.id
+            .label('roomlisting_id'),
+        (func.max(RoomBandPrice.rent) - func.coalesce(func.sum(RoomBandModifierPrice.discount), 0))
+            .label('price')
+    ]).select_from(
+        join(RoomListing,
+            join(
+                RoomBand,
+                RoomBandPrice
+            ),
+            (RoomListing.ballot_season_id == RoomBandPrice.season_id) &
+            (RoomListing.band_id == RoomBandPrice.band_id)
+        ).outerjoin(
+            join(
+                room_listing_modifiers_assoc,
+                join(
+                    RoomBandModifier,
+                    RoomBandModifierPrice
+                )
+            ),
+            (RoomListing.ballot_season_id == RoomBandModifierPrice.season_id) &
+            (RoomListing.id == room_listing_modifiers_assoc.c.room_listing_id)
+        )
+    ).group_by(RoomListing.id).correlate(None).alias(name='listing_rents')
+
+    # price = __table__.c.price
+
+
+RoomListing._cost_obj = relationship(
+    ListingRent,
+    lazy='subquery',
+    uselist=False,
+    primaryjoin=ListingRent.roomlisting_id == RoomListing.id,
+    foreign_keys=ListingRent.roomlisting_id
+)
+
