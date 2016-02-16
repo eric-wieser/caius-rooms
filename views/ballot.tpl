@@ -1,5 +1,6 @@
 % import database.orm as m
 % from bottle import request
+% from collections import Counter
 % rebase('layout')
 
 <%
@@ -13,6 +14,8 @@ show_edit = request.user and request.user.is_admin
 
 	<h1>Ballots for {{ ballot_season }}</h1>
 
+	% by_band = Counter(l.band for l in ballot_season.room_listings)
+	% by_modifier = Counter(m for l in ballot_season.room_listings for m in l.modifiers)
 	<h2>Prices</h2>
 
 	<div class="row">
@@ -22,7 +25,8 @@ show_edit = request.user and request.user.is_admin
 					<tr>
 						<th>Band</th>
 						<th>Description</th>
-						<th>Rent</th>
+						<th class='text-right'>Rent</th>
+						<th class='text-right'>Rooms</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -30,7 +34,16 @@ show_edit = request.user and request.user.is_admin
 						<tr>
 							<td><span class="label" style="background-color: #{{b.band.color}}">{{b.band.name}}</span></td>
 							<td>{{b.band.description}}</td>
-							<td>&pound;{{b.rent}}</td>
+							<td class='text-right'>&pound;{{b.rent}}</td>
+							<td class='text-right'>{{by_band[b.band]}}</td>
+						</tr>
+					% end
+					% if by_band[None]:
+						<tr>
+							<td></td>
+							<td>Unbanded</td>
+							<td></td>
+							<td class='text-right'>{{by_band[None]}}</td>
 						</tr>
 					% end
 				</tbody>
@@ -43,7 +56,8 @@ show_edit = request.user and request.user.is_admin
 					<tr>
 						<th>Modifier</th>
 						<th>Description</th>
-						<th>Discount</th>
+						<th class='text-right'>Discount</th>
+						<th class='text-right'>Rooms</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -51,7 +65,8 @@ show_edit = request.user and request.user.is_admin
 						<tr>
 							<td>{{b.modifier.name}}</td>
 							<td>{{b.modifier.description}}</td>
-							<td>&pound;{{b.discount}}</td>
+							<td class='text-right'>&pound;{{b.discount}}</td>
+							<td class='text-right'>{{by_modifier[b.modifier]}}</td>
 						</tr>
 					% end
 				</tbody>

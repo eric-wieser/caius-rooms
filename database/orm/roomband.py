@@ -49,7 +49,7 @@ class RoomBandPrice(Base):
 	band_id   = Column(Integer, ForeignKey(RoomBand.id),     primary_key=True, nullable=False)
 	season_id = Column(Integer, ForeignKey(BallotSeason.year), primary_key=True, nullable=False)
 
-	season    = relationship(lambda: BallotSeason, backref="bands_prices")
+	season    = relationship(lambda: BallotSeason, backref="band_prices")
 	band      = relationship(lambda: RoomBand, backref="prices")
 
 	rent = Column(Numeric(6,2), nullable=False)
