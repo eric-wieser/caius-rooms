@@ -76,7 +76,7 @@ def upgrade_live():
         op.execute(bands.update().where(bands.c.name==name).values(color=color))
 
 
-    op.alter_column('room_bands', 'color', existing_type=sa.String(length=6), nullable=True)
+    op.alter_column('room_bands', 'color', existing_type=sa.VARCHAR(length=6), nullable=True)
     ### end Alembic commands ###
 
 

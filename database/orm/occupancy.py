@@ -14,7 +14,7 @@ class Occupancy(Base):
 	__tablename__ = 'occupancies'
 
 	id          = Column(Integer,                             primary_key=True)
-	resident_id = Column(CRSID,   ForeignKey(Person.crsid))
+	resident_id = Column(CRSID,   ForeignKey(Person.crsid), index=True)
 	listing_id  = Column(Integer, ForeignKey(RoomListing.id), nullable=False, index=True)
 	chosen_at   = Column(DateTime)
 
