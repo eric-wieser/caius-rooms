@@ -379,6 +379,7 @@ with base_route(app, '/places'):
 	def show_places(db):
 		from sqlalchemy.orm import joinedload
 
+		# this line preloads all the places into the cache
 		places = db.query(m.Place).options(
 			joinedload(m.Place.children),
 			joinedload(m.Place.rooms)
@@ -395,6 +396,8 @@ with base_route(app, '/places'):
 				.subqueryload(m.Room.listing_for)
 				.subqueryload(m.RoomListing.audience_types)
 		).all()
+
+		# which this line then accesses
 		root = db.query(m.Place).get(1)
 
 		return template('places', location=root, ballot=get_ballot(db))
