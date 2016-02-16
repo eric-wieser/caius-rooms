@@ -4,6 +4,7 @@ from sqlalchemy.types import (
 	DateTime,
 	Integer,
 	Unicode,
+	String,
 	UnicodeText,
 	Numeric
 )
@@ -20,11 +21,12 @@ class RoomBand(Base):
 	__tablename__ = 'room_bands'
 
 	id   = Column(Integer, primary_key=True)
-	name = Column(Unicode(255))
-	description = Column(UnicodeText)
+	name = Column(Unicode(255), nullable=False)
+	color = Column(String(6), nullable=False)
+	description = Column(UnicodeText, nullable=False)
 
 	def __repr__(self):
-		return "RoomBand(name={})".format(self.name)
+		return "RoomBand(name={!r})".format(self.name)
 
 
 class RoomBandModifier(Base):
@@ -32,11 +34,11 @@ class RoomBandModifier(Base):
 	__tablename__ = 'room_band_modifiers'
 
 	id   = Column(Integer, primary_key=True)
-	name = Column(Unicode(255))
-	description = Column(UnicodeText)
+	name = Column(Unicode(255), nullable=False)
+	description = Column(UnicodeText, nullable=False)
 
 	def __repr__(self):
-		return "RoomBand(name={})".format(self.name)
+		return "RoomBand(name={!r})".format(self.name)
 
 
 class RoomBandPrice(Base):
@@ -50,10 +52,10 @@ class RoomBandPrice(Base):
 	season    = relationship(lambda: BallotSeason, backref="bands_prices")
 	band      = relationship(lambda: RoomBand, backref="prices")
 
-	rent = Column(Numeric(6,2))
+	rent = Column(Numeric(6,2), nullable=False)
 
 	def __repr__(self):
-		return "RoomBand(name={})".format(self.name)
+		return "RoomBandPrice({!r}, rent={})".format(self.band.name, self.rent)
 
 class RoomBandModifierPrice(Base):
 	""" Band prices for a given year """
@@ -66,9 +68,9 @@ class RoomBandModifierPrice(Base):
 	season    = relationship(lambda: BallotSeason, backref="modifier_prices")
 	modifier  = relationship(lambda: RoomBandModifier, backref="prices")
 
-	discount = Column(Numeric(6,2))
+	discount = Column(Numeric(6,2), nullable=False)
 
 	def __repr__(self):
-		return "RoomBandModifierPrice(name={})".format(self.name)
+		return "RoomBandModifierPrice({!r}, discount={})".format(self.modifier.name, self.discount)
 
 
