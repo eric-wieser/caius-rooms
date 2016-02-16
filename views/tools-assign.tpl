@@ -1,4 +1,5 @@
 % rebase('layout')
+% from sqlalchemy import inspect
 
 <%
 def last_it(it):
@@ -46,6 +47,11 @@ end
 						<input id="user-input" name="user" class="form-control" placeholder="crsid" />
 					% end
 				</div>
+				% if user and inspect(user).transient:
+					<div class='alert alert-warning'>
+						This user is new to the roompicks system, but their CRSID is valid - check this was intentional.
+					</div>
+				% end
 				% if occ_src:
 					<div class="alert alert-danger">
 						This user is already booked into

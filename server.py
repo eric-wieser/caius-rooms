@@ -835,6 +835,13 @@ with base_route(app, '/tools'):
 
 		if request.query.user:
 			user = db.query(m.Person).get(request.query.user)
+			if not user:
+				d = utils.lookup_ldap([request.query.user])
+				print d
+				d = d.get(request.query.user)
+				if d:
+					name = d.get('visibleName')
+					user = m.Person(crsid=request.query.user, name=name)
 
 		if request.query.room:
 			room = db.query(m.Room).get(request.query.room)
