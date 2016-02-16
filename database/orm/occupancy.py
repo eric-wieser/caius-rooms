@@ -5,8 +5,8 @@ from sqlalchemy.types import (
 	Integer
 )
 from sqlalchemy import func
-from sqlalchemy.orm import relationship, backref, column_property, join
-from sqlalchemy.sql.expression import select
+from sqlalchemy.orm import relationship, backref, column_property, join, aliased, outerjoin
+from sqlalchemy.sql.expression import select, exists
 
 from . import Base, Person, CRSID, BallotEvent, BallotSeason, BallotSlot, RoomListing
 
@@ -33,27 +33,28 @@ class Occupancy(Base):
 			self.resident_id, self.listing
 		)
 
-# a mapping of (Person, BallotSeason) -> datetime, used to detect balloted slots
-resident_year_to_first_occ_ts_s = select([
-	Person.crsid.label('person'),
-	BallotSeason.year.label('season'),
-	func.min(Occupancy.chosen_at).label('ts')
+# finds the oldest occupancy for each (person, year) pair
+Occupancy2 = aliased(Occupancy)
+RoomListing2 = aliased(RoomListing)
+BallotSeason2 = aliased(BallotSeason)
+
+resident_year_to_first_occ_s = select([
+	Occupancy.id.label('occ1_id')
 ]).select_from(
-	join(Occupancy, RoomListing).join(BallotSeason).join(Person)
-).group_by(BallotSeason.year, Person.crsid).correlate(None).alias()
+	outerjoin(
+		join(Occupancy, RoomListing).join(BallotSeason),
+		join(Occupancy2, RoomListing2).join(BallotSeason2),
+
+		(Occupancy.resident_id == Occupancy2.resident_id) &
+		(BallotSeason.year == BallotSeason2.year) &
+		(Occupancy.chosen_at > Occupancy2.chosen_at)
+	)
+).where(Occupancy2.id == None).correlate(None).alias()
 
 # this occupancy was the first one
 Occupancy.is_first = column_property(
-	select([
-		Occupancy.chosen_at == resident_year_to_first_occ_ts_s.c.ts
-	])
-	.where(
-		(resident_year_to_first_occ_ts_s.c.person == Occupancy.resident_id) &
-		(resident_year_to_first_occ_ts_s.c.season == RoomListing.ballot_season_id) &
-		(Occupancy.listing_id == RoomListing.id)
-	)
+	exists().where(resident_year_to_first_occ_s.c.occ1_id==Occupancy.id)
 )
-
 
 # a mapping of Occupancy to BallotSlot in which it was booked
 occ_to_slot_s = select([
