@@ -146,7 +146,7 @@ def add_routes(app):
 				room_ids.remove(l.room_id)
 			else:
 				l.audience_types -= {ballot_type}
-				if not l.audience_types:
+				if not l.audience_types and not l.occupancies:
 					not_visible.add(l)
 
 		# remove listings with no information left
