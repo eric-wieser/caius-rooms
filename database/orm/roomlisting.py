@@ -33,10 +33,11 @@ class RoomListing(Base):
         backref="all_time_listings",
         collection_class=set)
 
-    band = relationship(lambda: RoomBand, backref=backref("listings", lazy='subquery', order_by=ballot_season_id.desc()))
+    band = relationship(lambda: RoomBand, lazy='subquery', backref=backref("listings", lazy='subquery', order_by=ballot_season_id.desc()))
     modifiers = relationship(lambda: RoomBandModifier,
         secondary=lambda: room_listing_modifiers_assoc,
         backref="all_time_listings",
+        lazy='subquery',
         collection_class=set)
 
     # this property is only used for the side effects

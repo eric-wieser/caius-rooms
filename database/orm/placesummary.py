@@ -45,6 +45,7 @@ Place.summary = relationship(
 	lambda: PlaceSummary,
 	viewonly=True,
 	uselist=False,
+	lazy='subquery',
 	primaryjoin=(PlaceSummary.place_id == Place.id) & PlaceSummary.is_newest
 )
 
