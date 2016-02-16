@@ -10,18 +10,66 @@ end
 show_edit = request.user and request.user.is_admin
 %>
 <div class="container">
+
+	<h1>Ballots for {{ ballot_season }}</h1>
+
+	<h2>Prices</h2>
+
+	<div class="row">
+		<div class="col-md-6">
+			<table class="table table-condensed">
+				<thead>
+					<tr>
+						<th>Band</th>
+						<th>Description</th>
+						<th>Rent</th>
+					</tr>
+				</thead>
+				<tbody>
+					% for b in sorted(ballot_season.band_prices, key=lambda b: b.band.name):
+						<tr>
+							<td><span class="label" style="background-color: #{{b.band.color}}">{{b.band.name}}</span></td>
+							<td>{{b.band.description}}</td>
+							<td>&pound;{{b.rent}}</td>
+						</tr>
+					% end
+				</tbody>
+			</table>
+		</div>
+
+		<div class="col-md-6">
+			<table class="table table-condensed">
+				<thead>
+					<tr>
+						<th>Modifier</th>
+						<th>Description</th>
+						<th>Discount</th>
+					</tr>
+				</thead>
+				<tbody>
+					% for b in sorted(ballot_season.modifier_prices, key=lambda b: b.modifier.name):
+						<tr>
+							<td>{{b.modifier.name}}</td>
+							<td>{{b.modifier.description}}</td>
+							<td>&pound;{{b.discount}}</td>
+						</tr>
+					% end
+				</tbody>
+			</table>
+		</div>
+	</div>
+
 	% if show_edit:
 		<a href="{{ url_for(ballot_season, extra_path='add-event') }}" class="btn btn-primary pull-right">
 			<span class="glyphicon glyphicon-plus"></span> Add new ballot event
 		</a>
 	% end
-
-	<h1>Ballots for {{ ballot_season }}</h1>
+	<h2>Schedule</h2>
 
 	<div class="row">
 		% for event in ballot_season.events:
 			<div class="col-md-4">
-				<h2>
+				<h3>
 					{{ event.type.name }}
 					<small>
 						{{ '{:%d %b}'.format(event.opens_at) }}
@@ -32,7 +80,7 @@ show_edit = request.user and request.user.is_admin
 							<span class="glyphicon glyphicon-pencil"></span>
 						</a>
 					</small>
-				</h2>
+				</h3>
 
 				<table class="table table-condensed">
 					<tbody>
