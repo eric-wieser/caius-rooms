@@ -12,6 +12,16 @@ from utils import needs_auth, lookup_ldap
 import database.orm as m
 
 def add_routes(app):
+	@app.route('/<ballot_id:int>/edit-prices')
+	@needs_auth('admin')
+	def show_ballot_price_edit(ballot_id, db):
+		ballot = db.query(m.BallotSeason).filter(m.BallotSeason.year == ballot_id).one()
+
+		bands = db.query(m.RoomBand).all()
+		modifiers = db.query(m.RoomBandModifier).all()
+
+		return template('ballot-edit-prices', ballot_season=ballot, bands=bands, modifiers=modifiers)
+
 	@app.route('/<ballot_id:int>/add-event')
 	@needs_auth('admin')
 	def show_ballot_event_add(ballot_id, db):

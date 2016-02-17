@@ -16,7 +16,14 @@ show_edit = request.user and request.user.is_admin
 
 	% by_band = Counter(l.band for l in ballot_season.room_listings)
 	% by_modifier = Counter(m for l in ballot_season.room_listings for m in l.modifiers)
-	<h2>Prices</h2>
+	<h2>
+		Prices
+		% if show_edit:
+			<small><a href="{{ url_for(ballot_season, extra_path="edit-prices") }}">
+				<span class="glyphicon glyphicon-pencil"></span>
+			</a></small>
+		% end
+	</h2>
 
 	<div class="row">
 		<div class="col-md-6">
@@ -103,9 +110,11 @@ show_edit = request.user and request.user.is_admin
 						&#x2012;
 						{{ '{:%d %b}'.format(event.closes_at) }}
 
-						<a href="{{ url_for(ballot_season, extra_path="{}/edit".format(event.type.name)) }}">
-							<span class="glyphicon glyphicon-pencil"></span>
-						</a>
+						% if show_edit:
+							<a href="{{ url_for(ballot_season, extra_path="{}/edit".format(event.type.name)) }}">
+								<span class="glyphicon glyphicon-pencil"></span>
+							</a>
+						% end
 					</small>
 				</h3>
 
