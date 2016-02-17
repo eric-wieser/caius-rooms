@@ -39,12 +39,24 @@ show_edit = request.user and request.user.is_admin
 						</tr>
 					% end
 					% if by_band[None]:
-						<tr>
-							<td></td>
-							<td>Unbanded</td>
-							<td></td>
-							<td class='text-right'>{{by_band[None]}}</td>
-						</tr>
+						% unpriced = sum(l.rent is None and l.band is None for l in ballot_season.room_listings)
+						% unbanded = by_band[None] - unpriced
+						% if unbanded:
+							<tr>
+								<td></td>
+								<td>Unbanded</td>
+								<td></td>
+								<td class='text-right'>{{by_band[None] - unpriced}}</td>
+							</tr>
+						% end
+						% if unpriced:
+							<tr>
+								<td></td>
+								<td>Unpriced</td>
+								<td></td>
+								<td class='text-right'>{{ unpriced}}</td>
+							</tr>
+						% end
 					% end
 				</tbody>
 			</table>
