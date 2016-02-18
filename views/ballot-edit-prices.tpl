@@ -84,6 +84,11 @@ end
 						<td><a href="{{url_for(r.room)}}" target='_blank'>{{r.room.pretty_name()}}</a></td>
 						<td>
 							<select class="form-control">
+								% if r.band is None:
+									<option value="" selected>None</option>
+								% else:
+									<option value="">None</option>
+								% end
 								% for b in sorted(bands, key=lambda b: b.name):
 									% if r.band == b:
 										<option value="{{b.id}}" selected>{{b.name}}</option>
@@ -91,6 +96,7 @@ end
 										<option value="{{b.id}}">{{b.name}}</option>
 									% end
 								% end
+
 							</select>
 						</td>
 						<td>
