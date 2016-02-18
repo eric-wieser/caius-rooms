@@ -10,7 +10,10 @@ def layout_breadcrumb():
 end
 %>
 <div class="container">
-	<form  class="form-inline">
+	<div class="alert alert-warning">
+		<strong>This form does not work yet</strong> - spending time filling it out leads only to sadness
+	</div>
+	<form class="form-inline">
 		<div class="row">
 			<div class="col-md-6">
 				<table class="table table-condensed">
@@ -66,6 +69,48 @@ end
 				</table>
 			</div>
 		</div>
+
+		<table class='table table-condensed'>
+			<thead>
+				<tr>
+					<th>Room</th>
+					<th>Band</th>
+					<th>Modifiers</th>
+				</tr>
+			</thead>
+			<tbody>
+				% for r in ballot_season.room_listings:
+					<tr>
+						<td><a href="{{url_for(r.room)}}" target='_blank'>{{r.room.pretty_name()}}</a></td>
+						<td>
+							<select class="form-control">
+								% for b in sorted(bands, key=lambda b: b.name):
+									% if r.band == b:
+										<option value="{{b.id}}" selected>{{b.name}}</option>
+									% else:
+										<option value="{{b.id}}">{{b.name}}</option>
+									% end
+								% end
+							</select>
+						</td>
+						<td>
+							% for b in sorted(modifiers, key=lambda b: b.name):
+								<div class="checkbox" style="display: block">
+									<label>
+										% if b in r.modifiers:
+											<input type="checkbox" name="{{r.id}}-mod" value="{{b.id}}" checked />
+										% else:
+											<input type="checkbox" name="{{r.id}}-mod" value="{{b.id}}" />
+										% end
+										{{b.name}}
+									</label>
+								</div>
+							% end
+						</td>
+					</tr>
+				% end
+			</tbody>
+		</table>
 		<button type="submit" class="btn btn-primary">Update band prices</button>
 	</form>
 </div>
