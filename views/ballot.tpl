@@ -41,7 +41,18 @@ show_edit = request.user and request.user.is_admin
 						<tr>
 							<td><span class="label" style="background-color: #{{b.band.color}}">{{b.band.name}}</span></td>
 							<td>{{b.band.description}}</td>
-							<td class='text-right'>&pound;{{b.rent}}</td>
+							<td class='text-right'>
+								% last_b = b.band.price_for[ballot_season.previous]
+								% if last_b and b.rent and last_b.rent:
+									% pct = 100 * (b.rent - last_b.rent) / last_b.rent
+									% if pct > 0:
+										<small class="text text-danger" title='Compared to &pound;{{last_b.rent}}'>+{{ '{:.2f}'.format(pct)}}%</small>
+									% else:
+										<small class="text text-success" title='Compared to &pound;{{last_b.rent}}'>&minus;{{ '{:.2f}'.format(abs(pct))}}%</small>
+									% end
+								% end
+								&pound;{{b.rent}}
+							</td>
 							<td class='text-right'>{{by_band[b.band]}}</td>
 						</tr>
 					% end
@@ -84,7 +95,18 @@ show_edit = request.user and request.user.is_admin
 						<tr>
 							<td>{{b.modifier.name}}</td>
 							<td>{{b.modifier.description}}</td>
-							<td class='text-right'>&pound;{{b.discount}}</td>
+							<td class='text-right'>
+								% last_b = b.modifier.price_for[ballot_season.previous]
+								% if last_b and b.discount and last_b.discount:
+									% pct = 100 * (b.discount - last_b.discount) / last_b.discount
+									% if pct > 0:
+										<small class="text text-success" title='Compared to &pound;{{last_b.discount}}'>+{{ '{:.2f}'.format(pct)}}%</small>
+									% else:
+										<small class="text text-danger" title='Compared to &pound;{{last_b.discount}}'>&minus;{{ '{:.2f}'.format(abs(pct))}}%</small>
+									% end
+								% end
+								&pound;{{b.discount}}
+							</td>
 							<td class='text-right'>{{by_modifier[b.modifier]}}</td>
 						</tr>
 					% end
