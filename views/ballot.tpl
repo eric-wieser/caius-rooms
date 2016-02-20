@@ -76,12 +76,12 @@ show_edit = request.user and request.user.is_admin
 							<td class='text-right'>
 								% if by_band[b] - by_band_prev[b]:
 									<a href="/rooms?ballot={{ballot_season.year}}&amp;filter_id={{','.join(str(l) for l in by_band[b] - by_band_prev[b])}}"
-									  class='text-success' target='blank'>
+									   class='text-success' target='_blank'>
 										+{{len(by_band[b] - by_band_prev[b])}}</a>
 								% end
 								% if by_band_prev[b] - by_band[b]:
 									<a href="/rooms?ballot={{ballot_season.previous.year}}&amp;filter_id={{','.join(str(l) for l in by_band_prev[b] - by_band[b])}}"
-									  class='text-danger' target='blank'>
+									   class='text-danger' target='_blank'>
 										&minus;{{len(by_band_prev[b] - by_band[b])}}</a>
 								% end
 								<a href='/rooms?ballot={{ballot_season.year}}&amp;filter_id={{','.join(str(l) for l in by_band[b])}}' target='_blank'>{{len(by_band[b])}}</a>
