@@ -1,6 +1,6 @@
 % import database.orm as m
 % from bottle import request
-% from collections import Counter
+% from collections import Counter, defaultdict
 % rebase('layout')
 
 <%
@@ -14,8 +14,14 @@ show_edit = request.user and request.user.is_admin
 
 	<h1>Ballots for {{ ballot_season }}</h1>
 
-	% by_band = Counter(l.band for l in ballot_season.room_listings)
-	% by_modifier = Counter(m for l in ballot_season.room_listings for m in l.modifiers)
+	% by_band = defaultdict(set)
+	% by_modifier = defaultdict(set)
+	% for l in ballot_season.room_listings:
+		% by_band[l.band].add(l)
+		% for m in l.modifiers:
+			% by_modifier[m].add(l)
+		% end
+	% end
 	<h2>
 		Prices
 		% if show_edit:
@@ -56,18 +62,22 @@ show_edit = request.user and request.user.is_admin
 									&pound;{{b_price.rent}}
 								% end
 							</td>
-							<td class='text-right'>{{by_band[b]}}</td>
+							<td class='text-right'>
+								<a href='/rooms?filter_id={{','.join(str(l.room_id) for l in by_band[b])}}' target='_blank'>{{len(by_band[b])}}</a>
+							</td>
 						</tr>
 					% end
 					% if by_band[None]:
-						% unpriced = sum(l.rent is None and l.band is None for l in ballot_season.room_listings)
+						% unpriced = {l for l in ballot_season.room_listings if l.rent is None and l.band is None}
 						% unbanded = by_band[None] - unpriced
 						% if unbanded:
 							<tr>
 								<td></td>
 								<td>Unbanded</td>
 								<td></td>
-								<td class='text-right'>{{by_band[None] - unpriced}}</td>
+								<td class='text-right'>
+									<a href='/rooms?filter_id={{','.join(str(l.room_id) for l in unbanded)}}' target='_blank'>{{len(unbanded)}}</a>
+								</td>
 							</tr>
 						% end
 						% if unpriced:
@@ -75,7 +85,9 @@ show_edit = request.user and request.user.is_admin
 								<td></td>
 								<td>Unpriced</td>
 								<td></td>
-								<td class='text-right'>{{ unpriced}}</td>
+								<td class='text-right'>
+									<a href='/rooms?filter_id={{','.join(str(l.room_id) for l in unpriced)}}' target='_blank'>{{len(unpriced)}}</a>
+								</td>
 							</tr>
 						% end
 					% end
@@ -113,7 +125,9 @@ show_edit = request.user and request.user.is_admin
 									&pound;{{b_price.discount}}
 								% end
 							</td>
-							<td class='text-right'>{{by_modifier[b]}}</td>
+							<td class='text-right'>
+								<a href='/rooms?filter_id={{','.join(str(l.room_id) for l in by_modifier[b])}}' target='_blank'>{{len(by_modifier[b])}}</a>
+							</td>
 						</tr>
 					% end
 				</tbody>
