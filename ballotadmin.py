@@ -2,24 +2,54 @@ from datetime import datetime, timedelta
 import csv
 import StringIO
 import json
+import re
+import decimal
 
 from bottle import *
 from sqlalchemy import func
 from sqlalchemy.orm import joinedload, joinedload_all
 from sqlalchemy.orm.strategy_options import Load
 
-from utils import needs_auth, lookup_ldap
+from utils import needs_auth, lookup_ldap, add_structure, url_for
 import database.orm as m
 
 def add_routes(app):
-	@app.route('/<ballot_id:int>/edit-prices')
+	@app.route('/<ballot_id:int>/edit-prices', method=['POST', 'GET'])
 	@needs_auth('admin')
 	def show_ballot_price_edit(ballot_id, db):
 		ballot = db.query(m.BallotSeason).filter(m.BallotSeason.year == ballot_id).one()
+		last_ballot = db.query(m.BallotSeason).get(ballot_id-1)
+		# db.make_transient(ballot)
 		bands = db.query(m.RoomBand).all()
 		modifiers = db.query(m.RoomBandModifier).all()
 
-		return template('ballot-edit-prices', ballot_season=ballot, bands=bands, modifiers=modifiers)
+		if request.method == 'POST':
+			postdata = add_structure(request.forms)
+
+			band_prices = ballot.band_prices
+
+			def do_update():
+				for id, obj in postdata['bands'].items():
+					try:
+						rent = decimal.Decimal(obj['rent'])
+					except decimal.DecimalException:
+						rent = None
+					band = db.query(m.RoomBand).get(id)
+
+					if band:
+						price = next((p for p in band_prices if p.band == band), None)
+						if rent is not None:
+							if price:
+								price.rent = rent
+							else:
+								m.RoomBandPrice(band=band, season=ballot, rent=rent)
+						elif price:
+							band_prices.remove(price)
+
+			do_update()
+			return redirect(url_for(ballot))
+		else:
+			return template('ballot-edit-prices', ballot_season=ballot, bands=bands, modifiers=modifiers, last_ballot=last_ballot)
 
 	@app.route('/<ballot_id:int>/edit-band-assignments')
 	@needs_auth('admin')
