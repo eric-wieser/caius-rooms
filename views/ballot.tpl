@@ -17,9 +17,20 @@ show_edit = request.user and request.user.is_admin
 	% by_band = defaultdict(set)
 	% by_modifier = defaultdict(set)
 	% for l in ballot_season.room_listings:
-		% by_band[l.band].add(l)
+		% by_band[l.band].add(l.room_id)
 		% for m in l.modifiers:
-			% by_modifier[m].add(l)
+			% by_modifier[m].add(l.room_id)
+		% end
+	% end
+
+	% by_band_prev = defaultdict(set)
+	% by_modifier_prev = defaultdict(set)
+	% if ballot_season.previous:
+		% for l in ballot_season.previous.room_listings:
+			% by_band_prev[l.band].add(l.room_id)
+			% for m in l.modifiers:
+				% by_modifier_prev[m].add(l.room_id)
+			% end
 		% end
 	% end
 	<h2>
@@ -63,12 +74,22 @@ show_edit = request.user and request.user.is_admin
 								% end
 							</td>
 							<td class='text-right'>
-								<a href='/rooms?ballot={{ballot_season.year}}&amp;filter_id={{','.join(str(l.room_id) for l in by_band[b])}}' target='_blank'>{{len(by_band[b])}}</a>
+								% if by_band[b] - by_band_prev[b]:
+									<a href="/rooms?ballot={{ballot_season.year}}&amp;filter_id={{','.join(str(l) for l in by_band[b] - by_band_prev[b])}}"
+									  class='text-success' target='blank'>
+										+{{len(by_band[b] - by_band_prev[b])}}</a>
+								% end
+								% if by_band_prev[b] - by_band[b]:
+									<a href="/rooms?ballot={{ballot_season.previous.year}}&amp;filter_id={{','.join(str(l) for l in by_band_prev[b] - by_band[b])}}"
+									  class='text-danger' target='blank'>
+										&minus;{{len(by_band_prev[b] - by_band[b])}}</a>
+								% end
+								<a href='/rooms?ballot={{ballot_season.year}}&amp;filter_id={{','.join(str(l) for l in by_band[b])}}' target='_blank'>{{len(by_band[b])}}</a>
 							</td>
 						</tr>
 					% end
 					% if by_band[None]:
-						% unpriced = {l for l in ballot_season.room_listings if l.rent is None and l.band is None}
+						% unpriced = {l.room_id for l in ballot_season.room_listings if l.rent is None and l.band is None}
 						% unbanded = by_band[None] - unpriced
 						% if unbanded:
 							<tr>
@@ -76,7 +97,7 @@ show_edit = request.user and request.user.is_admin
 								<td>Unbanded</td>
 								<td></td>
 								<td class='text-right'>
-									<a href='/rooms?ballot={{ballot_season.year}}&amp;filter_id={{','.join(str(l.room_id) for l in unbanded)}}' target='_blank'>{{len(unbanded)}}</a>
+									<a href='/rooms?ballot={{ballot_season.year}}&amp;filter_id={{','.join(str(l) for l in unbanded)}}' target='_blank'>{{len(unbanded)}}</a>
 								</td>
 							</tr>
 						% end
@@ -86,7 +107,7 @@ show_edit = request.user and request.user.is_admin
 								<td>Unpriced</td>
 								<td></td>
 								<td class='text-right'>
-									<a href='/rooms?ballot={{ballot_season.year}}&amp;filter_id={{','.join(str(l.room_id) for l in unpriced)}}' target='_blank'>{{len(unpriced)}}</a>
+									<a href='/rooms?ballot={{ballot_season.year}}&amp;filter_id={{','.join(str(l) for l in unpriced)}}' target='_blank'>{{len(unpriced)}}</a>
 								</td>
 							</tr>
 						% end
@@ -116,9 +137,9 @@ show_edit = request.user and request.user.is_admin
 								% if last_b_price and b_price and b_price.discount and last_b_price.discount:
 									% pct = 100 * (b_price.discount - last_b_price.discount) / last_b_price.discount
 									% if pct > 0:
-										<small class="text text-success" title='Compared to &pound;{{last_b_price.discount}}'>+{{ '{:.2f}'.format(pct)}}%</small>
+										<small class="text-success" title='Compared to &pound;{{last_b_price.discount}}'>+{{ '{:.2f}'.format(pct)}}%</small>
 									% else:
-										<small class="text text-danger" title='Compared to &pound;{{last_b_price.discount}}'>&minus;{{ '{:.2f}'.format(abs(pct))}}%</small>
+										<small class="text-danger" title='Compared to &pound;{{last_b_price.discount}}'>&minus;{{ '{:.2f}'.format(abs(pct))}}%</small>
 									% end
 								% end
 								% if b_price:
@@ -126,7 +147,17 @@ show_edit = request.user and request.user.is_admin
 								% end
 							</td>
 							<td class='text-right'>
-								<a href='/rooms?ballot={{ballot_season.year}}&amp;filter_id={{','.join(str(l.room_id) for l in by_modifier[b])}}' target='_blank'>{{len(by_modifier[b])}}</a>
+								% if by_modifier[b] - by_modifier_prev[b]:
+									<a href="/rooms?ballot={{ballot_season.year}}&amp;filter_id={{','.join(str(l) for l in by_modifier[b] - by_modifier_prev[b])}}"
+									   class='text-success' target='_blank'>
+										+{{len(by_modifier[b] - by_modifier_prev[b])}}</a>
+								% end
+								% if by_modifier_prev[b] - by_modifier[b]:
+									<a href="/rooms?ballot={{ballot_season.previous.year}}&amp;filter_id={{','.join(str(l) for l in by_modifier_prev[b] - by_modifier[b])}}"
+									   class='text-danger' target='_blank'>
+										&minus;{{len(by_modifier_prev[b] - by_modifier[b])}}</a>
+								% end
+								<a href='/rooms?ballot={{ballot_season.year}}&amp;filter_id={{','.join(str(l) for l in by_modifier[b])}}' target='_blank'>{{len(by_modifier[b])}}</a>
 							</td>
 						</tr>
 					% end
