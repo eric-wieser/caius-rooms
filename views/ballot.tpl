@@ -63,7 +63,7 @@ show_edit = request.user and request.user.is_admin
 								% end
 							</td>
 							<td class='text-right'>
-								<a href='/rooms?filter_id={{','.join(str(l.room_id) for l in by_band[b])}}' target='_blank'>{{len(by_band[b])}}</a>
+								<a href='/rooms?ballot={{ballot_season.year}}&amp;filter_id={{','.join(str(l.room_id) for l in by_band[b])}}' target='_blank'>{{len(by_band[b])}}</a>
 							</td>
 						</tr>
 					% end
@@ -76,7 +76,7 @@ show_edit = request.user and request.user.is_admin
 								<td>Unbanded</td>
 								<td></td>
 								<td class='text-right'>
-									<a href='/rooms?filter_id={{','.join(str(l.room_id) for l in unbanded)}}' target='_blank'>{{len(unbanded)}}</a>
+									<a href='/rooms?ballot={{ballot_season.year}}&amp;filter_id={{','.join(str(l.room_id) for l in unbanded)}}' target='_blank'>{{len(unbanded)}}</a>
 								</td>
 							</tr>
 						% end
@@ -86,7 +86,7 @@ show_edit = request.user and request.user.is_admin
 								<td>Unpriced</td>
 								<td></td>
 								<td class='text-right'>
-									<a href='/rooms?filter_id={{','.join(str(l.room_id) for l in unpriced)}}' target='_blank'>{{len(unpriced)}}</a>
+									<a href='/rooms?ballot={{ballot_season.year}}&amp;filter_id={{','.join(str(l.room_id) for l in unpriced)}}' target='_blank'>{{len(unpriced)}}</a>
 								</td>
 							</tr>
 						% end
@@ -126,7 +126,7 @@ show_edit = request.user and request.user.is_admin
 								% end
 							</td>
 							<td class='text-right'>
-								<a href='/rooms?filter_id={{','.join(str(l.room_id) for l in by_modifier[b])}}' target='_blank'>{{len(by_modifier[b])}}</a>
+								<a href='/rooms?ballot={{ballot_season.year}}&amp;filter_id={{','.join(str(l.room_id) for l in by_modifier[b])}}' target='_blank'>{{len(by_modifier[b])}}</a>
 							</td>
 						</tr>
 					% end
