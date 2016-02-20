@@ -37,23 +37,26 @@ show_edit = request.user and request.user.is_admin
 					</tr>
 				</thead>
 				<tbody>
-					% for b in sorted(ballot_season.band_prices, key=lambda b: b.band.name):
+					% for b in sorted((b for b in by_band if b is not None), key=lambda b: b.name):
 						<tr>
-							<td><span class="label" style="background-color: #{{b.band.color}}">{{b.band.name}}</span></td>
-							<td>{{b.band.description}}</td>
+							<td><span class="label" style="background-color: #{{b.color}}">{{b.name}}</span></td>
+							<td>{{b.description}}</td>
 							<td class='text-right'>
-								% last_b = b.band.price_for.get(ballot_season.previous)
-								% if last_b and b.rent and last_b.rent:
-									% pct = 100 * (b.rent - last_b.rent) / last_b.rent
+								% b_price = b.price_for.get(ballot_season)
+								% last_b_price = b.price_for.get(ballot_season.previous)
+								% if last_b_price and b_price and b_price.rent and last_b_price.rent:
+									% pct = 100 * (b_price.rent - last_b_price.rent) / last_b_price.rent
 									% if pct > 0:
-										<small class="text text-danger" title='Compared to &pound;{{last_b.rent}}'>+{{ '{:.2f}'.format(pct)}}%</small>
+										<small class="text text-danger" title='Compared to &pound;{{last_b_price.rent}}'>+{{ '{:.2f}'.format(pct)}}%</small>
 									% else:
-										<small class="text text-success" title='Compared to &pound;{{last_b.rent}}'>&minus;{{ '{:.2f}'.format(abs(pct))}}%</small>
+										<small class="text text-success" title='Compared to &pound;{{last_b_price.rent}}'>&minus;{{ '{:.2f}'.format(abs(pct))}}%</small>
 									% end
 								% end
-								&pound;{{b.rent}}
+								% if b_price:
+									&pound;{{b_price.rent}}
+								% end
 							</td>
-							<td class='text-right'>{{by_band[b.band]}}</td>
+							<td class='text-right'>{{by_band[b]}}</td>
 						</tr>
 					% end
 					% if by_band[None]:
@@ -91,23 +94,26 @@ show_edit = request.user and request.user.is_admin
 					</tr>
 				</thead>
 				<tbody>
-					% for b in sorted(ballot_season.modifier_prices, key=lambda b: b.modifier.name):
+					% for b in sorted((b for b in by_modifier if b is not None), key=lambda b: b.name):
 						<tr>
-							<td>{{b.modifier.name}}</td>
-							<td>{{b.modifier.description}}</td>
+							<td>{{b.name}}</td>
+							<td>{{b.description}}</td>
 							<td class='text-right'>
-								% last_b = b.modifier.price_for.get(ballot_season.previous)
-								% if last_b and b.discount and last_b.discount:
-									% pct = 100 * (b.discount - last_b.discount) / last_b.discount
+								% b_price = b.price_for.get(ballot_season)
+								% last_b_price = b.price_for.get(ballot_season.previous)
+								% if last_b_price and b_price and b_price.discount and last_b_price.discount:
+									% pct = 100 * (b_price.discount - last_b_price.discount) / last_b_price.discount
 									% if pct > 0:
-										<small class="text text-success" title='Compared to &pound;{{last_b.discount}}'>+{{ '{:.2f}'.format(pct)}}%</small>
+										<small class="text text-success" title='Compared to &pound;{{last_b_price.discount}}'>+{{ '{:.2f}'.format(pct)}}%</small>
 									% else:
-										<small class="text text-danger" title='Compared to &pound;{{last_b.discount}}'>&minus;{{ '{:.2f}'.format(abs(pct))}}%</small>
+										<small class="text text-danger" title='Compared to &pound;{{last_b_price.discount}}'>&minus;{{ '{:.2f}'.format(abs(pct))}}%</small>
 									% end
 								% end
-								&pound;{{b.discount}}
+								% if b_price:
+									&pound;{{b_price.discount}}
+								% end
 							</td>
-							<td class='text-right'>{{by_modifier[b.modifier]}}</td>
+							<td class='text-right'>{{by_modifier[b]}}</td>
 						</tr>
 					% end
 				</tbody>
