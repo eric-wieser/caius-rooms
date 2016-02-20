@@ -43,7 +43,7 @@ end
 								<td class='text-right'>
 									<div class="input-group">
 										<div class="input-group-addon">&pound;</div>
-										<input class="form-control" name="bands[{{b.id}}].rent" size="7" type="number" value="{{active_bands[b].rent if b in active_bands else ''}}" />
+										<input class="form-control" name="bands[{{b.id}}].rent" size="7" type="number" step="0.01" value="{{active_bands[b].rent if b in active_bands else ''}}" />
 									</div>
 								</td>
 							</tr>
@@ -70,7 +70,7 @@ end
 								<td class='text-right'>
 									<div class="input-group">
 										<div class="input-group-addon">&pound;</div>
-										<input class="form-control"  name="modifiers[{{b.id}}].discount" size='7' type="number" value="{{active_modifiers[b].discount if b in active_modifiers else ''}}" />
+										<input class="form-control"  name="modifiers[{{b.id}}].discount" size='7' type="number" step="0.01" value="{{active_modifiers[b].discount if b in active_modifiers else ''}}" />
 									</div>
 								</td>
 							</tr>
