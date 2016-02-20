@@ -11,10 +11,8 @@ end
 %>
 <div class="container">
 	<form class="form-inline" method="post">
-		<button type="submit" class="btn btn-danger" name='reset'>Reset band assignments to {{ballot_season.previous}}</button>
-		<div class="alert alert-warning">
-			<strong>The rest of this form does not work yet</strong> - spending time filling it out leads only to sadness
-		</div>
+		<p><button type="submit" class="btn btn-danger" name='reset'>Reset band assignments to {{ballot_season.previous}}</button></p>
+
 		<table class='table table-condensed'>
 			<thead>
 				<tr>

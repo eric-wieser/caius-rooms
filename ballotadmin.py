@@ -111,7 +111,28 @@ def add_routes(app):
 					list_new.band = list_old.band
 					list_new.modifiers = list_old.modifiers
 		else:
-			raise HTTPError(500, 'Not yet supported')
+			listings = ballot.room_listings
+
+			for id, obj in postdata['listings'].items():
+				listing = db.query(m.RoomListing).get(id)
+				if not listing or listing.ballot_season != ballot:
+					raise HTTPError(400, 'Invalid listing id')
+
+				if obj['band'] != '':
+					band_id = int(obj['band'])
+					band = db.query(m.RoomBand).get(band_id)
+					if not band:
+						raise HTTPError(400, 'Invalid band id')
+
+					listing.band = band
+
+				modifier_ids = map(int, obj['modifiers'])
+				modifiers = {db.query(m.RoomBandModifier).get(m_id) for m_id in modifier_ids}
+				if not all(modifiers):
+					raise HTTPError(400, 'Invalid modifier id')
+
+				listing.modifiers = modifiers
+
 		db.commit()
 		redirect(url_for(ballot))
 
