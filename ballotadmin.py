@@ -18,7 +18,6 @@ def add_routes(app):
 	@needs_auth('admin')
 	def show_ballot_price_edit(ballot_id, db):
 		ballot = db.query(m.BallotSeason).filter(m.BallotSeason.year == ballot_id).one()
-		last_ballot = db.query(m.BallotSeason).get(ballot_id-1)
 		# db.make_transient(ballot)
 		bands = db.query(m.RoomBand).all()
 		modifiers = db.query(m.RoomBandModifier).all()
@@ -49,7 +48,7 @@ def add_routes(app):
 			do_update()
 			return redirect(url_for(ballot))
 		else:
-			return template('ballot-edit-prices', ballot_season=ballot, bands=bands, modifiers=modifiers, last_ballot=last_ballot)
+			return template('ballot-edit-prices', ballot_season=ballot, bands=bands, modifiers=modifiers)
 
 	@app.route('/<ballot_id:int>/edit-band-assignments')
 	@needs_auth('admin')

@@ -6,7 +6,7 @@ from sqlalchemy.types import (
 	Unicode
 )
 from sqlalchemy import func
-from sqlalchemy.orm import relationship, backref, column_property, aliased
+from sqlalchemy.orm import relationship, backref, column_property, aliased, remote, foreign
 from sqlalchemy.orm.collections import attribute_mapped_collection
 from sqlalchemy.sql.expression import select
 
@@ -28,6 +28,13 @@ class BallotSeason(Base):
 	__tablename__ = 'ballot_seasons'
 
 	year          = Column(Integer, primary_key=True)
+
+	previous = relationship(
+		lambda: BallotSeason,
+		primaryjoin=lambda: remote(BallotSeason.year) == foreign(BallotSeason.year)-1,
+		uselist=False,
+		viewonly=True
+	)
 
 	def __repr__(self):
 		return "BallotSeason(year={})".format(self.year)

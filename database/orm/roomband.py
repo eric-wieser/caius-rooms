@@ -52,6 +52,13 @@ class RoomBandPrice(Base):
 	season    = relationship(lambda: BallotSeason, backref="band_prices")
 	band      = relationship(lambda: RoomBand, backref="prices")
 
+	# this property is only used for the side effects
+	_band = relationship(lambda: RoomBand,
+		backref=backref(
+			"price_for",
+			collection_class=attribute_mapped_collection('season')
+		)
+	)
 	rent = Column(Numeric(6,2), nullable=False)
 
 	def __repr__(self):
@@ -67,6 +74,14 @@ class RoomBandModifierPrice(Base):
 
 	season    = relationship(lambda: BallotSeason, backref="modifier_prices")
 	modifier  = relationship(lambda: RoomBandModifier, backref="prices")
+
+	# this property is only used for the side effects
+	_modifier = relationship(lambda: RoomBandModifier,
+		backref=backref(
+			"price_for",
+			collection_class=attribute_mapped_collection('season')
+		)
+	)
 
 	discount = Column(Numeric(6,2), nullable=False)
 
