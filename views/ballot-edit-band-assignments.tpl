@@ -10,10 +10,11 @@ def layout_breadcrumb():
 end
 %>
 <div class="container">
-	<div class="alert alert-warning">
-		<strong>This form does not work yet</strong> - spending time filling it out leads only to sadness
-	</div>
 	<form class="form-inline" method="post">
+		<button type="submit" class="btn btn-danger" name='reset'>Reset band assignments to {{ballot_season.previous}}</button>
+		<div class="alert alert-warning">
+			<strong>The rest of this form does not work yet</strong> - spending time filling it out leads only to sadness
+		</div>
 		<table class='table table-condensed'>
 			<thead>
 				<tr>

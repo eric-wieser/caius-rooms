@@ -7,7 +7,7 @@ import decimal
 
 from bottle import *
 from sqlalchemy import func
-from sqlalchemy.orm import joinedload, joinedload_all
+from sqlalchemy.orm import joinedload, joinedload_all, load_only
 from sqlalchemy.orm.strategy_options import Load
 
 from utils import needs_auth, lookup_ldap, add_structure, url_for
@@ -70,7 +70,7 @@ def add_routes(app):
 
 	@app.route('/<ballot_id:int>/edit-band-assignments')
 	@needs_auth('admin')
-	def show_ballot_price_edit(ballot_id, db):
+	def show_ballot_band_edit(ballot_id, db):
 		ballot = db.query(m.BallotSeason).options(
 			joinedload(m.BallotSeason.room_listings)
 				.joinedload(m.RoomListing.room)
@@ -86,6 +86,36 @@ def add_routes(app):
 
 		return template('ballot-edit-band-assignments', ballot_season=ballot, bands=bands, modifiers=modifiers)
 
+	@app.post('/<ballot_id:int>/edit-band-assignments')
+	@needs_auth('admin')
+	def save_ballot_band_edit(ballot_id, db):
+		ballot = db.query(m.BallotSeason).filter(m.BallotSeason.year == ballot_id).one()
+
+		postdata = add_structure(request.forms)
+		if postdata['reset'] == '':
+			last_ballot = ballot.previous
+			if not last_ballot:
+				raise HTTPError(400, 'No previous ballot to reset to')
+
+			rooms = db.query(m.Room).options(
+				load_only(m.Room.id),
+				joinedload(m.Room.listing_for)
+			)
+			n = 0
+			for r in rooms:
+				list_new = r.listing_for.get(ballot)
+				list_old = r.listing_for.get(last_ballot)
+
+				if list_new and list_old:
+					n += 1
+					list_new.band = list_old.band
+					list_new.modifiers = list_old.modifiers
+
+			return "{} {} {}".format(n, ballot, last_ballot)
+		else:
+			raise HTTPError(500, 'Not yet supported')
+		db.commit()
+		redirect(url_for(ballot))
 
 
 	@app.route('/<ballot_id:int>/add-event')
