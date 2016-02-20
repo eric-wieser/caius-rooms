@@ -37,6 +37,8 @@ end
 									<td class='text-right'>
 										% if b in last_bands:
 											&pound;{{last_bands[b].rent}}
+										% else:
+											<span class="text-muted">Not set</span>
 										% end
 									</td>
 								% end
@@ -58,15 +60,30 @@ end
 						<tr>
 							<th>Modifier</th>
 							<th>Description</th>
+							% if last_ballot:
+								<th class='text-right' style='white-space: nowrap'>
+									Discount in {{ last_ballot }}
+								</th>
+							% end
 							<th class='text-right'>Discount</th>
 						</tr>
 					</thead>
 					<tbody>
 						% active_modifiers = {m.modifier: m for m in ballot_season.modifier_prices}
+						% last_modifiers = {m.modifier: m for m in last_ballot.modifier_prices} if last_ballot else {}
 						% for b in sorted(modifiers, key=lambda b: b.name):
 							<tr>
 								<td>{{b.name}}</td>
 								<td>{{b.description}}</td>
+								% if last_ballot:
+									<td class='text-right'>
+										% if b in last_modifiers:
+											&pound;{{last_modifiers[b].discount}}
+										% else:
+											<span class="text-muted">Not set</span>
+										% end
+									</td>
+								% end
 								<td class='text-right'>
 									<div class="input-group">
 										<div class="input-group-addon">&pound;</div>
