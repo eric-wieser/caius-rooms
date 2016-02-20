@@ -3,6 +3,8 @@ from datetime import datetime, timedelta
 import random
 import string
 import itertools
+import re
+from collections import defaultdict
 
 def format_ts(ts):
 	""" Used to format any timestamp in a readable way """
@@ -201,3 +203,38 @@ def update_csrf_token():
 	import binascii
 	import os
 	request.session['crsf_token'] = binascii.hexlify(os.urandom(32))
+
+
+def add_structure(d):
+	recdefaultdict = lambda: defaultdict(recdefaultdict)
+	res = recdefaultdict()
+	for key in d:
+		path = re.split(r'\.', key)
+		curr = res
+		assign = lambda x, curr=curr: res.__setitem__(step, x)
+		for step in path:
+			m = re.match(r'^(\w+)((?:\[\d*\])*)$', step)
+			if not m:
+				raise ValueError('Could not match {!r} from {!r}'.format(step, key))
+
+			step = m.group(1)
+			assign = lambda x, curr=curr: curr.__setitem__(step, x)
+			curr = curr[step]
+			was_list = False
+			if m.group(2):
+				for i in re.findall(r'\[(\d*)\]', m.group(2)):
+					assert not was_list
+					if i:
+						i = int(i)
+						assign = lambda x, i=i, curr=curr: curr.__setitem__(i, x)
+						curr = curr[i]
+						was_list = False
+					else:
+						was_list = True
+
+		if was_list:
+			assign(d.getall(key))
+		else:
+			assign(d.get(key))
+
+	return res
