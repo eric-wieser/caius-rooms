@@ -26,6 +26,7 @@ def add_routes(app):
 			postdata = add_structure(request.forms)
 
 			band_prices = ballot.band_prices
+			modifier_prices = ballot.modifier_prices
 
 			def do_update():
 				for id, obj in postdata['bands'].items():
@@ -44,6 +45,23 @@ def add_routes(app):
 								m.RoomBandPrice(band=band, season=ballot, rent=rent)
 						elif price:
 							band_prices.remove(price)
+
+				for id, obj in postdata['modifiers'].items():
+					try:
+						rent = decimal.Decimal(obj['discount'])
+					except (decimal.DecimalException, TypeError) as e:
+						rent = None
+					modifier = db.query(m.RoomBandModifier).get(id)
+
+					if modifier:
+						price = next((p for p in modifier_prices if p.modifier == modifier), None)
+						if rent is not None:
+							if price:
+								price.rent = rent
+							else:
+								m.RoomBandModifierPrice(modifier=modifier, season=ballot, discount=rent)
+						elif price:
+							modifier_prices.remove(price)
 
 			do_update()
 			return redirect(url_for(ballot))
