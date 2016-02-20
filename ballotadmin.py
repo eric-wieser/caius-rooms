@@ -110,8 +110,6 @@ def add_routes(app):
 					n += 1
 					list_new.band = list_old.band
 					list_new.modifiers = list_old.modifiers
-
-			return "{} {} {}".format(n, ballot, last_ballot)
 		else:
 			raise HTTPError(500, 'Not yet supported')
 		db.commit()
