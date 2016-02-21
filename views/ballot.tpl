@@ -41,7 +41,7 @@ show_edit = request.user and request.user.is_admin
 			</a></small>
 		% end
 	</h2>
-
+	<p>Red and green numbers next to columns indicate changes since last year. If cells are blank, then there is no information yet for this year.</p>
 	<div class="row">
 		<div class="col-md-6">
 			<table class="table table-condensed">
