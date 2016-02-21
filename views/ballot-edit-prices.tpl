@@ -20,7 +20,7 @@ end
 							<th>Description</th>
 							% if ballot_season.previous:
 								<th class='text-right'>
-									Rent from {{ ballot_season.previous }}
+									Rent from <span style='white-space: nowrap'>{{ ballot_season.previous }}</span>
 								</th>
 							% end
 							<th class='text-right'>New Rent</th>
@@ -61,8 +61,8 @@ end
 							<th>Modifier</th>
 							<th>Description</th>
 							% if ballot_season.previous:
-								<th class='text-right' style='white-space: nowrap'>
-									Discount in {{ ballot_season.previous }}
+								<th class='text-right'>
+									Discount in <span style='white-space: nowrap'>{{ ballot_season.previous }}</span>
 								</th>
 							% end
 							<th class='text-right'>Discount</th>
