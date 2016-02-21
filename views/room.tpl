@@ -270,9 +270,25 @@ end
 				<tr>
 					<th scope="row">Rent</th>
 					<td colspan="2">
-						% if last_listing and last_listing.rent:
-							&pound;{{ "{:.2f}".format(last_listing.rent) }} / term
-
+						% if last_listing:
+							% band = last_listing.band
+							% if band:
+								% if last_listing.rent2 is not None:
+									&pound;{{last_listing.rent2}}
+								% end
+								% desc = band.description
+								% if last_listing.modifiers:
+									% desc = '{}: with {}'.format(desc, ', '.join(m.name for m in last_listing.modifiers))
+								% end
+								<span class='label label-default' style='background-color: #{{ band.color }}' title="{{ desc }}">{{band.name}}<!--
+									% if last_listing.modifiers:
+										-->&minus;<!--
+									% end
+								--></span>
+							% elif last_listing.rent:
+								&pound;{{last_listing.rent}}
+							% end
+							 / term
 							% if not ballot_event:
 								<br /><small class="text-danger">Rent is shown as paid by the current occupants. If you are choosing a room in a ballot, please login or switch to that ballot to see the prices you'd pay.</small>
 							% end
