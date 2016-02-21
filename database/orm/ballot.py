@@ -39,7 +39,7 @@ class BallotSeason(Base):
 	def __repr__(self):
 		return "BallotSeason(year={})".format(self.year)
 
-	def __str__(self):
+	def __unicode__(self):
 		return u"{} \u2012 {}".format(self.year, self.year+1)
 
 
