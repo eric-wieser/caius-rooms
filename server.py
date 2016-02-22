@@ -820,6 +820,44 @@ with base_route(app, '/ballots'):
 		).filter(m.BallotSeason.year == ballot_id).one()
 		return template('ballot', ballot_season=ballot, db=db)
 
+	@app.route('/<ballot_id:int>/<ballot_type_name>', name="ballot-event")
+	@needs_auth('admin')
+	def show_ballot_event(ballot_id, ballot_type_name, db):
+		from sqlalchemy import func
+		from sqlalchemy.orm.strategy_options import Load
+		if ballot_type_name.lower() != ballot_type_name:
+			raise redirect(app.get_url(
+				'ballot-event',
+				ballot_id=ballot_id, ballot_type_name=ballot_type_name.lower()
+			))
+
+		ballot_type = db.query(m.BallotType).filter(func.lower(m.BallotType.name) == ballot_type_name.lower()).one()
+
+		listing_load = (
+			Load(m.BallotEvent)
+				.joinedload(m.BallotEvent.season)
+				.joinedload(m.BallotSeason.room_listings)
+		)
+
+		ballot_event = (db
+			.query(m.BallotEvent)
+			.join(m.BallotSeason)
+			.filter(m.BallotEvent.type == ballot_type)
+			.filter(m.BallotSeason.year == ballot_id)
+			.options(
+				listing_load
+					.joinedload(m.RoomListing.audience_types),
+				listing_load
+					.subqueryload(m.RoomListing.room)
+				# 	.joinedload(m.Room.parent),
+				# listing_load
+				# 	.subqueryload(m.RoomListing.occupancies),
+				# Load(m.BallotEvent)
+				# 	.subqueryload(m.BallotEvent.slots)
+			)
+		).one()
+		return template('ballot-event', event=ballot_event)
+
 	import ballotadmin
 	ballotadmin.add_routes(app)
 
