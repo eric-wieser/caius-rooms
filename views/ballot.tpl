@@ -115,11 +115,6 @@ show_edit = request.user and request.user.is_admin
 					% end
 				</tbody>
 			</table>
-			% if not show_pct_change:
-				<span class='text-muted'>
-					Not showing the percentage increase in prices yet, as the amount is not finalized
-				</span>
-			% end
 		</div>
 
 		<div class="col-md-6">
@@ -140,7 +135,7 @@ show_edit = request.user and request.user.is_admin
 							<td class='text-right'>
 								% b_price = b.price_for.get(ballot_season)
 								% last_b_price = b.price_for.get(ballot_season.previous)
-								% if last_b_price and b_price and b_price.discount and last_b_price.discount:
+								% if show_pct_change and last_b_price and b_price and b_price.discount and last_b_price.discount:
 									% pct = 100 * (b_price.discount - last_b_price.discount) / last_b_price.discount
 									% if pct > 0:
 										<small class="text-success" title='Compared to &pound;{{last_b_price.discount}}'>+{{ '{:.2f}'.format(pct)}}%</small>
@@ -171,6 +166,11 @@ show_edit = request.user and request.user.is_admin
 			</table>
 		</div>
 	</div>
+	% if not show_pct_change:
+		<span class='text-muted'>
+			Not showing the percentage increase in prices yet, as the prices are not finalized
+		</span>
+	% end
 
 	% if show_edit:
 		<a href="{{ url_for(ballot_season, extra_path='add-event') }}" class="btn btn-primary pull-right">
