@@ -820,6 +820,9 @@ with base_route(app, '/ballots'):
 		).filter(m.BallotSeason.year == ballot_id).one()
 		return template('ballot', ballot_season=ballot, db=db)
 
+	import ballotadmin
+	ballotadmin.add_routes(app)
+
 	@app.route('/<ballot_id:int>/<ballot_type_name>', name="ballot-event")
 	@needs_auth('admin')
 	def show_ballot_event(ballot_id, ballot_type_name, db):
@@ -858,8 +861,6 @@ with base_route(app, '/ballots'):
 		).one()
 		return template('ballot-event', event=ballot_event)
 
-	import ballotadmin
-	ballotadmin.add_routes(app)
 
 
 with base_route(app, '/tools'):
