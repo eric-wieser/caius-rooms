@@ -19,6 +19,8 @@ def format_ts(ts):
 		return "{:%Y, %b %d}".format(ts)
 
 def format_ts_html(ts):
+	if ts is None:
+		return '<time>never</time>'
 	return '<time title="{}">{}</time>'.format(
 		ts.isoformat(), format_ts(ts)
 	)
