@@ -376,6 +376,7 @@ def add_routes(app):
 			o.writerow([str(n.date()) + "@", n.time(), "crsid123@", 'example student (delete!)'])
 
 		response.content_type = 'text/csv'
+		response.headers['Content-Disposition'] = 'attachment; filename="slots-{}-{}.csv"'.format(ballot_id, ballot_type.name)
 		return sfile.getvalue()
 
 
