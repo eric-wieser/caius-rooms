@@ -31,7 +31,9 @@ import itertools
 	<hr />
 
 	% if location.summary:
-		% include('parts/markdown', content=location.summary.markdown_content, columnize=True)
+		<div class="anchor" id="summary">
+			% include('parts/markdown', content=location.summary.markdown_content, columnize=True)
+		</div>
 		<%
 		editors = []
 		for s in location.summaries:
