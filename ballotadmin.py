@@ -125,6 +125,8 @@ def add_routes(app):
 						raise HTTPError(400, 'Invalid band id')
 
 					listing.band = band
+				else:
+					listing.band = None
 
 				modifier_ids = map(int, obj['modifiers'])
 				modifiers = {db.query(m.RoomBandModifier).get(m_id) for m_id in modifier_ids}
