@@ -53,8 +53,22 @@
 			<h4 class="list-group-item-heading">First years</h4>
 			<p class="list-group-item-text">
 				Balloted in pre-arranged groups of up to 5 people, who will be guaranteed adjacent time slots to allow them to all ballot at the same time. However, you still choose a room as an individual so when the day comes you could choose to split up if necessary.
+			</p>
 		</div>
 	</div>
+	<h2>Third year students balloting for their fourth year, when appropriate</h2>
+	<p>
+	The 4th year ballot happens much later in the year than the other two, after graduation results are announced and students know whether they are staying on for a masters. Note that this does not include any students already covered in the previous two sections.</p>
+	<div class="list-group">\
+		<div class="list-group-item">
+			<h4 class="list-group-item-heading">Everyone</h4>
+			<p class="list-group-item-text">
+				The order is completely random for all students in the ballot, and independent of all past years.
+			</p>
+		</div>
+	</div>
+
+	<hr />
 
 	<p>If you are an overseas student you have the option to choose a room in L St Mary’s or 37 Green Street. The advantages of this are that you are guaranteed a room in town and can use the room over Christmas and Easter. If you would prefer to ballot with your non-overseas friends instead that is also fine. You can still apply for continuous accommodation in Michaelmas next year and it will be available in all locations (excluding Harvey Court and 3 and 4 Morti).</p>
 </div>
