@@ -377,7 +377,7 @@ photos = [
 					     width="{{ photo.width }}" />
 					{{ photo.caption }}
 					<small class="pull-right text-right">
-						% if request.user:
+						% if request.user and photo.occupancy.resident is not None:
 							<a href="{{ url_for(photo.occupancy.resident) }}" style="display: block">
 								{{photo.occupancy.resident.name}}
 							</a>
