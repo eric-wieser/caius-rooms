@@ -376,7 +376,14 @@ photos = [
 					<img src="{{photo.href}}" class="img-rounded img-responsive"
 					     width="{{ photo.width }}" />
 					{{ photo.caption }}
-					<span class="text-muted pull-right">{{! format_ts_html(photo.published_at) }}</span>
+					<small class="pull-right text-right">
+						% if request.user:
+							<a href="{{ url_for(photo.occupancy.resident) }}" style="display: block">
+								{{photo.occupancy.resident.name}}
+							</a>
+						% end
+						<span class="text-muted">{{! format_ts_html(photo.published_at) }}</span>
+					</small>
 				</p>
 			% end
 			% if not photos:
