@@ -25,28 +25,37 @@ last_day = None
 		% end
 	</h1>
 
-	<div class="text-muted small">
+	<p class="text-muted small">
 		Row colors indicate
 		<span style="display: inline-block; padding: 2px; border-style: solid; border-width: 1px" class="alert-success">finished balloting</span>;
 		<span style="display: inline-block; padding: 2px; border-style: solid; border-width: 1px" class="alert-warning">hasn't logged in since the ballot opened</span>; and
 		<span style="display: inline-block; padding: 2px; border-style: solid; border-width: 1px" class="alert-danger">hasn't logged in since their slot opened</span>.
-	</div>
+	</p>
+
+	<p><em>Choice</em> indicates the room that the user actively selected on the website. The <em>Actual room</em> column shows the room these people most recently resided in. This column may contain multiple simultaneous rooms!</p>
 
 	<table class="table table-condensed">
 		<thead>
 			<tr>
 				<th></th>
 				<th>Person</th>
-				<th colspan='2' class="rule-right">Slot time</th>
-				<th>Last seen</th>
-				<!-- <th>Choice</th>
-				<th>Chosen at</th> -->
+				<th colspan='2'>Slot time</th>
+				<th class="rule-right">Last seen</th>
+				<th>Choice</th>
+				<th class="rule-right">Chosen at</th>
+				<th>Actual room</th>
+				<th>Updated at</th>
 			</tr>
 		</thead>
 		<tbody>
 			% for i, s in enumerate(sorted(event.slots, key=lambda s: s.time), 1):
 				% id, person, ts = (s.id, s.person, s.time)
-				% occ = None # s.choice
+				% occ = s.choice
+				% final_occs = {
+				% 	o for o in person.occupancies
+				% 	if o.listing.ballot_season == event.season
+				%   and not o.cancelled
+				% }
 				% t = datetime.now()
 				% if occ:
 					% cls = 'class="success"'
@@ -72,24 +81,48 @@ last_day = None
 						{{ day if day != last_day else ''}}
 					</td>
 					% last_day = day
-					<td style="width: 1px" class="rule-right">
+					<td style="width: 1px">
 						{{ '{:%H:%M}'.format(ts) }}
 					</td>
-					<td>
+					<td  class="rule-right">
 						{{! format_ts_html(s.person.last_seen)}}
 					</td>
 
-					<!-- <td>
+					<td>
 						% if occ:
+							% if occ not in final_occs:
+								<del>
+							% end
 							% room = occ.listing.room
-							<a href='{{url_for(room) }}'>{{room.pretty_name() }}</a>
+							<a href='{{url_for(room) }}#occupancy-{{occ.id}}'>{{room.pretty_name() }}</a>
+							% if occ not in final_occs:
+								</del>
+							% end
+						% end
+					</td>
+					<td class="rule-right">
+						% if occ:
+							% if occ not in final_occs:
+								<del>
+							% end
+							{{! format_ts_html(occ.chosen_at) }}
+							% if occ not in final_occs:
+								</del>
+							% end
+						% end
+					</td>
+
+					<td>
+						% for o in final_occs:
+							% room = o.listing.room
+							<a href='{{url_for(room) }}#occupancy-{{o.id}}'>{{room.pretty_name() }}</a>
 						% end
 					</td>
 					<td>
-						% if occ:
-							{{! format_ts_html(occ.chosen_at) }}
+						% if final_occs:
+							{{! format_ts_html(max(occ.chosen_at for occ in final_occs)) }}
 						% end
-					</td> -->
+					</td>
 				</tr>
 			% end
 		</tbody>
