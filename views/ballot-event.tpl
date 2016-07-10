@@ -25,10 +25,17 @@ last_day = None
 		% end
 	</h1>
 
+	<div class="text-muted small">
+		Row colors indicate
+		<span style="display: inline-block; padding: 2px; border-style: solid; border-width: 1px" class="alert-success">finished balloting</span>;
+		<span style="display: inline-block; padding: 2px; border-style: solid; border-width: 1px" class="alert-warning">hasn't logged in since the ballot opened</span>; and
+		<span style="display: inline-block; padding: 2px; border-style: solid; border-width: 1px" class="alert-danger">hasn't logged in since their slot opened</span>.
+	</div>
+
 	<table class="table table-condensed">
 		<thead>
 			<tr>
-				<td></td>
+				<th></th>
 				<th>Person</th>
 				<th colspan='2' class="rule-right">Slot time</th>
 				<th>Last seen</th>
@@ -45,6 +52,8 @@ last_day = None
 					% cls = 'class="success"'
 				% elif not person.last_seen or t > s.time and s.time > person.last_seen:
 					% cls = 'class="danger"'
+				% elif event.opens_at > person.last_seen:
+					% cls = 'class="warning"'
 				% else:
 					% cls = ''
 				% end
