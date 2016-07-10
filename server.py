@@ -869,12 +869,14 @@ with base_route(app, '/ballots'):
 				listing_load
 					.joinedload(m.RoomListing.audience_types),
 				listing_load
-					.subqueryload(m.RoomListing.room)
+					.subqueryload(m.RoomListing.room),
 				# 	.joinedload(m.Room.parent),
 				# listing_load
 				# 	.subqueryload(m.RoomListing.occupancies),
-				# Load(m.BallotEvent)
-				# 	.subqueryload(m.BallotEvent.slots)
+				Load(m.BallotEvent)
+					.subqueryload(m.BallotEvent.slots)
+					.joinedload(m.BallotSlot.person)
+					.subqueryload(m.Person.occupancies)
 			)
 		).one()
 		return template('ballot-event', event=ballot_event)
