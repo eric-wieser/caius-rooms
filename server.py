@@ -12,7 +12,6 @@ import bottle
 from bottle import *
 from bottle.ext.sqlalchemy import SQLAlchemyPlugin
 from beaker.middleware import SessionMiddleware
-import raven
 
 # our includes
 import database.orm as m
@@ -193,49 +192,68 @@ def error_handler(res):
 
 
 # declare all our application specific routes
+try:
+	import raven
+except ImportError:
+	print "Warning: raven not found, using development login page"
+	@app.route('/login')
+	def do_login(db):
+		if request.query.crsid:
+			request.session["user"] = request.query.crsid
+			utils.update_csrf_token()
 
-@app.route('/login')
-def do_login(db):
-	# already logged in - return to the home page
-	if request.user:
-		return redirect(request.query.return_to)
+			return redirect(request.query.return_to)
+		else:
+			return '<form method="GET" action="{}">{}{}</form>'.format(
+				request.url,
+				'<input name="crsid" placeholder="crsid" />',
+				'<input type="submit" />'
+			)
 
-	if 'authenticating' not in request.session:
-		request.session['authenticating'] = True
-
-		r = raven.Request(url=request.url, desc="RoomPicks")
-		redirect(str(r))
-	else:
-		del request.session['authenticating']
-		if "WLS-Response" not in request.query:
-			raise HTTPError(400, "Authentication failed. Please try again")
-
-		r = raven.Response(request.query["WLS-Response"])
-
-		assert "WLS-Response" in request.url
-		base_url = request.url[:request.url.rfind("WLS-Response")-1]
-
-		if r.url != base_url:
-			print r.url, base_url
-			abort(400, "Login failed: it seems another site tried to log you in")
-
-		issue_delta = (datetime.utcnow() - r.issue).total_seconds()
-		if not -15 < issue_delta < 75:
-			abort(403, "Login failed: you took too long to log in - please try again")
-
-		if not r.success:
-			abort(403, "Login failed: reason unknown")
+else:
+	@app.route('/login')
+	def do_login(db):
+		# already logged in - return to the home page
+		if request.user:
 			return redirect(request.query.return_to)
 
-		# a no-op here, but important if you set iact or aauth
-		if not r.check_iact_aauth(None, None):
-			abort(403, "Something went wrong when logging in: check_iact_aauth failed")
+		if 'authenticating' not in request.session:
+			request.session['authenticating'] = True
 
-		request.session["user"] = r.principal
-		utils.update_csrf_token()
+			r = raven.Request(url=request.url, desc="RoomPicks")
+			redirect(str(r))
+		else:
+			del request.session['authenticating']
+			if "WLS-Response" not in request.query:
+				raise HTTPError(400, "Authentication failed. Please try again")
 
-		print "Successfully logged in as {0}".format(r.principal)
-		return redirect(request.query.return_to)
+			r = raven.Response(request.query["WLS-Response"])
+
+			assert "WLS-Response" in request.url
+			base_url = request.url[:request.url.rfind("WLS-Response")-1]
+
+			if r.url != base_url:
+				print r.url, base_url
+				abort(400, "Login failed: it seems another site tried to log you in")
+
+			issue_delta = (datetime.utcnow() - r.issue).total_seconds()
+			if not -15 < issue_delta < 75:
+				abort(403, "Login failed: you took too long to log in - please try again")
+
+			if not r.success:
+				abort(403, "Login failed: reason unknown")
+				return redirect(request.query.return_to)
+
+			# a no-op here, but important if you set iact or aauth
+			if not r.check_iact_aauth(None, None):
+				abort(403, "Something went wrong when logging in: check_iact_aauth failed")
+
+			request.session["user"] = r.principal
+			utils.update_csrf_token()
+
+			print "Successfully logged in as {0}".format(r.principal)
+			return redirect(request.query.return_to)
+
 
 @app.route('/login-as')
 @needs_auth('admin')
