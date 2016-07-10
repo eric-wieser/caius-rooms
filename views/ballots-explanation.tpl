@@ -59,7 +59,7 @@
 	<h2>Third year students balloting for their fourth year, when appropriate</h2>
 	<p>
 	The 4th year ballot happens much later in the year than the other two, after graduation results are announced and students know whether they are staying on for a masters. Note that this does not include any students already covered in the previous two sections.</p>
-	<div class="list-group">\
+	<div class="list-group">
 		<div class="list-group-item">
 			<h4 class="list-group-item-heading">Everyone</h4>
 			<p class="list-group-item-text">
