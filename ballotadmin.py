@@ -276,11 +276,6 @@ def add_routes(app):
 				if not l.audience_types and not l.occupancies:
 					not_visible.add(l)
 
-		# remove listings with no information left
-		for l in not_visible:
-			if l.rent is None:
-				ballot_season.room_listings.remove(l)
-
 		# now find rooms with no listing
 		for i in room_ids:
 			r = db.query(m.Room).get(i)
