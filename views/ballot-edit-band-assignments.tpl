@@ -83,10 +83,10 @@ modifiers = sorted(modifiers, key=lambda b: b.name)
 				</tr>
 			</thead>
 			<tbody>
-				% for r in sorted(ballot_season.room_listings, key=lambda rl: tuple(p.id for p in rl.room.path)):
+				% for r in sorted(ballot_season.room_listings, key=lambda rl: tuple(p.id for p in rl.room.parent.path)):
 					<tr>
 						<td>
-							% path = r.room.path[:-1]
+							% path = r.room.parent.path
 							% for j, p in enumerate(path):
 								<a class="small parent-link" style="margin-left: {{ 2 * j }}rem; display: block"
 								   href="{{ url_for(p) }}"
