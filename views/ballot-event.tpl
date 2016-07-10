@@ -38,13 +38,10 @@ last_day = None
 		<thead>
 			<tr>
 				<th></th>
-				<th>Person</th>
-				<th colspan='2'>Slot time</th>
-				<th class="rule-right">Last seen</th>
-				<th>Choice</th>
-				<th class="rule-right">Chosen at</th>
-				<th>Actual room</th>
-				<th>Updated at</th>
+				<th>Person<div class='small text-muted'>Last seen</div></th>
+				<th colspan='2' class="rule-right">Slot time</th>
+				<th>Choice<div class='small text-muted'>Choice time</div></th>
+				<th>Actual room<div class='small text-muted'>Last updated</div></th>
 			</tr>
 		</thead>
 		<tbody>
@@ -74,20 +71,17 @@ last_day = None
 						{{ i }}
 					</th>
 					<td>
-						% include('parts/user-link', user=person)
+						% include('parts/user-link', user=person, shrink=False)
+						<div class='text-muted small'>{{! format_ts_html(s.person.last_seen)}}</div>
 					</td>
 					% day = '{:%d %b}'.format(ts)
 					<td style="white-space: nowrap; width: 1px">
 						{{ day if day != last_day else ''}}
 					</td>
 					% last_day = day
-					<td style="width: 1px">
+					<td style="width: 1px" class="rule-right">
 						{{ '{:%H:%M}'.format(ts) }}
 					</td>
-					<td  class="rule-right">
-						{{! format_ts_html(s.person.last_seen)}}
-					</td>
-
 					<td>
 						% if occ:
 							% if occ not in final_occs:
@@ -95,17 +89,7 @@ last_day = None
 							% end
 							% room = occ.listing.room
 							<a href='{{url_for(room) }}#occupancy-{{occ.id}}'>{{room.pretty_name() }}</a>
-							% if occ not in final_occs:
-								</del>
-							% end
-						% end
-					</td>
-					<td class="rule-right">
-						% if occ:
-							% if occ not in final_occs:
-								<del>
-							% end
-							{{! format_ts_html(occ.chosen_at) }}
+							<div class='text-muted small'>{{! format_ts_html(occ.chosen_at) }}</div>
 							% if occ not in final_occs:
 								</del>
 							% end
@@ -113,14 +97,17 @@ last_day = None
 					</td>
 
 					<td>
-						% for o in final_occs:
+						<!--
+						% for i, o in enumerate(final_occs):
 							% room = o.listing.room
-							<a href='{{url_for(room) }}#occupancy-{{o.id}}'>{{room.pretty_name() }}</a>
+							% if i != 0:
+								-->; <!--
+							% end
+							--><a href='{{url_for(room) }}#occupancy-{{o.id}}'>{{room.pretty_name() }}</a><!--
 						% end
-					</td>
-					<td>
+						-->
 						% if final_occs:
-							{{! format_ts_html(max(occ.chosen_at for occ in final_occs)) }}
+							<div class='text-muted small'>{{! format_ts_html(max(occ.chosen_at for occ in final_occs)) }}</div>
 						% end
 					</td>
 				</tr>
