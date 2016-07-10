@@ -52,7 +52,7 @@ last_day = None
 					% cls = 'class="success"'
 				% elif not person.last_seen or t > s.time and s.time > person.last_seen:
 					% cls = 'class="danger"'
-				% elif event.opens_at > person.last_seen:
+				% elif event.opens_at > person.last_seen.date():
 					% cls = 'class="warning"'
 				% else:
 					% cls = ''
