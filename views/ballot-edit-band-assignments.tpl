@@ -83,7 +83,7 @@ modifiers = sorted(modifiers, key=lambda b: b.name)
 				</tr>
 			</thead>
 			<tbody>
-				% for r in sorted(ballot_season.room_listings, key=lambda rl: tuple(p.id for p in rl.room.parent.path)):
+				% for r in sorted(ballot_season.room_listings, key=lambda rl: tuple(p.name for p in rl.room.parent.path + [rl.room])):
 					<tr>
 						<td>
 							% path = r.room.parent.path
