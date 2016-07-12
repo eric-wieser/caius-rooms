@@ -20,6 +20,23 @@ else:
 	ballot_event = None
 	ballot_season = ballot
 end
+
+n_free_by_loc = {
+	sub_loc: sum(
+		1
+		for room in sub_loc.rooms
+		if ballot_season in room.listing_for
+		if ballot_event is None or ballot_event.type in room.listing_for[ballot_season].audience_types
+		if all(occ.cancelled for occ in room.listing_for[ballot_season].occupancies)
+	)
+	for i, (sub_loc, level, path) in enumerate(flatten_iter(location))
+}
+
+def n_free_nested(loc):
+	return n_free_by_loc[loc] + sum(n_free_nested(subloc) for subloc in loc.children)
+end
+
+
 %>
 <div class="container">
 	<table class="table table-condensed table-hover sortable" id="place-heirarchy">
@@ -53,13 +70,7 @@ end
 					% if sub_loc.rooms:
 						<%
 						n_rooms = len(sub_loc.rooms)
-						n_free = sum(
-							1
-							for room in sub_loc.rooms
-							if ballot_season in room.listing_for
-							if ballot_event is None or ballot_event.type in room.listing_for[ballot_season].audience_types
-							if all(occ.cancelled for occ in room.listing_for[ballot_season].occupancies)
-						)
+						n_free = n_free_by_loc[sub_loc]
 						%>
 						<td data-value="{{n_free}}">
 							{{ n_free }} / {{ n_rooms }}
@@ -75,6 +86,87 @@ end
 			% end
 		</tbody>
 	</table>
+	<div id="map" style="height: 400px; margin-top: 10px"></div>
+		<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&amp;sensor=false"></script>
+		<script>
+			% import json
+			google.maps.visualRefresh = true;
+
+			var mapElem = $('#map');
+
+			function initialize() {
+				var opts;
+			    map = new google.maps.Map(mapElem[0], opts = {
+					zoom: 14,
+					center: new google.maps.LatLng(52.20675, 0.1223485),
+					disableDefaultUI: true,
+					draggable: true,
+					zoomControl: false,
+					scaleControl: false,
+					scrollwheel: false,
+					mapTypeId: google.maps.MapTypeId.ROADMAP,
+					styles: [
+						{
+							featureType: "poi",
+							elementType: "labels",
+							stylers: [
+								{visibility: "off" }
+							]
+						}, {
+							featureType: "administrative",
+							elementType: "labels",
+							stylers: [
+								{visibility: "off" }
+							]
+						}
+					]
+				});
+
+				% data = [dict(coords=loc.geocoords, name=loc.pretty_name(), id=loc.id, nf=n_free_nested(loc)) for loc, _, _ in flatten_iter(location) if loc.latitude and loc.longitude]
+				var data = {{! json.dumps(data) }};
+
+				var windows = [];
+				windows = data.map(function(d) {
+					var color = d.nf == 0 ? '#d9534f' :
+							             d.nf < 5 ? '#f0ad4e' : '#5cb85c';
+					var marker = new google.maps.Marker({
+						position: new google.maps.LatLng(d.coords[0], d.coords[1]),
+						map: map,
+						icon: {
+							path: google.maps.SymbolPath.CIRCLE,
+							scale: 8,
+							strokeWeight: 2,
+							fillOpacity: 0.75,
+							strokeColor: color,
+							fillColor: color
+						}
+					});
+					var infoWindow = new google.maps.InfoWindow({
+						maxWidth: 200,
+						content: $('<div>').append(
+							$('<a>').attr('href', '/places/'+d["id"]).text(d["name"]),
+							$('<br>'),
+							$('<small>').text(d.nf == 1 ? '1 space' : d.nf + ' spaces')
+						).html()
+					});
+					marker.addListener('click', function(evt) {
+						infoWindow.open(map, marker);
+						windows.filter(function(w) { return w != infoWindow; }).forEach(function(w) { w.close(); });
+					});
+					return infoWindow;
+				});
+
+				var active = false;
+				mapElem.on('click', function(e) {
+					active = true;
+					map.setOptions({scrollwheel: true});
+				}).on('mouseout', function() {
+					map.setOptions({scrollwheel: false});
+				})
+			}
+
+			initialize();
+		</script>
 	<style>
 	#place-heirarchy td {
 		vertical-align: bottom;
