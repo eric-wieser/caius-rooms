@@ -71,7 +71,7 @@
 					<p>
 						<button type="submit" class="btn btn-primary text-right">Accept changes</button>
 					</p>
-					<table class="table">
+					<table class="table" id="changed-names">
 						% for user in sorted(users, key=lambda u: u.crsid):
 							<tr>
 								<td>
@@ -96,13 +96,24 @@
 									{{ names[user] }}
 								</td>
 								<td>
-									<a href="#" class="text-danger" onclick="(this).parent().parent().fadeOut(function() { $(this).remove(); }); return false">
+									<a href="#" class="text-danger delete-user">
 										<span class="glyphicon glyphicon-remove"></span>
 									</a>
 								</td>
 							</tr>
 						% end
 					</table>
+					<script>
+					$(function() {
+						$('#changed-names').find('tr').each(function() {
+							var $t =  $(this);
+							$t.find('.delete-user').on('click', function() {
+								$t.fadeOut(function() { $(this).remove(); });
+								return false;
+							});
+						});
+					});
+					</script>
 				% end
 			</form>
 		</div>
