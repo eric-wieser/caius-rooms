@@ -918,8 +918,14 @@ with base_route(app, '/tools'):
 			raise HTTPError(400)
 
 		else:
-			cancel_src = request.forms.cancel_src == "1"
-			cancel_dest = request.forms.cancel_dest == "1"
+			# check if a swap was requested
+			do_swap = (request.forms.cancel_src == 'swap') + (request.forms.cancel_src == 'swap')
+			if do_swap == 1:
+				raise HTTPError(400, "Either neither or both users must be swapping")
+			do_swap = do_swap == 2
+
+			cancel_src = do_swap or request.forms.cancel_src == "1"
+			cancel_dest = do_swap or request.forms.cancel_dest == "1"
 
 			from sqlalchemy.orm.session import make_transient
 			from datetime import datetime
@@ -929,6 +935,7 @@ with base_route(app, '/tools'):
 			# better lock the table now, just to be sure
 			roombooking.lock_occupancies(db)
 
+			# the listing for the target room
 			listing = room.listing_for.get(season)
 			if not listing:
 				listing = m.RoomListing(
@@ -937,18 +944,43 @@ with base_route(app, '/tools'):
 				)
 
 			occs = listing.occupancies
-			assert not any(occ.resident == user for occ in occs)
+			if any(occ.resident == user for occ in occs):
+				raise HTTPError(400, "User is already in this room!")
+
+			src_occs = [
+				occ
+				for occ in user.occupancies
+				if occ.listing.ballot_season == season
+				if not occ.cancelled
+			]
+			dest_occs = [
+				occ
+				for occ in listing.occupancies
+				if not occ.cancelled
+			]
+
+			now = datetime.now()
+
 
 			if cancel_src:
-				for occ in user.occupancies:
-					if occ.listing.ballot_season == season:
-						occ.cancelled = True
-
-			if cancel_dest:
-				for occ in listing.occupancies:
+				for occ in src_occs:
 					occ.cancelled = True
 
-			new_occ = m.Occupancy(resident=user, listing=listing, chosen_at=datetime.now())
+			if cancel_dest:
+				for occ in dest_occs:
+					occ.cancelled = True
+
+			if do_swap:
+				if len(src_occs) > 1: raise HTTPError(400, "Cannot swap a user residing in multiple simultaneous rooms")
+				if len(dest_occs) > 1: raise HTTPError(400, "Cannot swap a user into a room with multiple residents")
+
+				src_occ = src_occs[0]
+				dest_occ = dest_occs[0]
+
+				reverse_occ = m.Occupancy(resident=dest_occ.resident, listing=src_occ.listing, chosen_at=now)
+				db.add(reverse_occ)
+
+			new_occ = m.Occupancy(resident=user, listing=listing, chosen_at=now)
 			db.add(new_occ)
 
 			redirect('/rooms/{}'.format(room.id))

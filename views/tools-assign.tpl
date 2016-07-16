@@ -69,6 +69,13 @@ end
 								<input type="radio" name="cancel_src" value="0" /> Leave the occupancy in the previous room(s), if the student is now occupying both old and new rooms
 							</label>
 						</div>
+						% if len(occ_dest) == 1:
+							<div class="radio">
+								<label>
+									<input type="radio" name="cancel_src" value="swap" class="exclusive"/> Swap this student with the student in their destination room
+								</label>
+							</div>
+						% end
 					</div>
 				% end
 			</div>
@@ -102,9 +109,31 @@ end
 								<input type="radio" name="cancel_dest" value="0" />Allow both people to occupy the new room, as in the case of a shared set
 							</label>
 						</div>
+						% if len(occ_src) == 1:
+							<div class="radio">
+								<label>
+									<input type="radio" name="cancel_dest" value="swap" /> Swap this student with the student moving into their room
+								</label>
+							</div>
+						% end
 					</div>
 				% end
 			</div>
+
+			<script>
+			// make sure that if one swap is selected, so is the other
+			$(function() {
+				var i0 = $('input[name=cancel_dest'), i1 = $('input[name=cancel_src]');
+
+				[[i0, i1], [i1, i0]].forEach(function(p) {
+					p[0].on('change', function() {
+						var isSwap = p.map(function(el) { return el.filter(':checked').val() == 'swap'; });
+						if(isSwap[0] && !isSwap[1]) p[1].val(['swap']);
+						else if(!isSwap[0] && isSwap[1]) p[1].val(['1']);
+					});
+				})
+			})
+			</script>
 
 			<div class="col-md-4">
 				<div class="form-group">
