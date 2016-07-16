@@ -36,6 +36,12 @@
 			<h2>Manually entered names <small>{{ len(users_reverted) }}</small></h2>
 			<p>Users who haven't set a manual name on lookup, but have one here</p>
 			<table class="table">
+				<thead>
+					<tr>
+						<th>Custom name on Roompicks</th>
+						<th>Default name on lookup.cam.ac.uk</th>
+					</tr>
+				</thead>
 				% for user in sorted(users_reverted, key=lambda u: u.crsid):
 					<tr>
 						<td>
@@ -72,6 +78,12 @@
 						<button type="submit" class="btn btn-primary text-right">Accept changes</button>
 					</p>
 					<table class="table" id="changed-names">
+						<thead>
+							<tr>
+								<th>Current name on Roompicks</th>
+								<th>New name from lookup.cam.ac.uk</th>
+							</tr>
+						</thead>
 						% for user in sorted(users, key=lambda u: u.crsid):
 							<tr>
 								<td>
