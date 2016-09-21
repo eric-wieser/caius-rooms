@@ -68,7 +68,7 @@ def add_routes(app):
 		else:
 			return template('ballot-edit-prices', ballot_season=ballot, bands=bands, modifiers=modifiers)
 
-	@app.route('/<ballot_id:int>/edit-band-assignments')
+	@app.route('/<ballot_id:int>/band-assignments/edit')
 	@needs_auth('admin')
 	def show_ballot_band_edit(ballot_id, db):
 		ballot = db.query(m.BallotSeason).options(
@@ -84,9 +84,9 @@ def add_routes(app):
 		bands = db.query(m.RoomBand).all()
 		modifiers = db.query(m.RoomBandModifier).all()
 
-		return template('ballot-edit-band-assignments', ballot_season=ballot, bands=bands, modifiers=modifiers)
+		return template('ballot-band-assignments-edit', ballot_season=ballot, bands=bands, modifiers=modifiers)
 
-	@app.post('/<ballot_id:int>/edit-band-assignments')
+	@app.post('/<ballot_id:int>/band-assignments/edit')
 	@needs_auth('admin')
 	def save_ballot_band_edit(ballot_id, db):
 		ballot = db.query(m.BallotSeason).filter(m.BallotSeason.year == ballot_id).one()
