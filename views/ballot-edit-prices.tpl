@@ -101,12 +101,6 @@ end
 			<div class='col-sm-6 text-left'>
 				<button type="submit" class="btn btn-primary">Update band prices</button>
 			</div>
-			<div class='col-sm-6 text-right'>
-				<a href='band-assignments/edit' class="btn btn-default" target='_blank'>
-					<span class="glyphicon glyphicon-pencil"></span>
-					Edit band assignments
-				</a>
-			</div>
 		</div>
 	</form>
 </div>

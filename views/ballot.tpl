@@ -41,6 +41,9 @@ show_edit = request.user and request.user.is_admin
 				<span class="glyphicon glyphicon-pencil"></span>
 			</a></small>
 		% end
+		<a href="{{ url_for(ballot_season, extra_path='band-assignments') }}" class="btn btn-default pull-right">
+			<span class="glyphicon glyphicon-transfer"></span> View band and modifier changes
+		</a>
 	</h2>
 	<p>Red and green numbers next to columns indicate changes since last year. If cells are blank, then there is no information yet for this year.</p>
 	<div class="row">
@@ -167,9 +170,9 @@ show_edit = request.user and request.user.is_admin
 		</div>
 	</div>
 	% if not show_pct_change:
-		<span class='text-muted'>
+		<div class='text-muted'>
 			Not showing the percentage increase in prices yet, as the prices are not finalized
-		</span>
+		</div>
 	% end
 
 	% if show_edit:

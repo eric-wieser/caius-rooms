@@ -5,6 +5,7 @@
 % rebase('layout')
 
 <%
+show_edit = request.user and request.user.is_admin
 
 def flatten_iter(p, level=0, path=[]):
 	for c in p.children:
@@ -68,7 +69,15 @@ with_added_modifiers.update({k: v  for k, v        in newly_listed.iteritems() i
 with_added_modifiers.update({k: v2 for k, (v1, v2) in still_listed.iteritems() if not v1.modifiers and v2.modifiers})
 %>
 <div class="container">
-	<h1>Banding and modifier changes for {{ ballot_season }}</h1>
+	<h1>Banding and modifiers for {{ ballot_season }}
+		% if show_edit:
+			<small><a href="{{ url_for(ballot_season, extra_path="band-assignments/edit") }}">
+				<span class="glyphicon glyphicon-pencil"></span>
+			</a></small>
+		% end
+	</h1>
+	<p class="lead">Showing changes between this ballot and the previous one.</p>
+
 	<h2>Bands</h2>
 	<div class="row">
 		<div class="col-md-4">
