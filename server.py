@@ -498,6 +498,22 @@ with base_route(app, '/places'):
 
 
 with base_route(app, '/reviews'):
+	@app.route('')
+	@hide_from_public
+	def show_recent(db):
+		from sqlalchemy.orm import joinedload, subqueryload
+		reviews = (db
+			.query(m.Review)
+			.options(
+				joinedload(m.Review.occupancy)
+					.joinedload(m.Occupancy.listing)
+					.joinedload(m.RoomListing.room)
+			)
+			.order_by(m.Review.published_at.desc())
+			.filter(m.Review.is_newest & (m.Review.editor == None))
+		)
+		return template('reviews', reviews=reviews)
+
 	@app.route('/new', name="new-review-choice")
 	@needs_auth('ownership')
 	def prompt_review_choice(db):
