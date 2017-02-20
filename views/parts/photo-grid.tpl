@@ -1,4 +1,5 @@
 <%
+from bottle import request
 def ordered_photos(photos, cols=6, rows=2):
 	x = 0
 	y = 0
@@ -33,6 +34,18 @@ end
 % for photo in ordered_photos(photos, cols, rows):
 	% room = photo.occupancy.listing.room
 	<div class="{{ 'col-md-4 col-sm-6 col-xs-12' if photo.is_panorama else 'col-md-2 col-sm-3 col-xs-6' }} ">
-		<a href="{{ url_for(room) }}" title="{{ photo.caption }}&NewLine;{{ photo.published_at }}" class="thumbnail cropped-photo" style="display: block; height: 150px; background-image: url({{ photo.href }}); margin: 15px 0px; position: relative; overflow: hidden" target="_blank"><span class="label label-default" style="display: block; position: absolute; top: 0; left: 0;">{{room.pretty_name()}}</span></a>
+		<a href="{{ url_for(room) }}"
+		   title="{{ photo.caption }}&NewLine;{{ photo.published_at }}"
+		   class="thumbnail cropped-photo"
+		   style="display: block; height: 150px; background-image: url({{ photo.href }}); margin: 15px 0px; position: relative; overflow: hidden"
+		   target="_blank">
+			<span class="label label-default" style="display: block; position: absolute; top: 0; left: 0;">{{room.pretty_name()}}</span>
+			% if request.user and photo.occupancy.resident:
+				% user = photo.occupancy.resident
+				<div style="display: block; position: absolute; bottom: 0; right: 0;" title="Uploaded by {{user.name}}">
+					<img src="{{ user.gravatar(size=20) }}" width="20" height="20" style="display: block;" />
+				</div>
+			% end
+		</a>
 	</div>
 % end
