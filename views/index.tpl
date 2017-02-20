@@ -117,42 +117,17 @@ rebase('layout')
 		</div>
 		<div class="col-md-6 col-md-pull-6">
 			<h2>Recent reviews</h2>
-			<table class="table">
-				<% reviews = (db
-					.query(m.Review)
-					.options(
-						joinedload(m.Review.occupancy)
-							.joinedload(m.Occupancy.listing)
-							.joinedload(m.RoomListing.room)
-					)
-					.order_by(m.Review.published_at.desc())
-					.filter(m.Review.is_newest & (m.Review.editor == None))
-				) %>
-				% for review in reviews.limit(10):
-					% room = review.occupancy.listing.room
-					% author = review.occupancy.resident
-					<tr>
-						<td class="text-right">
-							<a href="{{ url_for(room) }}#occupancy-{{review.occupancy.id}}">{{ room.pretty_name() }}</a>
-						</td>
-						% if request.user:
-							<td>
-								% if author:
-									<a href="{{ url_for(author) }}" style="display: block; padding-left: 25px;">
-										<img src="{{ author.gravatar(size=20) }}" width="20" height="20" style="margin-left: -25px; float: left" />
-										{{ author.name }}
-									</a>
-								% else:
-									<span class="text-muted">unknown</span>
-								% end
-							</td>
-						% end
-						<td>
-							{{! format_ts_html(review.published_at) }}
-						</td>
-					</tr>
-				%end
-			</table>
+			<% reviews = (db
+				.query(m.Review)
+				.options(
+					joinedload(m.Review.occupancy)
+						.joinedload(m.Occupancy.listing)
+						.joinedload(m.RoomListing.room)
+				)
+				.order_by(m.Review.published_at.desc())
+				.filter(m.Review.is_newest & (m.Review.editor == None))
+			) %>
+			% include('parts/review-list', reviews=reviews.limit(10))
 		</div>
 	</div>
 	<div class="row">
