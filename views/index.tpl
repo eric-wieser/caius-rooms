@@ -116,7 +116,7 @@ rebase('layout')
 			</table>
 		</div>
 		<div class="col-md-6 col-md-pull-6">
-			<h2>Recent reviews</h2>
+			<h2>Recent reviews <small><a href="/reviews">more</a></small></h2>
 			<% reviews = (db
 				.query(m.Review)
 				.options(
