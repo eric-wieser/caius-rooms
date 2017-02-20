@@ -71,17 +71,21 @@ def add_routes(app):
 	@app.route('/<ballot_id:int>/band-assignments')
 	@needs_auth('admin')
 	def show_ballot_band_edit(ballot_id, db):
-		ballot = db.query(m.BallotSeason).options(
+		opts = (
 			joinedload(m.BallotSeason.room_listings)
 				.joinedload(m.RoomListing.room)
 				.load_only(m.Room.id, m.Room.name, m.Room.parent_id),
 			joinedload(m.BallotSeason.room_listings)
 				.joinedload(m.RoomListing.room)
 				.joinedload(m.Room.parent)
-		).filter(m.BallotSeason.year == ballot_id).one()
+		)
 
+		ballot = db.query(m.BallotSeason).options(*opts).filter(m.BallotSeason.year == ballot_id).one()
 
-		db.query(m.Place).all()
+		# do some preloading
+		prev = db.query(m.BallotSeason).options(*opts).filter(m.BallotSeason.year == ballot.previous.year).one()
+		places = db.query(m.Place).all()
+
 		bands = db.query(m.RoomBand).all()
 		modifiers = db.query(m.RoomBandModifier).all()
 
