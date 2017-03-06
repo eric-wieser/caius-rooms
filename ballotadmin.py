@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 import csv
-import StringIO
+from io import StringIO
 import json
 import re
 import decimal
@@ -320,7 +320,8 @@ def add_routes(app):
 
 		step2 = None
 		if request.method == "POST" and request.files.slot_csv:
-			raw_data, parse_errors = parse_csv(iter(request.files.slot_csv.file))
+			with StringIO(request.files.slot_csv.file.read(), newline=None) as f:
+				raw_data, parse_errors = parse_csv(f)
 
 			data, data_errors = process_slot_tuples(db, raw_data)
 
