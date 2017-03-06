@@ -7,7 +7,7 @@
 def layout_breadcrumb():
 	yield ('#', u'{} season'.format(ballot_season))
 end
-show_pct_change = False  # TODO
+show_pct_change = True
 
 show_edit = request.user and request.user.is_admin
 %>
@@ -172,6 +172,11 @@ show_edit = request.user and request.user.is_admin
 	% if not show_pct_change:
 		<div class='text-muted'>
 			Not showing the percentage increase in prices yet, as the prices are not finalized
+		</div>
+	% else:
+		<div class='text-muted'>
+			Note that prices do not reflect the actual charge made by the college, which will be rounded
+			to a multiple of 70p for technical reasons.
 		</div>
 	% end
 
