@@ -116,21 +116,15 @@ def add_routes(app):
 
 		postdata = add_structure(request.forms)
 		if postdata['reset'] == '':
-			last_ballot = ballot.previous
-			if not last_ballot:
-				raise HTTPError(400, 'No previous ballot to reset to')
-
 			rooms = db.query(m.Room).options(
 				load_only(m.Room.id),
 				joinedload(m.Room.listing_for)
 			)
-			n = 0
 			for r in rooms:
 				list_new = r.listing_for.get(ballot)
-				list_old = r.listing_for.get(last_ballot)
+				list_old = _first_listing_before(r, ballot)
 
 				if list_new and list_old:
-					n += 1
 					list_new.band = list_old.band
 					list_new.modifiers = list_old.modifiers
 		else:
@@ -399,6 +393,16 @@ def add_routes(app):
 		response.headers['Content-Disposition'] = 'attachment; filename="slots-{}-{}.csv"'.format(ballot_id, ballot_type.name)
 		return sfile.getvalue()
 
+
+def _first_listing_before(room, ballot):
+	while True:
+		ballot = ballot.previous
+		if not ballot:
+			break
+
+		list_old = room.listing_for.get(ballot)
+		if list_old:
+			return list_old
 
 def parse_json(j):
 	return [
