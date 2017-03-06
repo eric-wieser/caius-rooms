@@ -239,7 +239,7 @@ with_added_modifiers.update({k: v2 for k, (v1, v2) in still_listed.iteritems() i
 								<a href="{{ url_for(room) }}">{{ room.pretty_name() }}</a>
 							</td>
 							<td>
-								{{ ', '.join(m.name for m in listing2.modifiers) }}
+								{{ ', '.join(m.name for m in listing.modifiers) }}
 							</td>
 						</tr>
 					% end
