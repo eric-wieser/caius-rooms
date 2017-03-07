@@ -14,12 +14,12 @@ end
 
 done = all([user, room, season])
 if done:
-	occ_dest = room.listing_for.get(season)
-	occ_dest = occ_dest and [
+	dest_listing = room.listing_for.get(season)
+	occ_dest = [
 		occ
-		for occ in occ_dest.occupancies
+		for occ in dest_listing.occupancies
 		if not occ.cancelled
-	]
+	] if dest_listing else []
 	occ_src = [
 		occ
 		for occ in user.occupancies
