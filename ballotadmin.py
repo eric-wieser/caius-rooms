@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 import csv
-from io import StringIO
+from io import BytesIO
 import json
 import re
 import decimal
@@ -320,7 +320,7 @@ def add_routes(app):
 
 		step2 = None
 		if request.method == "POST" and request.files.slot_csv:
-			with StringIO(request.files.slot_csv.file.read(), newline=None) as f:
+			with BytesIO(request.files.slot_csv.file.read(), newline=None) as f:
 				raw_data, parse_errors = parse_csv(f)
 
 			data, data_errors = process_slot_tuples(db, raw_data)
@@ -374,7 +374,7 @@ def add_routes(app):
 		).one()
 
 
-		sfile = StringIO.StringIO()
+		sfile = BytesIO()
 		o = csv.writer(sfile)
 
 		o.writerow(["date", "time", "crsid", "name (ignored)"])
