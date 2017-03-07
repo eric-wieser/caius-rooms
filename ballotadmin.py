@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 import csv
-from io import BytesIO
+from io import BytesIO, StringIO
 import json
 import re
 import decimal
@@ -320,7 +320,7 @@ def add_routes(app):
 
 		step2 = None
 		if request.method == "POST" and request.files.slot_csv:
-			with BytesIO(request.files.slot_csv.file.read(), newline=None) as f:
+			with StringIO(request.files.slot_csv.file.read().decode('utf8'), newline=None) as f:
 				raw_data, parse_errors = parse_csv(f)
 
 			data, data_errors = process_slot_tuples(db, raw_data)
@@ -381,10 +381,10 @@ def add_routes(app):
 		last_date = None
 		for s in sorted(ballot_event.slots, key=lambda s: s.time):
 			if s.time.date() != last_date:
-				o.writerow([str(s.time.date()) + "@", s.time.time(), s.person.crsid + "@", s.person.name])
+				o.writerow([str(s.time.date()) + "@", s.time.time(), s.person.crsid + "@", s.person.name.encode('utf8')])
 				last_date = s.time.date()
 			else:
-				o.writerow(["", s.time.time(), s.person.crsid + "@", s.person.name])
+				o.writerow(["", s.time.time(), s.person.crsid + "@", s.person.name.encode('utf8')])
 
 		if not ballot_event.slots:
 			n = datetime.now().replace(second=0, microsecond=0)
