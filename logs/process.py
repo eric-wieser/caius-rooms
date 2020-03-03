@@ -1,4 +1,5 @@
 """ Script to run through log files and format them readably """
+from __future__ import print_function
 
 import os
 import sqlparse
@@ -23,7 +24,7 @@ def process(f, skip=False):
 
 it = fileinput.input([x for x in os.listdir('.') if x.endswith('.log')], inplace=True)
 
-print "queries : path"
+print("queries : path")
 
 for f in sorted(os.listdir('.')):
 	if f.endswith('.log'):
@@ -31,11 +32,11 @@ for f in sorted(os.listdir('.')):
 			qs = 0
 			for line in process(inf):
 				qs += 1
-				print >> outf, line
+				print(line, file=outf)
 				if qs > 200:
 					break
 
 			for line in process(inf, skip=True):
 				qs += 1
 
-			print "{1:7} : {0}".format(f[:-4].replace('.', '/'), qs)
+			print("{1:7} : {0}".format(f[:-4].replace('.', '/'), qs))

@@ -1,5 +1,8 @@
 import regex as re
-import itertools
+import sys
+
+if sys.version_info.major < 3:
+	from itertools import izip as zip
 
 room_range = re.compile(r'''
 	\b(?:
@@ -46,7 +49,7 @@ def references_in_m(match):
 			s, e = spans[0]
 			spans[0] = (s - 1, e)
 
-		items = itertools.izip(rooms, spans)
+		items = zip(rooms, spans)
 
 		# special case rooms like N7/8
 		if match.group('sep') == '/' and len(rooms) == 2:

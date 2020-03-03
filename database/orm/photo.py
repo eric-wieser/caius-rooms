@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import os
 
 from sqlalchemy import Column, ForeignKey
@@ -97,7 +99,7 @@ class Photo(Base):
 	def _inserted(cls, mapper, connection, target):
 		if target.raw_im:
 			if target.mime_type == 'image/jpeg' and 'exif' in target.raw_im.info:
-				print "Preserved exif!"
+				print("Preserved exif!")
 				target.raw_im.save(target.storage_path, exif=target.raw_im.info['exif'])
 			else:
 				target.raw_im.save(target.storage_path)

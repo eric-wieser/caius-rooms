@@ -38,6 +38,7 @@ end
 rooms.sort(
 	key=lambda r: (
 		listing_state[room],
+		r.stats.adjusted_rating is None,
 		r.stats.adjusted_rating,
 		r.stats.photo_count,
 		-r.id

@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, joinedload_all
 import database.orm as m
@@ -43,18 +45,18 @@ def scan(room, section):
 	for path, (start_idx, end_idx) in reference_helper.references_in(section.content):
 		ref_room = find_room(room, path)
 		if ref_room is PartRoom:
-			print room, path, '=>', 'PartRoom'
-			print section.content[max(0, start_idx-10):end_idx + 10]
+			print(room, path, '=>', 'PartRoom')
+			print(section.content[max(0, start_idx-10):end_idx + 10])
 			continue
 
 		if ref_room is MultiRoom:
-			print room, path, '=>', 'MultiRoom'
-			print section.content[max(0, start_idx-10):end_idx + 10]
+			print(room, path, '=>', 'MultiRoom')
+			print(section.content[max(0, start_idx-10):end_idx + 10])
 			continue
 
 		if ref_room is None:
-			print room, path, '=>', ref_room
-			print section.content[max(0, start_idx-10):end_idx + 10]
+			print(room, path, '=>', ref_room)
+			print(section.content[max(0, start_idx-10):end_idx + 10])
 			continue
 
 		ref = m.ReviewRoomReference(

@@ -155,7 +155,7 @@ from bottle import request, template, response
 
 def needs_auth(reason_or_callback, reason='privacy'):
 	# handle the optional "reason" argument
-	if isinstance(reason_or_callback, basestring):
+	if isinstance(reason_or_callback, (str, type(u''))):
 		reason = reason_or_callback
 		return lambda callback: needs_auth(callback, reason)
 	else:
@@ -172,7 +172,10 @@ def needs_auth(reason_or_callback, reason='privacy'):
 
 def url_for(x, extra_path=None, qs={}):
 	import database.orm as m
-	from urllib import urlencode
+	try:
+		from urllib.parse import urlencode
+	except ImportError:
+		from urllib import urlencode
 
 	if isinstance(x, m.Room):
 		base = '/rooms/{}'.format(x.id)

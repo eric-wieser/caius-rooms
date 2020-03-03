@@ -6,7 +6,7 @@
 		<p>Since obviously the information is useful, I'll show the people around your position anyway as a compromise.</p>
 	</td></tr>
 % end
-% slot_tuples = sorted(slot_tuples, key=lambda (id, p, t): t)
+% slot_tuples = sorted(slot_tuples, key=lambda tup: tup[-1]) # id, p, t
 % for i, (id, person, ts) in enumerate(slot_tuples, 1):
 	% if not pred or pred(id, person, ts):
 		<tr>

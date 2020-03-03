@@ -1,3 +1,5 @@
+import sys
+
 from sqlalchemy import Column, ForeignKey, UniqueConstraint
 from sqlalchemy.types import (
 	Date,
@@ -39,8 +41,12 @@ class BallotSeason(Base):
 	def __repr__(self):
 		return "BallotSeason(year={})".format(self.year)
 
-	def __unicode__(self):
+	def __str__(self):
 		return u"{} \u2012 {}".format(self.year, self.year+1)
+
+	if sys.version_info.major < 3:
+		__unicode__ = __str__
+		del __str__
 
 
 class BallotEvent(Base):

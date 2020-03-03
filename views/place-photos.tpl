@@ -36,7 +36,7 @@ end
 
 <div class="container">
 	% filtered_rooms  = place.all_rooms_q.all()
-	% filtered_rooms.sort(key=lambda r: map(lambda l: l.name, r.parent.path + [r]))
+	% filtered_rooms.sort(key=lambda r: [l.name for l in r.parent.path + [r]])
 
 	% def grouper(n, iterable, fillvalue=None):
     	% "grouper(3, 'ABCDEFG', 'x') --> ABC DEF Gxx"

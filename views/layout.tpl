@@ -1,9 +1,13 @@
 <%
 import json
 from bottle import request
-import urllib
-import urlparse
-
+try:
+	import urllib.parse as urlparse
+	from urllib.parse import quote_plus
+except ImportError:
+	import urlparse
+	from urllib import quote_plus
+end
 url_parts = request.path[1:].split('/')
 main_route = url_parts[0]
 nav = [
@@ -116,7 +120,7 @@ end
 								</li>
 							% else:
 								<li class="alert-info">
-									<a href="/login?return_to={{ urllib.quote_plus(request.url) }}">
+									<a href="/login?return_to={{ quote_plus(request.url) }}">
 										Login
 									</a>
 								</li>
