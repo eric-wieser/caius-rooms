@@ -2,8 +2,11 @@
 import json
 from bottle import request
 import urllib
-import urlparse
-
+try:
+	import urllib.parse as urlparse
+except ImportError:
+	import urlparse
+end
 url_parts = request.path[1:].split('/')
 main_route = url_parts[0]
 nav = [

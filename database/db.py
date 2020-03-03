@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import os
 
 from sqlalchemy import create_engine
@@ -35,9 +37,9 @@ def makePostgreSQL(user, password='', host='localhost'):
 	))
 
 try:
-	import db_conn
+	from . import db_conn
 except ImportError:
-	print "Using local sqlite database"
+	print("Using local sqlite database")
 	engine = makeSQLLite()
 else:
 	if db_conn.db_type == 'mysql':

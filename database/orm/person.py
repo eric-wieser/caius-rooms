@@ -26,7 +26,7 @@ class Person(Base):
     def gravatar(self, size=None):
         from hashlib import md5
         return 'http://www.gravatar.com/avatar/{}?d=identicon{}'.format(
-            md5(self.email).hexdigest(),
+            md5(self.email.encode('utf-8')).hexdigest(),
             '&s={}'.format(size) if size else ''
         )
 

@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 from database import olddb, db
 import database.orm as m
 import time
@@ -19,17 +21,17 @@ def update():
 	for r in reserves:
 		room = ns.query(m.Room).get(r.room)
 		if not room:
-			print "ER: room {} does not exist".format(r.room)
+			print("ER: room {} does not exist".format(r.room))
 			continue
 
 		user = ns.query(m.Person).get(r.person)
 		if not user:
-			print "EU: user {} does not exist".format(r.person)
+			print("EU: user {} does not exist".format(r.person))
 			continue
 
 		listing = room.listing_for.get(ballot)
 		if not listing:
-			print "EL: no listing for room {} ({})".format(r.room, room.pretty_name())
+			print("EL: no listing for room {} ({})".format(r.room, room.pretty_name()))
 			continue
 
 		if not any(user == o.resident for o in listing.occupancies):
@@ -37,7 +39,7 @@ def update():
 				resident=user,
 				chosen_at=r.ts_chosen
 			))
-			print "B: {:6s} -> {:3d} ({})".format(user.crsid, room.id, room.pretty_name())
+			print("B: {:6s} -> {:3d} ({})".format(user.crsid, room.id, room.pretty_name()))
 
 	ns.commit()
 	ns.close()
@@ -47,5 +49,5 @@ while True:
 	try:
 		update()
 	except Exception as e:
-		print "EE: {}".format(e)
+		print("EE: {}".format(e))
 	time.sleep(30)

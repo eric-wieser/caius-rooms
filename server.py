@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 # system includes
 import random
 import re
@@ -195,7 +197,7 @@ def error_handler(res):
 try:
 	import raven
 except ImportError:
-	print "Warning: raven not found, using development login page"
+	print("Warning: raven not found, using development login page")
 	@app.route('/login')
 	def do_login(db):
 		if request.query.crsid:
@@ -233,7 +235,7 @@ else:
 			base_url = request.url[:request.url.rfind("WLS-Response")-1]
 
 			if r.url != base_url:
-				print r.url, base_url
+				print(r.url, base_url)
 				abort(400, "Login failed: it seems another site tried to log you in")
 
 			issue_delta = (datetime.utcnow() - r.issue).total_seconds()
@@ -250,7 +252,7 @@ else:
 			request.session["user"] = r.principal
 			utils.update_csrf_token()
 
-			print "Successfully logged in as {0}".format(r.principal)
+			print("Successfully logged in as {0}".format(r.principal))
 			return redirect(request.query.return_to)
 
 
@@ -911,7 +913,7 @@ with base_route(app, '/tools'):
 			user = db.query(m.Person).get(request.query.user)
 			if not user:
 				d = utils.lookup_ldap([request.query.user])
-				print d
+				print(d)
 				d = d.get(request.query.user)
 				if d:
 					name = d.get('visibleName')
