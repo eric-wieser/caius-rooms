@@ -242,7 +242,6 @@ else:
 
 			if not r.success:
 				abort(403, "Login failed: reason unknown")
-				return redirect(request.query.return_to)
 
 			# a no-op here, but important if you set iact or aauth
 			if not r.check_iact_aauth(None, None):
