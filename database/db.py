@@ -27,10 +27,11 @@ def makeMySQL(user, password):
 		pool_recycle=3600
 	)
 
-def makePostgreSQL(user, password=''):
-	return create_engine('postgresql+psycopg2://{user}:{password}@localhost:5432/gcsu'.format(
+def makePostgreSQL(user, password='', host='localhost'):
+	return create_engine('postgresql+psycopg2://{user}:{password}@{host}:5432/gcsu'.format(
 		user=user,
-		password=password
+		password=password,
+		host=host
 	))
 
 try:
@@ -42,6 +43,6 @@ else:
 	if db_conn.db_type == 'mysql':
 		engine = makeMySQL(db_conn.user, db_conn.password)
 	elif db_conn.db_type == 'postgres':
-		engine = makePostgreSQL(db_conn.postgres_user)
+		engine = makePostgreSQL(db_conn.postgres_user, host='postgres')
 
 Session = sessionmaker(engine)
